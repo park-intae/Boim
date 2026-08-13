@@ -9,10 +9,10 @@
 ## ✅ 체크리스트
 
 ### 1. 백엔드(API) InsuranceProduct CRUD 구현
-- [ ] `packages/shared-types`: InsuranceProduct 생성, 조회, 수정 응답 DTO 추가
-- [ ] `apps/api`: `insurance-product` 모듈, 컨트롤러, 서비스 생성 및 Prisma CRUD 구현
-- [ ] `apps/api`: 기능 구현에 대한 단위 테스트 및 E2E 테스트 코드 작성 (규칙 준수)
-- [ ] 🌿 커밋 완료
+- [x] `packages/shared-types`: InsuranceProduct 생성, 조회, 수정 응답 DTO 추가
+- [x] `apps/api`: `insurance-product` 모듈, 컨트롤러, 서비스 생성 및 Prisma CRUD 구현
+- [x] `apps/api`: 기능 구현에 대한 단위 테스트 및 E2E 테스트 코드 작성 (규칙 준수)
+- [x] 🌿 커밋 완료
 
 ### 2. 프론트엔드(Web) 공통 레이아웃 구성
 - [ ] 대시보드 공통 레이아웃 컴포넌트(Sidebar, Topbar, Main) 제작 (Tailwind CSS 활용)
