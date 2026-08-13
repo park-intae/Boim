@@ -11,7 +11,7 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-brand-dark text-white h-screen flex flex-col hidden md:flex">
+    <aside className="w-64 bg-brand-dark text-white h-screen flex flex-col shrink-0">
       <div className="p-6 text-2xl font-bold border-b border-gray-800 flex items-center gap-2">
         <div className="w-8 h-8 bg-brand-primary rounded-lg"></div>
         Boim

@@ -2,7 +2,7 @@ import { Bell, User } from 'lucide-react';
 
 export function RightSidebar() {
   return (
-    <aside className="w-80 bg-gray-50 h-screen flex flex-col hidden lg:flex border-l border-gray-200 shrink-0">
+    <aside className="w-80 bg-gray-50 h-screen flex flex-col border-l border-gray-200 shrink-0">
       <header className="h-20 flex items-center justify-end px-6 border-b border-gray-200 bg-white">
         <div className="flex items-center gap-4">
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors relative">
