@@ -33,7 +33,9 @@ export class InsuranceProductService {
       where: { id },
     });
     if (!product) {
-      throw new NotFoundException(`해당 보험 상품(ID: ${id})을 찾을 수 없습니다.`);
+      throw new NotFoundException(
+        `해당 보험 상품(ID: ${id})을 찾을 수 없습니다.`,
+      );
     }
     return product;
   }

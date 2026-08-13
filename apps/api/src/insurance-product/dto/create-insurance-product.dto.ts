@@ -2,7 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { CreateInsuranceProductDto as SharedCreateDto } from '@boim/shared-types';
 
 export class CreateInsuranceProductDto implements SharedCreateDto {
-  @ApiProperty({ description: '사용자 ID (추후 JWT 인증 도입 시 제거될 수 있음)' })
+  @ApiProperty({
+    description: '사용자 ID (추후 JWT 인증 도입 시 제거될 수 있음)',
+  })
   userId!: number;
 
   @ApiProperty({ description: '보험 카테고리 (예: 생명보험, 실비보험 등)' })

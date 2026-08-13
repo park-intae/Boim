@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { InsuranceProductService } from './insurance-product.service';
 import { CreateInsuranceProductDto } from './dto/create-insurance-product.dto';
 import { UpdateInsuranceProductDto } from './dto/update-insurance-product.dto';
@@ -7,7 +15,9 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 @ApiTags('Insurance Products (보험 상품)')
 @Controller('insurance-products')
 export class InsuranceProductController {
-  constructor(private readonly insuranceProductService: InsuranceProductService) {}
+  constructor(
+    private readonly insuranceProductService: InsuranceProductService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: '새 보험 상품 등록' })

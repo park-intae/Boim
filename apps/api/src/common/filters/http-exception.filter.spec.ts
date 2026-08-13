@@ -12,7 +12,9 @@ describe('HttpExceptionFilter', () => {
     const mockJson = jest.fn();
     const mockStatus = jest.fn().mockReturnValue({ json: mockJson });
     const mockGetResponse = jest.fn().mockReturnValue({ status: mockStatus });
-    const mockHttpArgumentsHost = jest.fn().mockReturnValue({ getResponse: mockGetResponse });
+    const mockHttpArgumentsHost = jest
+      .fn()
+      .mockReturnValue({ getResponse: mockGetResponse });
     const mockArgumentsHost = {
       switchToHttp: mockHttpArgumentsHost,
     } as any;
@@ -35,7 +37,9 @@ describe('HttpExceptionFilter', () => {
     const mockJson = jest.fn();
     const mockStatus = jest.fn().mockReturnValue({ json: mockJson });
     const mockGetResponse = jest.fn().mockReturnValue({ status: mockStatus });
-    const mockHttpArgumentsHost = jest.fn().mockReturnValue({ getResponse: mockGetResponse });
+    const mockHttpArgumentsHost = jest
+      .fn()
+      .mockReturnValue({ getResponse: mockGetResponse });
     const mockArgumentsHost = {
       switchToHttp: mockHttpArgumentsHost,
     } as any;

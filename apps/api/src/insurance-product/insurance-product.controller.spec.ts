@@ -23,7 +23,9 @@ describe('InsuranceProductController', () => {
       ],
     }).compile();
 
-    controller = module.get<InsuranceProductController>(InsuranceProductController);
+    controller = module.get<InsuranceProductController>(
+      InsuranceProductController,
+    );
     service = module.get<InsuranceProductService>(InsuranceProductService);
   });
 
@@ -32,7 +34,16 @@ describe('InsuranceProductController', () => {
   });
 
   it('should call create method', async () => {
-    const dto = { userId: 1, category: '생명보험', name: '테스트 상품', institution: '삼성생명', startDate: '2023-01-01', maturityDate: '2033-01-01', monthlyPayment: 100000, coverageAmount: 100000000 };
+    const dto = {
+      userId: 1,
+      category: '생명보험',
+      name: '테스트 상품',
+      institution: '삼성생명',
+      startDate: '2023-01-01',
+      maturityDate: '2033-01-01',
+      monthlyPayment: 100000,
+      coverageAmount: 100000000,
+    };
     expect(await controller.create(dto)).toEqual({ id: 1 });
     expect(service.create).toHaveBeenCalledWith(dto);
   });
