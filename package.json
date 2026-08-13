@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend start:dev",
-    "dev": "pnpm run dev:backend & pnpm run dev:frontend",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
   },
   "engines": {
     "node": ">=22.0.0"
