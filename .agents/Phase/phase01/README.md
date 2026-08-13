@@ -20,7 +20,7 @@
 - [x] 백엔드 통신을 위한 API 클라이언트(Axios/Fetch) 전역 인스턴스 생성 및 에러 인터셉터 설정
 
 ### 4. Phase 01 테스트 및 검증
-- [ ] 프론트엔드 라우팅 및 공통 레이아웃 기본 단위 테스트(Vitest + RTL) 작성
-- [ ] 백엔드 Prisma 모델 및 기본 API E2E 테스트(Jest + Supertest) 뼈대 작성
-- [ ] 백엔드 Swagger 접속 및 더미 응답 확인
-- [ ] 작업 내용 일괄 커밋 및 푸시
+- [x] 프론트엔드 라우팅 및 공통 레이아웃 기본 단위 테스트(Vitest + RTL) 작성
+- [x] 백엔드 Prisma 모델 및 기본 API E2E 테스트(Jest + Supertest) 뼈대 작성
+- [x] 백엔드 Swagger 접속 및 더미 응답 확인
+- [x] 작업 내용 일괄 커밋 및 푸시
