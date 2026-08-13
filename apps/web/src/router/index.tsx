@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { InsurancePage } from '../pages/InsurancePage';
+import { HomePage } from '../pages/HomePage';
 
 export const router = createBrowserRouter([
   {
@@ -9,7 +10,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <div className="text-gray-800 text-2xl font-bold">대시보드 컨텐츠 영역</div>,
+        element: <HomePage />,
       },
       {
         path: 'insurance',
