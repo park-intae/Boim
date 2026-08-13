@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
+import { InsurancePage } from '../pages/InsurancePage';
 
 export const router = createBrowserRouter([
   {
@@ -12,7 +13,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'insurance',
-        element: <div className="text-gray-800 text-2xl font-bold">가입 현황 리스트 (Phase02 진행중)</div>,
+        element: <InsurancePage />,
       }
     ]
   },

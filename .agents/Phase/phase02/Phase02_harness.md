@@ -20,7 +20,7 @@
 - [x] 🌿 커밋 완료
 
 ### 3. 프론트엔드-백엔드 데이터 연동
-- [ ] TanStack Query(`useQuery`, `useMutation`)를 활용해 InsuranceProduct API 연동 훅 작성
-- [ ] 보험 목록 조회 및 등록 화면(모달/페이지) 컴포넌트 개발
-- [ ] 기능(Hook 및 렌더링)에 대한 단위 테스트 작성
-- [ ] 🌿 커밋 완료
+- [x] TanStack Query(`useQuery`, `useMutation`)를 활용해 InsuranceProduct API 연동 훅 작성
+- [x] 보험 목록 조회 및 등록 화면(모달/페이지) 컴포넌트 개발
+- [x] 기능(Hook 및 렌더링)에 대한 단위 테스트 작성
+- [x] 🌿 커밋 완료
