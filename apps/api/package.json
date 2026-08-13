@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "@boim/api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@boim/shared-types": "workspace:^",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
