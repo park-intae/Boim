@@ -15,7 +15,7 @@ vi.mock('lucide-react', () => ({
 }));
 
 describe('DashboardLayout', () => {
-  it('Sidebar와 Topbar 컴포넌트가 렌더링되어야 한다', () => {
+  it('Sidebar와 RightSidebar 컴포넌트가 렌더링되어야 한다', () => {
     render(
       <BrowserRouter>
         <DashboardLayout />
@@ -26,6 +26,8 @@ describe('DashboardLayout', () => {
     expect(screen.getByText('대시보드')).toBeInTheDocument();
     expect(screen.getByText('보험 캘린더')).toBeInTheDocument();
     
-    expect(screen.getByText(/환영합니다, 사용자님/i)).toBeInTheDocument();
+    // RightSidebar 확인
+    expect(screen.getByText('요약 정보')).toBeInTheDocument();
+    expect(screen.getByText('다가오는 일정')).toBeInTheDocument();
   });
 });

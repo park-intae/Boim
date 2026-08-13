@@ -7,8 +7,8 @@
 ## ✅ 체크리스트
 
 ### 1. 전체 레이아웃 (Global Layout)
-- [ ] 전체적인 화면 분할(Grid/Flex) 및 배경색, 컨테이너 등 베이스 레이아웃 재구성
-- [ ] Tailwind 전역 설정(Theme, Font, Color 등) 고도화
+- [x] 전체적인 화면 분할(Grid/Flex) 및 배경색, 컨테이너 등 베이스 레이아웃 재구성
+- [x] Tailwind 전역 설정(Theme, Font, Color 등) 고도화
 
 ### 2. 메인 캘린더 (Main Calendar)
 - [ ] 중앙에 위치할 핵심 컴포넌트인 캘린더 UI 뼈대 및 디자인 시안 적용
