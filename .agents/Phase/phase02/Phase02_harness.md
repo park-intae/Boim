@@ -15,9 +15,9 @@
 - [x] 🌿 커밋 완료
 
 ### 2. 프론트엔드(Web) 공통 레이아웃 구성
-- [ ] 대시보드 공통 레이아웃 컴포넌트(Sidebar, Topbar, Main) 제작 (Tailwind CSS 활용)
-- [ ] 캘린더 & 대시보드 레이아웃 단위 테스트(RTL) 작성
-- [ ] 🌿 커밋 완료
+- [x] 대시보드 공통 레이아웃 컴포넌트(Sidebar, Topbar, Main) 제작 (Tailwind CSS 활용)
+- [x] 캘린더 & 대시보드 레이아웃 단위 테스트(RTL) 작성
+- [x] 🌿 커밋 완료
 
 ### 3. 프론트엔드-백엔드 데이터 연동
 - [ ] TanStack Query(`useQuery`, `useMutation`)를 활용해 InsuranceProduct API 연동 훅 작성
