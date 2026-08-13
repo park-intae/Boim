@@ -21,6 +21,7 @@
 - **Actions 및 훅 (`use()` 등):** 폼 제출 등 비동기 작업에 React 19의 Actions(`useActionState`, `useFormStatus`) 및 `use()` 훅을 적재적소에 활용합니다.
 
 ## 4. UI 및 스타일링
+- **디자인 리소스 참조 (필수):** UI 컴포넌트나 레이아웃 작업 전, 반드시 `docs/design/` 폴더에 있는 `Color Palette.svg`와 `Design&Wireframe.svg` 파일을 열어 색상 토큰과 레이아웃 구조를 파악하고 이를 엄격히 준수하여 구현해야 합니다.
 - **Tailwind CSS 퍼스트:** 모든 스타일링의 기본은 Tailwind CSS 유틸리티 클래스를 사용합니다.
 - **접근성(a11y):** 키보드 네비게이션 및 스크린 리더 지원이 필요한 경우 `Shadcn/ui`나 `Radix UI` 기반의 Headless 컴포넌트를 사용합니다.
 - **애니메이션 원칙 (경량화 우선):**
