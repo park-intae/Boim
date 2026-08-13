@@ -11,13 +11,18 @@ export interface InsuranceProductDto {
   category: string;
   name: string;
   institution: string;
-  startDate: Date;
-  maturityDate: Date;
+  startDate: Date | string;
+  maturityDate: Date | string;
   monthlyPayment: number;
   coverageAmount: bigint | number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
+
+export type CreateInsuranceProductDto = Omit<InsuranceProductDto, 'id' | 'createdAt' | 'updatedAt'>;
+
+export type UpdateInsuranceProductDto = Partial<CreateInsuranceProductDto>;
+
 
 export interface NotificationDto {
   id: bigint | number;
