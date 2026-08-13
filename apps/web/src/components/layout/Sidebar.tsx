@@ -1,5 +1,8 @@
 import { Calendar, Shield, PieChart, Bell, Settings, ShieldCheck } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { SummaryCard } from './SummaryCard';
 
 export function Sidebar() {
   const menuItems = [
@@ -11,21 +14,22 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-[247px] bg-white h-screen flex flex-col shrink-0 border-r border-gray-100">
-      <div className="pt-10 pb-10 px-8 flex items-center gap-3">
-        <ShieldCheck className="w-7 h-7 text-gray-900" />
-        <span className="text-[21px] font-bold text-gray-900 tracking-tight">보험 관리</span>
+    <aside className="w-[247px] bg-white h-screen flex flex-col shrink-0 border-r border-brand-gray-100 z-20 shadow-[2px_0_10px_rgba(0,0,0,0.02)]">
+      <div className="pt-[48px] px-7 flex items-center gap-2">
+        <ShieldCheck className="w-7 h-7 text-brand-gray-900" />
+        <span className="text-[21px] font-bold text-brand-gray-900 tracking-tight">보험 관리</span>
       </div>
-      <nav className="flex-1 px-4 space-y-1">
+      
+      <nav className="mt-[72px] px-4 space-y-[1px] flex-1">
         {menuItems.map((item) => (
           <NavLink
             key={item.name}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 font-medium text-[15px] ${
+              `flex items-center gap-3 px-4 h-[58px] rounded-2xl transition-colors duration-200 font-medium text-[15px] ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-800 font-bold'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-brand-50 text-brand-800 font-bold'
+                  : 'text-brand-gray-700 hover:bg-brand-gray-50 hover:text-brand-gray-900'
               }`
             }
           >
@@ -34,6 +38,15 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {/* SummaryCard placed at the bottom inside the sidebar */}
+      <div className="px-4 pb-[40px] mt-auto">
+        <ErrorBoundary fallback={<div className="p-4 bg-red-50 text-red-500 rounded-2xl">오류</div>}>
+          <Suspense fallback={<div className="h-[170px] bg-brand-gray-50 animate-pulse rounded-2xl" />}>
+            <SummaryCard />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </aside>
   );
 }
