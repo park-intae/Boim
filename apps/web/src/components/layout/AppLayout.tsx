@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { RightPanel } from './RightPanel';
 
 export function AppLayout() {
   return (
@@ -22,11 +23,7 @@ export function AppLayout() {
           </main>
           
           {/* Right Column: Off-canvas or side panel */}
-          <aside className="w-[380px] flex-shrink-0 pr-10 pb-12 overflow-y-auto">
-            <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-gray-400 font-medium bg-gray-50/50">
-              우측 패널 영역 (8월 12일 상세)
-            </div>
-          </aside>
+          <RightPanel />
           
         </div>
       </div>
