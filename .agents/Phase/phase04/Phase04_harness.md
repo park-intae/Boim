@@ -5,9 +5,9 @@
 ## ✅ 체크리스트
 
 ### 1. API 클라이언트 및 전역 상태 관리 세팅
-- [ ] 프론트엔드 API 폴더(`src/api`) 내 Axios 인스턴스 구성 및 공통 에러 핸들러 작성
-- [ ] 서버 상태 관리를 위한 `TanStack Query (React Query)` Provider 전역 설정
-- [ ] 보험 API 호출을 위한 Query & Mutation Custom Hook 구현 (`useInsuranceQueries`)
+- [x] 프론트엔드 API 폴더(`src/api`) 내 Axios 인스턴스 구성 및 공통 에러 핸들러 작성
+- [x] 서버 상태 관리를 위한 `TanStack Query (React Query)` Provider 전역 설정
+- [x] 보험 API 호출을 위한 Query & Mutation Custom Hook 구현 (`useInsuranceQueries`)
 
 ### 2. 중앙 캘린더 데이터 연동 (Read-Only)
 - [ ] 백엔드 `insurance-product` GET API와 캘린더 컴포넌트 연결
@@ -17,6 +17,7 @@
 ### 3. 우측 상세 패널 (Right Panel) 상태/뷰 설계
 - [ ] 우측 패널의 화면 상태를 `View Mode`(일정 목록 확인)와 `Form Mode`(새 보험 등록 및 수정)로 전환하는 로직 구현
 - [ ] 선택된 날짜에 이벤트가 없을 경우 나타나는 Empty State에서 '등록' 버튼 클릭 시 Form Mode로 진입하도록 연결
+- [ ] 캘린더 우측 상단에 보험 추가 버튼 제작, 클릭시 우측 상세 패널 Form Mode로 전환
 - [ ] 패널 하단 '새로운 보험 등록' 둥근 플로팅 버튼 클릭 시 Form Mode로 전환
 
 ### 4. 우측 상세 패널 (Right Panel) Form UI 및 Mutation (Create / Update)
