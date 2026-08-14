@@ -3,6 +3,7 @@ import { format, isSameDay } from 'date-fns';
 import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQueries';
 import { InsuranceForm } from './InsuranceForm';
+import { MyInsuranceList } from './MyInsuranceList';
 
 export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
@@ -165,6 +166,8 @@ export function RightPanel() {
               </button>
             </div>
           </>
+        ) : panelMode === 'my-insurance' ? (
+          <MyInsuranceList />
         ) : (
           <InsuranceForm />
         )}
