@@ -5,10 +5,10 @@
 ## ✅ 체크리스트
 
 ### 1. 알림 모드 상태 관리 및 사이드바 연동
-- [ ] `useAppStore`의 `panelMode` 타입에 `'notifications'` 모드 추가
-- [ ] 좌측 `Sidebar` 컴포넌트의 '알림' 메뉴 클릭 시 `setPanelMode('notifications')` 호출 로직 구현 및 활성화 스타일 적용
-- [ ] 🧪 **[Test]** `useAppStore.test.ts`에 `'notifications'` 모드 전환 검증 테스트 추가
-- [ ] 🧪 **[Test]** `Sidebar.test.tsx`에서 '알림' 클릭 동작 검증 테스트 추가
+- [x] `useAppStore`의 `panelMode` 타입에 `'notifications'` 모드 추가
+- [x] 좌측 `Sidebar` 컴포넌트의 '알림' 메뉴 클릭 시 `setPanelMode('notifications')` 호출 로직 구현 및 활성화 스타일 적용
+- [x] 🧪 **[Test]** `useAppStore.test.ts`에 `'notifications'` 모드 전환 검증 테스트 추가
+- [x] 🧪 **[Test]** `Sidebar.test.tsx`에서 '알림' 클릭 동작 검증 테스트 추가
 
 ### 2. 알림 리스트 컴포넌트(`NotificationList`) 뼈대 및 UI 구현
 - [ ] `panelMode === 'notifications'`일 때 메인 또는 우측 패널에 렌더링될 `<NotificationList />` 컴포넌트 생성

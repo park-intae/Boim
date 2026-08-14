@@ -63,4 +63,12 @@ describe('useAppStore (Zustand)', () => {
     expect(state.panelMode).toBe('analysis');
     expect(state.editingProductId).toBeNull(); // list mode이므로 null
   });
+
+  it('setPanelMode("notifications")를 호출하면 notifications 모드로 변경되어야 한다.', () => {
+    useAppStore.getState().setPanelMode('notifications');
+    
+    const state = useAppStore.getState();
+    expect(state.panelMode).toBe('notifications');
+    expect(state.editingProductId).toBeNull(); // list mode이므로 null
+  });
 });

@@ -6,13 +6,13 @@ export function Sidebar() {
   const panelMode = useAppStore(state => state.panelMode);
   const setPanelMode = useAppStore(state => state.setPanelMode);
 
-  const activeMenu = panelMode === 'my-insurance' ? '내 보험' : panelMode === 'analysis' ? '보험료 분석' : '보험 일정';
+  const activeMenu = panelMode === 'my-insurance' ? '내 보험' : panelMode === 'analysis' ? '보험료 분석' : panelMode === 'notifications' ? '알림' : '보험 일정';
 
   const menuItems = [
     { name: '보험 일정', icon: CalendarDays, action: () => setPanelMode('view') },
     { name: '내 보험', icon: ShieldCheck, action: () => setPanelMode('my-insurance') },
     { name: '보험료 분석', icon: Activity, action: () => setPanelMode('analysis') },
-    { name: '알림', icon: Bell, action: () => {} },
+    { name: '알림', icon: Bell, action: () => setPanelMode('notifications') },
     { name: '설정', icon: Settings, action: () => {} },
   ];
 

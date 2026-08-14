@@ -52,4 +52,13 @@ describe('Sidebar Component', () => {
     
     expect(useAppStore.getState().panelMode).toBe('analysis');
   });
+
+  it('"알림" 메뉴를 클릭하면 panelMode가 "notifications"로 변경되어야 한다.', () => {
+    render(<Sidebar />);
+    
+    const notificationsMenu = screen.getByText('알림');
+    fireEvent.click(notificationsMenu);
+    
+    expect(useAppStore.getState().panelMode).toBe('notifications');
+  });
 });
