@@ -7,17 +7,14 @@ export function Header() {
       
       <div className="flex items-center justify-between w-[200px] shrink-0">
         
-        {/* Icons Group */}
-        <div className="flex items-center gap-2">
-          <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors rounded-full shrink-0">
-            <Moon className="w-5 h-5" />
-          </button>
+        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors rounded-full shrink-0">
+          <Moon className="w-5 h-5" />
+        </button>
 
-          <button className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors rounded-full shrink-0">
-            <Bell className="w-5 h-5" />
-            <div className="absolute top-[8px] right-[10px] w-2 h-2 bg-amber-500 rounded-full ring-2 ring-gray-50" />
-          </button>
-        </div>
+        <button className="relative w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors rounded-full shrink-0">
+          <Bell className="w-5 h-5" />
+          <div className="absolute top-[8px] right-[10px] w-2 h-2 bg-amber-500 rounded-full ring-2 ring-gray-50" />
+        </button>
         
         {/* Vertical Divider */}
         <div className="h-5 w-px bg-gray-200 shrink-0" />
