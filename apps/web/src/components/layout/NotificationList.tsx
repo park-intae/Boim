@@ -1,5 +1,5 @@
 import { Bell, AlertCircle, CalendarDays, CheckCircle2, X } from 'lucide-react';
-import { useGetNotifications, useMarkNotificationRead, useDeleteNotification, NotificationDto } from '../../api/useNotificationQueries';
+import { useGetNotifications, useMarkNotificationRead, useDeleteNotification } from '../../api/useNotificationQueries';
 
 export function NotificationList() {
   const { data: notifications = [] } = useGetNotifications();
