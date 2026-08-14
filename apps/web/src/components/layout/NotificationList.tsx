@@ -1,46 +1,10 @@
 import { Bell, AlertCircle, CalendarDays, CheckCircle2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useGetNotifications, useMarkNotificationRead, useDeleteNotification, NotificationDto } from '../../api/useNotificationQueries';
 
-// 향후 API나 전역 스토어로 대체될 임시 타입과 데이터
-export interface Notification {
-  id: string;
-  type: 'payment' | 'renewal' | 'info';
-  title: string;
-  message: string;
-  createdAt: string;
-  isRead: boolean;
-}
-
-const dummyNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'payment',
-    title: '보험료 납입일 안내',
-    message: '내일은 (무)무배당 실손의료보험의 납입일입니다. (예상 금액: 35,000원)',
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30분 전
-    isRead: false,
-  },
-  {
-    id: '2',
-    type: 'renewal',
-    title: '자동차 보험 갱신 안내',
-    message: '가입하신 다이렉트 자동차보험의 만기가 한 달 남았습니다. 갱신을 준비해주세요.',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2일 전
-    isRead: true,
-  },
-  {
-    id: '3',
-    type: 'info',
-    title: 'Boim 업데이트 안내',
-    message: '보험료 분석 기능이 새롭게 추가되었습니다. 지금 바로 확인해보세요!',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), // 5일 전
-    isRead: true,
-  }
-];
-
-export function NotificationList({ initialNotifications = dummyNotifications }: { initialNotifications?: Notification[] }) {
-  // 컴포넌트 내부에서 임시로 상태 관리 (추후 Zustand 등으로 이동 예정)
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+export function NotificationList() {
+  const { data: notifications = [] } = useGetNotifications();
+  const { mutate: markAsRead } = useMarkNotificationRead();
+  const { mutate: deleteNotification } = useDeleteNotification();
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -51,14 +15,12 @@ export function NotificationList({ initialNotifications = dummyNotifications }: 
   };
 
   const handleRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notif => notif.id === id ? { ...notif, isRead: true } : notif)
-    );
+    markAsRead(id);
   };
 
   const handleRemove = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    setNotifications(prev => prev.filter(notif => notif.id !== id));
+    deleteNotification(id);
   };
 
   const formatTimeAgo = (dateString: string) => {
