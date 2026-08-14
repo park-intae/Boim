@@ -16,9 +16,6 @@ export function Header() {
           <div className="absolute top-[8px] right-[10px] w-2 h-2 bg-amber-500 rounded-full ring-2 ring-gray-50" />
         </button>
         
-        {/* Vertical Divider */}
-        <div className="h-5 w-px bg-gray-200 shrink-0" />
-        
         {/* User Profile Pill */}
         <button className="flex items-center gap-2.5 cursor-pointer group hover:bg-gray-100 py-1.5 pl-1.5 pr-4 rounded-full transition-colors shrink-0 outline-none">
           <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-[14px] font-bold ring-1 ring-indigo-100/50 shadow-sm shrink-0">
