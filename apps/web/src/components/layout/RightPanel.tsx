@@ -4,6 +4,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQueries';
 import { InsuranceForm } from './InsuranceForm';
 import { MyInsuranceList } from './MyInsuranceList';
+import { PremiumAnalysis } from './PremiumAnalysis';
 
 export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
@@ -168,6 +169,8 @@ export function RightPanel() {
           </>
         ) : panelMode === 'my-insurance' ? (
           <MyInsuranceList />
+        ) : panelMode === 'analysis' ? (
+          <PremiumAnalysis />
         ) : (
           <InsuranceForm />
         )}

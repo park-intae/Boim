@@ -11,10 +11,10 @@
 - [x] 🧪 **[Test]** `Sidebar.test.tsx`에서 '보험료 분석' 클릭 시 상태 변경 검증
 
 ### 2. 보험료 분석 컴포넌트(`PremiumAnalysis`) 구현
-- [ ] 렌더링 영역(메인 또는 우측 패널)에 `panelMode === 'analysis'`일 때 나타날 `<PremiumAnalysis />` 컴포넌트 뼈대 생성
-- [ ] `useGetInsurances`를 호출하여 받아온 데이터를 카테고리별 합계 금액 및 퍼센티지로 가공하는 유틸리티/로직 작성
-- [ ] 차트 라이브러리(예: Recharts 등) 또는 Tailwind CSS를 활용한 Bar/Pie 형태의 시각화 UI 구현
-- [ ] 🧪 **[Test]** `<PremiumAnalysis />` 컴포넌트가 Mocking 데이터를 기반으로 차트 및 요약 정보를 정상 렌더링하는지 테스트
+- [x] 렌더링 영역(메인 또는 우측 패널)에 `panelMode === 'analysis'`일 때 나타날 `<PremiumAnalysis />` 컴포넌트 뼈대 생성
+- [x] `useGetInsurances`를 호출하여 받아온 데이터를 카테고리별 합계 금액 및 퍼센티지로 가공하는 유틸리티/로직 작성
+- [x] 차트 라이브러리(예: Recharts 등) 또는 Tailwind CSS를 활용한 Bar/Pie 형태의 시각화 UI 구현
+- [x] 🧪 **[Test]** `<PremiumAnalysis />` 컴포넌트가 Mocking 데이터를 기반으로 차트 및 요약 정보를 정상 렌더링하는지 테스트
 
 ### 3. 세부 통계 리스트 및 상태 분기
 - [ ] 시각화 자료 하단에 카테고리별 정확한 금액과 비율을 보여주는 리스트 UI 구현
