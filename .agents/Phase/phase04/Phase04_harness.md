@@ -10,9 +10,9 @@
 - [x] 보험 API 호출을 위한 Query & Mutation Custom Hook 구현 (`useInsuranceQueries`)
 
 ### 2. 중앙 캘린더 데이터 연동 (Read-Only)
-- [ ] 백엔드 `insurance-product` GET API와 캘린더 컴포넌트 연결
-- [ ] 더미 데이터(`mockEvents`)를 실제 API 응답 데이터 기반으로 교체
-- [ ] 특정 날짜 클릭 시 해당 날짜의 일정을 필터링하여 우측 패널(Right Panel)의 전역 상태(Context/Zustand)로 전달
+- [x] 백엔드 `insurance-product` GET API와 캘린더 컴포넌트 연결
+- [x] 더미 데이터(`mockEvents`)를 실제 API 응답 데이터 기반으로 교체
+- [x] 특정 날짜 클릭 시 해당 날짜의 일정을 필터링하여 우측 패널(Right Panel)의 전역 상태(Context/Zustand)로 전달
 
 ### 3. 우측 상세 패널 (Right Panel) 상태/뷰 설계
 - [ ] 우측 패널의 화면 상태를 `View Mode`(일정 목록 확인)와 `Form Mode`(새 보험 등록 및 수정)로 전환하는 로직 구현

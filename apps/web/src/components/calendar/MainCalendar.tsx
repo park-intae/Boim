@@ -12,14 +12,23 @@ import {
   isSameDay,
   addDays,
 } from 'date-fns';
+import { useAppStore } from '../../store/useAppStore';
+import { useGetInsurances } from '../../api/useInsuranceQueries';
 
 export function MainCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const selectedDate = useAppStore(state => state.selectedDate);
+  const setSelectedDate = useAppStore(state => state.setSelectedDate);
+  const setPanelMode = useAppStore(state => state.setPanelMode);
+
+  const { data: insurances = [] } = useGetInsurances();
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const onDateClick = (day: Date) => setSelectedDate(day);
+  const onDateClick = (day: Date) => {
+    setSelectedDate(day);
+    setPanelMode('view');
+  };
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
@@ -68,17 +77,34 @@ export function MainCalendar() {
   );
 
   const renderCells = () => {
-    // 1. 더미 데이터 생성 (날짜 문자열 기반)
-    // 실제 환경에서는 서버에서 받아온 데이터를 이 형태로 가공하여 사용합니다.
-    const mockEvents: Record<string, { type: 'payment' | 'renewal' | 'info', label: string }[]> = {
-      [format(new Date(), 'yyyy-MM-dd')]: [{ type: 'payment', label: '실손보험 납입' }],
-      [format(addDays(new Date(), 2), 'yyyy-MM-dd')]: [{ type: 'renewal', label: '자동차보험 갱신' }],
-      [format(addDays(new Date(), 5), 'yyyy-MM-dd')]: [
-        { type: 'payment', label: '암보험 납입' },
-        { type: 'info', label: '보장 분석 리포트' }
-      ],
-      [format(subMonths(new Date(), 0).setDate(15), 'yyyy-MM-dd')]: [{ type: 'payment', label: '종신보험 납입' }]
-    };
+    // API 데이터를 순회하며 현재 달력 범위(startDate ~ endDate)에 해당하는 이벤트를 매핑합니다.
+    const apiEvents: Record<string, { type: 'payment' | 'renewal' | 'info', label: string }[]> = {};
+    
+    insurances.forEach(product => {
+      // 1. 매월 납입일 (startDate의 '일' 기준)
+      if (product.startDate) {
+        const paymentDay = new Date(product.startDate).getDate();
+        // 현재 보여지는 달력의 각 달력 일자들과 비교하여 납입일 매핑 (보통 한 달력 뷰에 1~2개의 같은 날짜가 존재)
+        let tempDay = startDate;
+        while (tempDay <= endDate) {
+          if (tempDay.getDate() === paymentDay) {
+            const dKey = format(tempDay, 'yyyy-MM-dd');
+            if (!apiEvents[dKey]) apiEvents[dKey] = [];
+            apiEvents[dKey].push({ type: 'payment', label: `${product.name} 납입` });
+          }
+          tempDay = addDays(tempDay, 1);
+        }
+      }
+      // 2. 만기/갱신일
+      if (product.maturityDate) {
+        const mDate = new Date(product.maturityDate);
+        if (mDate >= startDate && mDate <= endDate) {
+          const dKey = format(mDate, 'yyyy-MM-dd');
+          if (!apiEvents[dKey]) apiEvents[dKey] = [];
+          apiEvents[dKey].push({ type: 'renewal', label: `${product.name} 만기` });
+        }
+      }
+    });
 
     const rows = [];
     let days = [];
@@ -95,7 +121,7 @@ export function MainCalendar() {
         const isSelected = isSameDay(day, selectedDate);
         const isToday = isSameDay(day, new Date());
         
-        const dayEvents = mockEvents[dateKey] || [];
+        const dayEvents = apiEvents[dateKey] || [];
         
         days.push(
           <div
