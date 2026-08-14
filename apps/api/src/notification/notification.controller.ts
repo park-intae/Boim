@@ -7,21 +7,17 @@ export class NotificationController {
 
   @Get()
   findAll() {
-    return {
-      success: true,
-      data: this.notificationService.findAll()
-    };
+    return this.notificationService.findAll();
   }
 
   @Patch(':id/read')
   markAsRead(@Param('id') id: string) {
-    const data = this.notificationService.markAsRead(id);
-    return { success: true, data };
+    return this.notificationService.markAsRead(id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     this.notificationService.remove(id);
-    return { success: true };
+    return null;
   }
 }
