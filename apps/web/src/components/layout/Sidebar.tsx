@@ -14,20 +14,20 @@ export function Sidebar() {
   return (
     <aside className="w-[260px] h-full bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
       
-      {/* 1. Logo Area (헤더와 동일한 h-60px 적용) */}
-      <div className="h-[60px] flex items-center px-8 shrink-0">
+      {/* 1. Logo Area */}
+      <div className="h-[60px] flex items-center px-10 shrink-0">
         <h1 className="text-[24px] font-extrabold text-indigo-600 tracking-tight">Boim</h1>
       </div>
       
       {/* 2. Navigation Menu */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-6 py-8 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.name === activeMenu;
           return (
             <div
               key={item.name}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all ${
+              className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl cursor-pointer transition-all ${
                 isActive
                   ? 'bg-indigo-50 text-indigo-700 font-bold'
                   : 'text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-900'
@@ -41,7 +41,7 @@ export function Sidebar() {
       </nav>
 
       {/* 3. Bottom Summary Panel */}
-      <div className="p-6 shrink-0">
+      <div className="p-8 pt-0 shrink-0">
         <div className="w-full bg-gray-50 rounded-2xl p-5 border border-gray-100/80 shadow-sm flex flex-col gap-4">
           
           <div className="flex items-center justify-between">
