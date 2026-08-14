@@ -14,13 +14,18 @@
 - [x] 더미 데이터(`mockEvents`)를 실제 API 응답 데이터 기반으로 교체
 - [x] 특정 날짜 클릭 시 해당 날짜의 일정을 필터링하여 우측 패널(Right Panel)의 전역 상태(Context/Zustand)로 전달
 
-### 3. 우측 상세 패널 (Right Panel) 상태/뷰 설계
+### 3. 우측 상세 패널 (Right Panel) 데이터 연동 (Read-Only)
+- [ ] Zustand 스토어(`useAppStore`)에 저장된 `selectedDate`를 구독하여 우측 패널 날짜 표시 연동
+- [ ] `useGetInsurances` 훅을 통해 받아온 실제 API 데이터를 `selectedDate` 기준으로 필터링 (납입일 및 만기일 기준)
+- [ ] 우측 패널의 하드코딩된 더미 데이터(`mockEvents`)를 제거하고 필터링된 실제 데이터 리스트로 렌더링 교체
+
+### 4. 우측 상세 패널 (Right Panel) 상태/뷰 설계
 - [ ] 우측 패널의 화면 상태를 `View Mode`(일정 목록 확인)와 `Form Mode`(새 보험 등록 및 수정)로 전환하는 로직 구현
 - [ ] 선택된 날짜에 이벤트가 없을 경우 나타나는 Empty State에서 '등록' 버튼 클릭 시 Form Mode로 진입하도록 연결
 - [ ] 캘린더 우측 상단에 보험 추가 버튼 제작, 클릭시 우측 상세 패널 Form Mode로 전환
 - [ ] 패널 하단 '새로운 보험 등록' 둥근 플로팅 버튼 클릭 시 Form Mode로 전환
 
-### 4. 우측 상세 패널 (Right Panel) Form UI 및 Mutation (Create / Update)
+### 5. 우측 상세 패널 (Right Panel) Form UI 및 Mutation (Create / Update)
 - [ ] 보험 등록/수정을 위한 입력 폼(Form) UI 구현
   - [ ] `docs/Boim_Schema.webp` 기반 데이터 필드 매핑:
     - 카테고리 (`category` - Select/Dropdown)
@@ -34,7 +39,7 @@
 - [ ] 폼 제출 시 백엔드 POST/PATCH API 연동 및 성공 시 캘린더 데이터 무효화(Invalidate Queries) 처리
 - [ ] 작성 취소 및 저장 성공 시 Form Mode에서 View Mode로 자연스러운 트랜지션 복귀
 
-### 5. 데이터 삭제 (Delete) 및 마무리
+### 6. 데이터 삭제 (Delete) 및 마무리
 - [ ] View Mode의 개별 보험 상세 카드 내부에 삭제(Delete) 액션 아이콘 추가
 - [ ] 삭제 요청 시 재확인 알림 후 백엔드 DELETE API 호출
 
