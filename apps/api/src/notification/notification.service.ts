@@ -35,6 +35,14 @@ export class NotificationService {
       message: '보험료 분석 기능이 새롭게 추가되었습니다. 지금 바로 확인해보세요!',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
       isRead: true,
+    },
+    {
+      id: '4',
+      type: 'info',
+      title: '삭제 테스트용 알림',
+      message: '이 알림은 삭제 기능을 테스트하기 위한 더미 데이터입니다. X 버튼을 눌러보세요.',
+      createdAt: new Date().toISOString(),
+      isRead: false,
     }
   ];
 
