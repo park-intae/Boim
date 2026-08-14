@@ -1,31 +1,51 @@
-import { Plus, Umbrella, ShieldCheck, ChevronRight } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse } from 'lucide-react';
+import { format, isSameDay } from 'date-fns';
+import { useAppStore } from '../../store/useAppStore';
+import { useGetInsurances } from '../../api/useInsuranceQueries';
 
 export function RightPanel() {
-  const isToday = true;
-  const selectedDate = new Date();
+  const selectedDate = useAppStore(state => state.selectedDate);
+  const { data: insurances = [] } = useGetInsurances();
+  const isToday = isSameDay(selectedDate, new Date());
 
-  // 더미 이벤트 데이터
-  const mockEvents = [
-    { 
-      id: 1, 
-      type: 'payment', 
-      title: '무배당 실손의료비보험', 
-      company: '삼성화재', 
-      amount: '125,000', 
-      status: '납입 예정',
-      icon: Umbrella
-    },
-    { 
-      id: 2, 
-      type: 'renewal', 
-      title: '다이렉트 자동차보험', 
-      company: '현대해상', 
-      amount: '850,000', 
-      status: '갱신 D-30',
-      icon: ShieldCheck
+  // 카테고리별 아이콘 매핑
+  const getCategoryIcon = (category: string) => {
+    if (category.includes('실비') || category.includes('의료')) return Umbrella;
+    if (category.includes('자동차')) return Car;
+    if (category.includes('암') || category.includes('건강')) return Activity;
+    if (category.includes('종신')) return HeartPulse;
+    return ShieldCheck;
+  };
+
+  // 선택된 날짜에 해당하는 실제 데이터 필터링
+  const dayEvents = insurances.flatMap(product => {
+    const events = [];
+    // 1. 매월 납입일 체크 (선택된 날짜의 '일'과 가입일의 '일'이 같은지)
+    if (product.startDate && new Date(product.startDate).getDate() === selectedDate.getDate()) {
+      events.push({
+        id: `payment-${product.id}`,
+        type: 'payment',
+        title: product.name,
+        company: product.institution,
+        amount: product.monthlyPayment,
+        status: '납입 예정',
+        icon: getCategoryIcon(product.category)
+      });
     }
-  ];
+    // 2. 만기일 체크 (선택된 날짜와 만기일이 같은 날인지)
+    if (product.maturityDate && isSameDay(new Date(product.maturityDate), selectedDate)) {
+      events.push({
+        id: `renewal-${product.id}`,
+        type: 'renewal',
+        title: product.name,
+        company: product.institution,
+        amount: product.monthlyPayment,
+        status: '만기/갱신',
+        icon: getCategoryIcon(product.category)
+      });
+    }
+    return events;
+  });
 
   return (
     <aside className="w-[380px] flex-shrink-0 pr-10 pb-12 flex flex-col h-full">
@@ -47,8 +67,8 @@ export function RightPanel() {
 
         {/* 2. Event List */}
         <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
-          {mockEvents.length > 0 ? (
-            mockEvents.map((evt) => {
+          {dayEvents.length > 0 ? (
+            dayEvents.map((evt) => {
               const Icon = evt.icon;
               return (
                 <div 
@@ -75,7 +95,9 @@ export function RightPanel() {
                   </div>
 
                   <div className="flex items-baseline justify-end gap-1 mt-1 pt-3 border-t border-gray-50">
-                    <span className="text-[20px] font-extrabold text-gray-900 tracking-tight">{evt.amount}</span>
+                    <span className="text-[20px] font-extrabold text-gray-900 tracking-tight">
+                      {evt.amount.toLocaleString()}
+                    </span>
                     <span className="text-[13px] font-bold text-gray-500">원</span>
                   </div>
                 </div>

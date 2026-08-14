@@ -15,9 +15,9 @@
 - [x] 특정 날짜 클릭 시 해당 날짜의 일정을 필터링하여 우측 패널(Right Panel)의 전역 상태(Context/Zustand)로 전달
 
 ### 3. 우측 상세 패널 (Right Panel) 데이터 연동 (Read-Only)
-- [ ] Zustand 스토어(`useAppStore`)에 저장된 `selectedDate`를 구독하여 우측 패널 날짜 표시 연동
-- [ ] `useGetInsurances` 훅을 통해 받아온 실제 API 데이터를 `selectedDate` 기준으로 필터링 (납입일 및 만기일 기준)
-- [ ] 우측 패널의 하드코딩된 더미 데이터(`mockEvents`)를 제거하고 필터링된 실제 데이터 리스트로 렌더링 교체
+- [x] Zustand 스토어(`useAppStore`)에 저장된 `selectedDate`를 구독하여 우측 패널 날짜 표시 연동
+- [x] `useGetInsurances` 훅을 통해 받아온 실제 API 데이터를 `selectedDate` 기준으로 필터링 (납입일 및 만기일 기준)
+- [x] 우측 패널의 하드코딩된 더미 데이터(`mockEvents`)를 제거하고 필터링된 실제 데이터 리스트로 렌더링 교체
 
 ### 4. 우측 상세 패널 (Right Panel) 상태/뷰 설계
 - [ ] 우측 패널의 화면 상태를 `View Mode`(일정 목록 확인)와 `Form Mode`(새 보험 등록 및 수정)로 전환하는 로직 구현
