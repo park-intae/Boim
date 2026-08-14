@@ -5,7 +5,7 @@ export function Header() {
     <header className="h-[60px] flex-shrink-0 flex items-center justify-between px-10 border-b border-transparent">
       <h2 className="text-[20px] font-bold text-gray-900 tracking-tight">보험 일정</h2>
       
-      <div className="flex items-center shrink-0">
+      <div className="flex items-center justify-between w-[210px] shrink-0">
         
         {/* Icons Group */}
         <div className="flex items-center gap-2">
@@ -20,7 +20,7 @@ export function Header() {
         </div>
         
         {/* Vertical Divider */}
-        <div className="h-5 w-px bg-gray-200 mx-5 shrink-0" />
+        <div className="h-5 w-px bg-gray-200 shrink-0" />
         
         {/* User Profile Pill */}
         <button className="flex items-center gap-2.5 cursor-pointer group hover:bg-gray-100 py-1.5 pl-1.5 pr-4 rounded-full transition-colors shrink-0 outline-none">
