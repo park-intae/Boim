@@ -23,7 +23,7 @@ export function HomePage() {
     { id: 1, title: '가입 보험', value: activeCount.toString(), unit: '건', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
     { id: 2, title: '이번 달 납입', value: totalMonthlyPayment.toLocaleString(), unit: '원', icon: CreditCard, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { id: 3, title: '이번 달 갱신/만기', value: renewalCount.toString(), unit: '건', icon: RefreshCw, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { id: 4, title: '미납 알림', value: '0', unit: '건', icon: AlertCircle, color: 'text-gray-500', bg: 'bg-gray-100' },
+    { id: 4, title: '미납 알림', value: '0', unit: '건', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
   ];
 
   return (

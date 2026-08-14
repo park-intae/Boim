@@ -1,15 +1,19 @@
 import { CalendarDays, ShieldCheck, Activity, Bell, Settings } from 'lucide-react';
 import { useGetInsurances } from '../../api/useInsuranceQueries';
+import { useAppStore } from '../../store/useAppStore';
 
 export function Sidebar() {
-  const activeMenu = '보험 일정';
+  const panelMode = useAppStore(state => state.panelMode);
+  const setPanelMode = useAppStore(state => state.setPanelMode);
+
+  const activeMenu = panelMode === 'my-insurance' ? '내 보험' : '보험 일정';
 
   const menuItems = [
-    { name: '보험 일정', icon: CalendarDays },
-    { name: '내 보험', icon: ShieldCheck },
-    { name: '보험료 분석', icon: Activity },
-    { name: '알림', icon: Bell },
-    { name: '설정', icon: Settings },
+    { name: '보험 일정', icon: CalendarDays, action: () => setPanelMode('view') },
+    { name: '내 보험', icon: ShieldCheck, action: () => setPanelMode('my-insurance') },
+    { name: '보험료 분석', icon: Activity, action: () => {} },
+    { name: '알림', icon: Bell, action: () => {} },
+    { name: '설정', icon: Settings, action: () => {} },
   ];
 
   const { data: insurances = [] } = useGetInsurances();
@@ -38,6 +42,7 @@ export function Sidebar() {
           return (
             <div
               key={item.name}
+              onClick={item.action}
               className={`flex items-center gap-3.5 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group ${
                 isActive
                   ? 'bg-indigo-50/80 text-indigo-700'
