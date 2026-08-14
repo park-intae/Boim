@@ -1,4 +1,5 @@
 import { Shield, CreditCard, RefreshCw, AlertCircle } from 'lucide-react';
+import { MainCalendar } from '../components/calendar/MainCalendar';
 
 const statCards = [
   { id: 1, title: '가입 보험', value: '4', unit: '건', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
@@ -31,9 +32,9 @@ export function HomePage() {
         })}
       </div>
       
-      {/* Calendar Area Placeholder */}
-      <div className="flex-1 min-h-0 bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] rounded-3xl flex items-center justify-center text-gray-400 font-medium">
-        메인 캘린더 영역 (추후 구현)
+      {/* Calendar Area */}
+      <div className="flex-1 min-h-0">
+        <MainCalendar />
       </div>
     </div>
   );
