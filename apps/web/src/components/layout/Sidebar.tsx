@@ -20,21 +20,21 @@ export function Sidebar() {
       </div>
       
       {/* 2. Navigation Menu */}
-      <nav className="flex-1 px-6 py-8 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-6 mt-8 pb-14 flex flex-col gap-8 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.name === activeMenu;
           return (
             <div
               key={item.name}
-              className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl cursor-pointer transition-all ${
+              className={`flex items-center gap-5 px-6 py-5 rounded-2xl cursor-pointer transition-all ${
                 isActive
                   ? 'bg-indigo-50 text-indigo-700 font-bold'
                   : 'text-gray-500 font-medium hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
-              <Icon className={`w-[20px] h-[20px] ${isActive ? 'text-indigo-600' : 'text-gray-400'}`} />
-              <span className="text-[15px]">{item.name}</span>
+              <Icon className={`w-8 h-8 ${isActive ? 'text-indigo-600' : 'text-gray-400'}`} />
+              <span className="text-[25px] tracking-tight">{item.name}</span>
             </div>
           );
         })}
