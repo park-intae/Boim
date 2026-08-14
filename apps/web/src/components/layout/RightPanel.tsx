@@ -85,91 +85,88 @@ export function RightPanel() {
           )}
         </div>
 
-        {/* 2. Content Area */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
-          {panelMode === 'view' ? (
-            // View Mode
-            dayEvents.length > 0 ? (
-              dayEvents.map((evt) => {
-                const Icon = evt.icon;
-                return (
-                  <div 
-                    key={evt.eventId} 
-                    className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col gap-3 relative"
-                    onClick={() => {
-                      // 향후 편집 모드 진입용
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className={`text-[11px] font-bold px-2 py-1 rounded-md
-                        ${evt.type === 'payment' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}
-                      `}>
-                        {evt.status}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button 
-                          aria-label="삭제"
-                          onClick={(e) => handleDelete(e, evt.id)}
-                          className="p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+        {/* 2. Content & Bottom Area */}
+        {panelMode === 'view' ? (
+          <>
+            <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
+              {dayEvents.length > 0 ? (
+                dayEvents.map((evt) => {
+                  const Icon = evt.icon;
+                  return (
+                    <div 
+                      key={evt.eventId} 
+                      className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col gap-3 relative"
+                      onClick={() => {
+                        // 향후 편집 모드 진입용
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[11px] font-bold px-2 py-1 rounded-md
+                          ${evt.type === 'payment' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}
+                        `}>
+                          {evt.status}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            aria-label="삭제"
+                            onClick={(e) => handleDelete(e, evt.id)}
+                            className="p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-                        <Icon className="w-5 h-5 text-gray-500" strokeWidth={2} />
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+                          <Icon className="w-5 h-5 text-gray-500" strokeWidth={2} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[12px] font-semibold text-gray-500">{evt.company}</span>
+                          <span className="text-[15px] font-bold text-gray-900 line-clamp-1">{evt.title}</span>
+                        </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-[12px] font-semibold text-gray-500">{evt.company}</span>
-                        <span className="text-[15px] font-bold text-gray-900 line-clamp-1">{evt.title}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex items-baseline justify-end gap-1 mt-1 pt-3 border-t border-gray-50">
-                      <span className="text-[20px] font-extrabold text-gray-900 tracking-tight">
-                        {evt.amount.toLocaleString()}
-                      </span>
-                      <span className="text-[13px] font-bold text-gray-500">원</span>
+                      <div className="flex items-baseline justify-end gap-1 mt-1 pt-3 border-t border-gray-50">
+                        <span className="text-[20px] font-extrabold text-gray-900 tracking-tight">
+                          {evt.amount.toLocaleString()}
+                        </span>
+                        <span className="text-[13px] font-bold text-gray-500">원</span>
+                      </div>
                     </div>
+                  );
+                })
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center gap-2">
+                  <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-2">
+                    <ShieldCheck className="w-6 h-6 text-gray-300" />
                   </div>
-                );
-              })
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center gap-2">
-                <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-2">
-                  <ShieldCheck className="w-6 h-6 text-gray-300" />
+                  <p className="text-[14px] font-bold text-gray-500">예정된 일정이 없습니다</p>
+                  <p className="text-[12px] text-gray-400 mb-4">새로운 보험을 등록해보세요!</p>
+                  <button 
+                    onClick={() => setPanelMode('form')}
+                    className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-[13px] font-bold rounded-lg transition-colors"
+                  >
+                    새 보험 등록
+                  </button>
                 </div>
-                <p className="text-[14px] font-bold text-gray-500">예정된 일정이 없습니다</p>
-                <p className="text-[12px] text-gray-400 mb-4">새로운 보험을 등록해보세요!</p>
-                <button 
-                  onClick={() => setPanelMode('form')}
-                  className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-[13px] font-bold rounded-lg transition-colors"
-                >
-                  새 보험 등록
-                </button>
-              </div>
-            )
-          ) : (
-            <div className="h-full relative pb-4">
-              <InsuranceForm />
+              )}
             </div>
-          )}
-        </div>
-
-        {/* 3. Bottom Sticky Action Button */}
-        {panelMode === 'view' && (
-          <div className="p-6 pt-2 bg-gradient-to-t from-white via-white to-transparent shrink-0">
-            <button 
-              onClick={() => setPanelMode('form')}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold text-[15px] transition-all shadow-[0_4px_14px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] hover:-translate-y-0.5"
-            >
-              <Plus className="w-5 h-5" strokeWidth={2.5} />
-              새로운 보험 등록
-            </button>
-          </div>
+            
+            {/* 3. Bottom Sticky Action Button */}
+            <div className="p-6 pt-2 bg-gradient-to-t from-white via-white to-transparent shrink-0">
+              <button 
+                onClick={() => setPanelMode('form')}
+                className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold text-[15px] transition-all shadow-[0_4px_14px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] hover:-translate-y-0.5"
+              >
+                <Plus className="w-5 h-5" strokeWidth={2.5} />
+                새로운 보험 등록
+              </button>
+            </div>
+          </>
+        ) : (
+          <InsuranceForm />
         )}
 
       </div>

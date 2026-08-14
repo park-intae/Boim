@@ -1,4 +1,5 @@
 import { CalendarDays, ShieldCheck, Activity, Bell, Settings } from 'lucide-react';
+import { useGetInsurances } from '../../api/useInsuranceQueries';
 
 export function Sidebar() {
   const activeMenu = '보험 일정';
@@ -10,6 +11,11 @@ export function Sidebar() {
     { name: '알림', icon: Bell },
     { name: '설정', icon: Settings },
   ];
+
+  const { data: insurances = [] } = useGetInsurances();
+
+  const totalMonthlyPayment = insurances.reduce((acc, curr) => acc + curr.monthlyPayment, 0);
+  const activeInsuranceCount = insurances.length;
 
   return (
     <aside className="w-[260px] h-full bg-white border-r border-gray-100 flex flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
@@ -64,7 +70,9 @@ export function Sidebar() {
           <div className="flex flex-col gap-0.5">
             <span className="text-[12px] text-gray-500 font-medium">이번 달 총 납입액</span>
             <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-[22px] font-extrabold text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors">345,000</span>
+              <span className="text-[22px] font-extrabold text-gray-900 tracking-tight group-hover:text-indigo-600 transition-colors">
+                {totalMonthlyPayment.toLocaleString()}
+              </span>
               <span className="text-[14px] font-bold text-gray-500">원</span>
             </div>
           </div>
@@ -74,7 +82,7 @@ export function Sidebar() {
           <div className="flex items-center justify-between">
             <span className="text-[12px] text-gray-500 font-medium">유지 중인 보험</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-[14px] font-bold text-gray-800">4</span>
+              <span className="text-[14px] font-bold text-gray-800">{activeInsuranceCount}</span>
               <span className="text-[12px] font-medium text-gray-500">건</span>
             </div>
           </div>

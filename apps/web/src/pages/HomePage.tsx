@@ -1,14 +1,31 @@
 import { Shield, CreditCard, RefreshCw, AlertCircle } from 'lucide-react';
 import { MainCalendar } from '../components/calendar/MainCalendar';
-
-const statCards = [
-  { id: 1, title: '가입 보험', value: '4', unit: '건', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-  { id: 2, title: '이번 달 납입', value: '345,000', unit: '원', icon: CreditCard, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-  { id: 3, title: '갱신 예정', value: '1', unit: '건', icon: RefreshCw, color: 'text-amber-600', bg: 'bg-amber-50' },
-  { id: 4, title: '만기 예정', value: '0', unit: '건', icon: AlertCircle, color: 'text-gray-500', bg: 'bg-gray-100' },
-];
+import { useGetInsurances } from '../api/useInsuranceQueries';
+import { isSameMonth, parseISO } from 'date-fns';
 
 export function HomePage() {
+  const { data: insurances = [] } = useGetInsurances();
+
+  const activeCount = insurances.length;
+  const totalMonthlyPayment = insurances.reduce((acc, curr) => acc + curr.monthlyPayment, 0);
+
+  // 갱신/만기 예정 (단순 예시: 이번 달에 만기일이 있는 경우)
+  const today = new Date();
+  let renewalCount = 0;
+  
+  insurances.forEach((ins) => {
+    if (ins.maturityDate && isSameMonth(parseISO(ins.maturityDate), today)) {
+      renewalCount++;
+    }
+  });
+
+  const statCards = [
+    { id: 1, title: '가입 보험', value: activeCount.toString(), unit: '건', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+    { id: 2, title: '이번 달 납입', value: totalMonthlyPayment.toLocaleString(), unit: '원', icon: CreditCard, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { id: 3, title: '이번 달 갱신/만기', value: renewalCount.toString(), unit: '건', icon: RefreshCw, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { id: 4, title: '미납 알림', value: '0', unit: '건', icon: AlertCircle, color: 'text-gray-500', bg: 'bg-gray-100' },
+  ];
+
   return (
     <div className="flex flex-col h-full space-y-6 pt-2">
       {/* 4 Summary Cards Area */}
