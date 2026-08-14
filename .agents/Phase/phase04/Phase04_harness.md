@@ -26,8 +26,8 @@
 - [x] 패널 하단 '새로운 보험 등록' 둥근 플로팅 버튼 클릭 시 Form Mode로 전환
 
 ### 5. 우측 상세 패널 (Right Panel) Form UI 및 Mutation (Create / Update)
-- [ ] 보험 등록/수정을 위한 입력 폼(Form) UI 구현
-  - [ ] `docs/Boim_Schema.webp` 기반 데이터 필드 매핑:
+- [x] 보험 등록/수정을 위한 입력 폼(Form) UI 구현
+  - [x] `docs/Boim_Schema.webp` 기반 데이터 필드 매핑:
     - 카테고리 (`category` - Select/Dropdown)
     - 보험 상품명 (`name` - Text Input)
     - 보험사명 (`institution` - Text Input)
@@ -35,19 +35,19 @@
     - 만기일 (`maturityDate` - Date Picker)
     - 월 납입액 (`monthlyPayment` - Number Input)
     - 보장 금액 (`coverageAmount` - Number Input)
-- [ ] `react-hook-form` 및 `zod`를 활용한 폼 데이터 검증(Validation) 로직 추가
-- [ ] 폼 제출 시 백엔드 POST/PATCH API 연동 및 성공 시 캘린더 데이터 무효화(Invalidate Queries) 처리
-- [ ] 작성 취소 및 저장 성공 시 Form Mode에서 View Mode로 자연스러운 트랜지션 복귀
+- [x] `react-hook-form` 및 `zod`를 활용한 폼 데이터 검증(Validation) 로직 추가
+- [x] 폼 제출 시 백엔드 POST/PATCH API 연동 및 성공 시 캘린더 데이터 무효화(Invalidate Queries) 처리
+- [x] 작성 취소 및 저장 성공 시 Form Mode에서 View Mode로 자연스러운 트랜지션 복귀
 
 ### 6. 데이터 삭제 (Delete) 및 마무리
 - [ ] View Mode의 개별 보험 상세 카드 내부에 삭제(Delete) 액션 아이콘 추가
 - [ ] 삭제 요청 시 재확인 알림 후 백엔드 DELETE API 호출
 
 ### 7. 테스트 코드 작성 (Vitest + React Testing Library)
-- [ ] Zustand 스토어(`useAppStore`) 상태 변경(날짜 선택, 패널 모드 전환) 단위 테스트 작성
+- [x] Zustand 스토어(`useAppStore`) 상태 변경(날짜 선택, 패널 모드 전환) 단위 테스트 작성
 - [ ] `useInsuranceQueries` React Query 훅의 성공/실패 시나리오 테스트 작성 (MSW 연동 또는 API 모킹)
-- [ ] `RightPanel` 및 `MainCalendar` 컴포넌트의 View/Form 모드 전환 UI 상호작용(Interaction) 테스트 작성
-- [ ] 우측 패널 폼(Form) 입력 및 검증(zod) 로직 테스트 작성
+- [x] `RightPanel` 및 `MainCalendar` 컴포넌트의 View/Form 모드 전환 UI 상호작용(Interaction) 테스트 작성
+- [x] 우측 패널 폼(Form) 입력 및 검증(zod) 로직 테스트 작성
 
 ## 💡 개발 가이드라인
 - **모달 금지**: 라우팅(페이지 이동)을 제외한 모든 인터랙티브 폼 입력 및 상세 확인은 철저히 **우측 사이드바(Right Panel)** 내부에서 이루어지도록 UI/UX를 설계합니다.

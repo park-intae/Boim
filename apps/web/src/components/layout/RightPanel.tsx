@@ -2,6 +2,7 @@ import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse } 
 import { format, isSameDay } from 'date-fns';
 import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances } from '../../api/useInsuranceQueries';
+import { InsuranceForm } from './InsuranceForm';
 
 export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
@@ -130,10 +131,8 @@ export function RightPanel() {
               </div>
             )
           ) : (
-            // Form Mode Placeholder (Phase 4-5에서 구현)
-            <div className="flex flex-col h-full items-center justify-center text-center">
-              <p className="text-[14px] font-bold text-gray-500">Form UI 개발 영역</p>
-              <p className="text-[12px] text-gray-400 mt-2">이곳에 react-hook-form 폼이 들어갑니다.</p>
+            <div className="h-full relative pb-4">
+              <InsuranceForm />
             </div>
           )}
         </div>

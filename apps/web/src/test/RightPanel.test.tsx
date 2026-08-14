@@ -7,6 +7,8 @@ import { useGetInsurances } from '../api/useInsuranceQueries';
 // 모킹
 vi.mock('../api/useInsuranceQueries', () => ({
   useGetInsurances: vi.fn(),
+  useCreateInsurance: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
+  useUpdateInsurance: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }));
 
 describe('RightPanel Component', () => {
