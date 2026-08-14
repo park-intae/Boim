@@ -5,6 +5,7 @@ import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQuer
 import { InsuranceForm } from './InsuranceForm';
 import { MyInsuranceList } from './MyInsuranceList';
 import { PremiumAnalysis } from './PremiumAnalysis';
+import { NotificationList } from './NotificationList';
 
 export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
@@ -171,6 +172,8 @@ export function RightPanel() {
           <MyInsuranceList />
         ) : panelMode === 'analysis' ? (
           <PremiumAnalysis />
+        ) : panelMode === 'notifications' ? (
+          <NotificationList />
         ) : (
           <InsuranceForm />
         )}
