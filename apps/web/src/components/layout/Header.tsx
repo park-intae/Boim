@@ -5,7 +5,7 @@ export function Header() {
     <header className="h-[60px] flex-shrink-0 flex items-center justify-between px-10 border-b border-transparent">
       <h2 className="text-[20px] font-bold text-gray-900 tracking-tight">보험 일정</h2>
       
-      <div className="flex items-center justify-between w-[210px] shrink-0">
+      <div className="flex items-center justify-between w-[200px] shrink-0">
         
         {/* Icons Group */}
         <div className="flex items-center gap-2">
