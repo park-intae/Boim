@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import {
   format,
   addMonths,
@@ -44,19 +44,28 @@ export function MainCalendar() {
           {format(currentDate, 'yyyy년 M월')}
         </h2>
       </div>
-      <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+      <div className="flex items-center gap-2">
         <button
-          onClick={prevMonth}
-          className="p-2 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+          onClick={() => setPanelMode('form')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
+          추가
         </button>
-        <button
-          onClick={nextMonth}
-          className="p-2 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
-        >
-          <ChevronRight className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+          <button
+            onClick={prevMonth}
+            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={nextMonth}
+            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );
