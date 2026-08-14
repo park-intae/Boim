@@ -1,4 +1,4 @@
-import { Bell, AlertCircle, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { Bell, AlertCircle, CalendarDays, CheckCircle2, X } from 'lucide-react';
 import { useState } from 'react';
 
 // 향후 API나 전역 스토어로 대체될 임시 타입과 데이터
@@ -56,6 +56,11 @@ export function NotificationList({ initialNotifications = dummyNotifications }: 
     );
   };
 
+  const handleRemove = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  };
+
   const formatTimeAgo = (dateString: string) => {
     const diff = Date.now() - new Date(dateString).getTime();
     const minutes = Math.floor(diff / (1000 * 60));
@@ -91,8 +96,16 @@ export function NotificationList({ initialNotifications = dummyNotifications }: 
               }`}
             >
               {!notif.isRead && (
-                <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-red-500" />
+                <div className="absolute top-4 right-10 w-2 h-2 rounded-full bg-red-500" />
               )}
+              
+              <button 
+                onClick={(e) => handleRemove(e, notif.id)}
+                className="absolute top-3 right-3 p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                aria-label="알림 제거"
+              >
+                <X className="w-4 h-4" />
+              </button>
               
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm border border-gray-100">
                 {getIcon(notif.type)}
