@@ -40,8 +40,8 @@
 - [x] 작성 취소 및 저장 성공 시 Form Mode에서 View Mode로 자연스러운 트랜지션 복귀
 
 ### 6. 데이터 삭제 (Delete) 및 마무리
-- [ ] View Mode의 개별 보험 상세 카드 내부에 삭제(Delete) 액션 아이콘 추가
-- [ ] 삭제 요청 시 재확인 알림 후 백엔드 DELETE API 호출
+- [x] View Mode의 개별 보험 상세 카드 내부에 삭제(Delete) 액션 아이콘 추가
+- [x] 삭제 요청 시 재확인 알림 후 백엔드 DELETE API 호출
 
 ### 7. 테스트 코드 작성 (Vitest + React Testing Library)
 - [x] Zustand 스토어(`useAppStore`) 상태 변경(날짜 선택, 패널 모드 전환) 단위 테스트 작성

@@ -1,7 +1,7 @@
-import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse } from 'lucide-react';
+import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse, Trash2 } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useAppStore } from '../../store/useAppStore';
-import { useGetInsurances } from '../../api/useInsuranceQueries';
+import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQueries';
 import { InsuranceForm } from './InsuranceForm';
 
 export function RightPanel() {
@@ -10,6 +10,7 @@ export function RightPanel() {
   const setPanelMode = useAppStore(state => state.setPanelMode);
   
   const { data: insurances = [] } = useGetInsurances();
+  const { mutate: deleteInsurance } = useDeleteInsurance();
   const isToday = isSameDay(selectedDate, new Date());
 
   // 카테고리별 아이콘 매핑
@@ -21,12 +22,20 @@ export function RightPanel() {
     return ShieldCheck;
   };
 
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 방지
+    if (window.confirm('정말 이 보험 일정을 삭제하시겠습니까?')) {
+      deleteInsurance(id);
+    }
+  };
+
   // 선택된 날짜에 해당하는 실제 데이터 필터링
   const dayEvents = insurances.flatMap(product => {
     const events = [];
     if (product.startDate && new Date(product.startDate).getDate() === selectedDate.getDate()) {
       events.push({
-        id: `payment-${product.id}`,
+        id: product.id.toString(), // DB PK
+        eventId: `payment-${product.id}`,
         type: 'payment',
         title: product.name,
         company: product.institution,
@@ -37,7 +46,8 @@ export function RightPanel() {
     }
     if (product.maturityDate && isSameDay(new Date(product.maturityDate), selectedDate)) {
       events.push({
-        id: `renewal-${product.id}`,
+        id: product.id.toString(), // DB PK
+        eventId: `renewal-${product.id}`,
         type: 'renewal',
         title: product.name,
         company: product.institution,
@@ -84,8 +94,11 @@ export function RightPanel() {
                 const Icon = evt.icon;
                 return (
                   <div 
-                    key={evt.id} 
-                    className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col gap-3"
+                    key={evt.eventId} 
+                    className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col gap-3 relative"
+                    onClick={() => {
+                      // 향후 편집 모드 진입용
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <span className={`text-[11px] font-bold px-2 py-1 rounded-md
@@ -93,7 +106,16 @@ export function RightPanel() {
                       `}>
                         {evt.status}
                       </span>
-                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                      <div className="flex items-center gap-2">
+                        <button 
+                          aria-label="삭제"
+                          onClick={(e) => handleDelete(e, evt.id)}
+                          className="p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+                      </div>
                     </div>
                     
                     <div className="flex items-center gap-3">
