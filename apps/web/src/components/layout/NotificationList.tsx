@@ -68,7 +68,7 @@ export function NotificationList({ initialNotifications = dummyNotifications }: 
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col flex-1 overflow-hidden bg-white">
       <div className="px-7 py-6 border-b border-gray-100 shrink-0 flex items-center justify-between">
         <h3 className="text-[22px] font-extrabold text-gray-900 tracking-tight">알림</h3>
         {notifications.filter(n => !n.isRead).length > 0 && (
