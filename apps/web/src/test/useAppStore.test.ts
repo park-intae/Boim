@@ -55,4 +55,12 @@ describe('useAppStore (Zustand)', () => {
     expect(state.panelMode).toBe('my-insurance');
     expect(state.editingProductId).toBeNull(); // list mode이므로 null
   });
+
+  it('setPanelMode("analysis")를 호출하면 analysis 모드로 변경되어야 한다.', () => {
+    useAppStore.getState().setPanelMode('analysis');
+    
+    const state = useAppStore.getState();
+    expect(state.panelMode).toBe('analysis');
+    expect(state.editingProductId).toBeNull(); // list mode이므로 null
+  });
 });

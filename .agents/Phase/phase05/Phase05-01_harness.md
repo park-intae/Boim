@@ -5,10 +5,10 @@
 ## ✅ 체크리스트
 
 ### 1. 상태 관리 및 사이드바 연동
-- [ ] `useAppStore`의 `panelMode` 타입에 `'analysis'` 모드 추가
-- [ ] 좌측 `Sidebar` 컴포넌트의 '보험료 분석' 메뉴 아이템 클릭 시 `setPanelMode('analysis')` 호출 로직 연결
-- [ ] 🧪 **[Test]** `useAppStore.test.ts`에 `'analysis'` 모드 전환 관련 단위 테스트 작성
-- [ ] 🧪 **[Test]** `Sidebar.test.tsx`에서 '보험료 분석' 클릭 시 상태 변경 검증
+- [x] `useAppStore`의 `panelMode` 타입에 `'analysis'` 모드 추가
+- [x] 좌측 `Sidebar` 컴포넌트의 '보험료 분석' 메뉴 아이템 클릭 시 `setPanelMode('analysis')` 호출 로직 연결
+- [x] 🧪 **[Test]** `useAppStore.test.ts`에 `'analysis'` 모드 전환 관련 단위 테스트 작성
+- [x] 🧪 **[Test]** `Sidebar.test.tsx`에서 '보험료 분석' 클릭 시 상태 변경 검증
 
 ### 2. 보험료 분석 컴포넌트(`PremiumAnalysis`) 구현
 - [ ] 렌더링 영역(메인 또는 우측 패널)에 `panelMode === 'analysis'`일 때 나타날 `<PremiumAnalysis />` 컴포넌트 뼈대 생성

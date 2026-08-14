@@ -43,4 +43,13 @@ describe('Sidebar Component', () => {
     expect(myInsuranceMenu.className).toContain('font-bold');
     expect(scheduleMenu.className).not.toContain('font-bold');
   });
+
+  it('"보험료 분석" 메뉴를 클릭하면 panelMode가 "analysis"로 변경되어야 한다.', () => {
+    render(<Sidebar />);
+    
+    const analysisMenu = screen.getByText('보험료 분석');
+    fireEvent.click(analysisMenu);
+    
+    expect(useAppStore.getState().panelMode).toBe('analysis');
+  });
 });
