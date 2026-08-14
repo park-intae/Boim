@@ -43,6 +43,12 @@
 - [ ] View Mode의 개별 보험 상세 카드 내부에 삭제(Delete) 액션 아이콘 추가
 - [ ] 삭제 요청 시 재확인 알림 후 백엔드 DELETE API 호출
 
+### 7. 테스트 코드 작성 (Vitest + React Testing Library)
+- [ ] Zustand 스토어(`useAppStore`) 상태 변경(날짜 선택, 패널 모드 전환) 단위 테스트 작성
+- [ ] `useInsuranceQueries` React Query 훅의 성공/실패 시나리오 테스트 작성 (MSW 연동 또는 API 모킹)
+- [ ] `RightPanel` 및 `MainCalendar` 컴포넌트의 View/Form 모드 전환 UI 상호작용(Interaction) 테스트 작성
+- [ ] 우측 패널 폼(Form) 입력 및 검증(zod) 로직 테스트 작성
+
 ## 💡 개발 가이드라인
 - **모달 금지**: 라우팅(페이지 이동)을 제외한 모든 인터랙티브 폼 입력 및 상세 확인은 철저히 **우측 사이드바(Right Panel)** 내부에서 이루어지도록 UI/UX를 설계합니다.
 - 백엔드 응답 스키마와 프론트엔드의 타입 인터페이스가 완벽히 일치하도록 공유 타입(`shared-types` 혹은 명확한 DTO 타입 선언)을 엄격하게 관리합니다.
