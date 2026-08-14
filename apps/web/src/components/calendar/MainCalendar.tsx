@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
 import {
   format,
   addMonths,
   subMonths,
+  addYears,
+  subYears,
   startOfMonth,
   endOfMonth,
   startOfWeek,
@@ -25,6 +27,8 @@ export function MainCalendar() {
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const nextYear = () => setCurrentDate(addYears(currentDate, 1));
+  const prevYear = () => setCurrentDate(subYears(currentDate, 1));
   const onDateClick = (day: Date) => {
     setSelectedDate(day);
     setPanelMode('view');
@@ -54,16 +58,32 @@ export function MainCalendar() {
         </button>
         <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
           <button
+            onClick={prevYear}
+            title="이전 연도"
+            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+          >
+            <ChevronsLeft className="w-5 h-5" />
+          </button>
+          <button
             onClick={prevMonth}
+            title="이전 달"
             className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextMonth}
+            title="다음 달"
             className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronRight className="w-5 h-5" />
+          </button>
+          <button
+            onClick={nextYear}
+            title="다음 연도"
+            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+          >
+            <ChevronsRight className="w-5 h-5" />
           </button>
         </div>
       </div>
