@@ -1,51 +1,35 @@
-import { Calendar, Shield, PieChart, Bell, Settings, ShieldCheck } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
-import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { SummaryCard } from './SummaryCard';
-
 export function Sidebar() {
-  const menuItems = [
-    { name: '보험 일정', path: '/calendar', icon: <Calendar className="w-5 h-5" /> },
-    { name: '내 보험', path: '/insurance', icon: <Shield className="w-5 h-5" /> },
-    { name: '보험료 분석', path: '/analysis', icon: <PieChart className="w-5 h-5" /> },
-    { name: '알림', path: '/notifications', icon: <Bell className="w-5 h-5" /> },
-    { name: '설정', path: '/settings', icon: <Settings className="w-5 h-5" /> },
-  ];
-
   return (
-    <aside className="w-[247px] bg-white h-screen flex flex-col shrink-0 border-r border-brand-gray-100 z-20 shadow-[2px_0_10px_rgba(0,0,0,0.02)]">
-      <div className="pt-[48px] px-7 flex items-center gap-2">
-        <ShieldCheck className="w-7 h-7 text-brand-gray-900" />
-        <span className="text-[21px] font-bold text-brand-gray-900 tracking-tight">보험 관리</span>
+    <aside className="w-[260px] h-full bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+      {/* Logo Area */}
+      <div className="p-8 pb-4">
+        <h1 className="text-[20px] font-bold text-gray-900">보험 관리</h1>
       </div>
       
-      <nav className="mt-[72px] px-4 space-y-[1px] flex-1">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 h-[58px] rounded-2xl transition-colors duration-200 font-medium text-[15px] ${
-                isActive
-                  ? 'bg-brand-50 text-brand-800 font-bold'
-                  : 'text-brand-gray-700 hover:bg-brand-gray-50 hover:text-brand-gray-900'
-              }`
-            }
-          >
-            {item.icon}
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
+      {/* Navigation */}
+      <nav className="flex-1 px-4 py-4 space-y-1">
+        <div className="px-4 py-3 bg-indigo-50 text-indigo-700 rounded-xl font-semibold cursor-pointer">
+          보험 일정
+        </div>
+        <div className="px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium cursor-pointer">
+          내 보험
+        </div>
+        <div className="px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium cursor-pointer">
+          보험료 분석
+        </div>
+        <div className="px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium cursor-pointer">
+          알림
+        </div>
+        <div className="px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-xl font-medium cursor-pointer">
+          설정
+        </div>
       </nav>
 
-      {/* SummaryCard placed at the bottom inside the sidebar */}
-      <div className="px-4 pb-[40px] mt-auto">
-        <ErrorBoundary fallback={<div className="p-4 bg-red-50 text-red-500 rounded-2xl">오류</div>}>
-          <Suspense fallback={<div className="h-[170px] bg-brand-gray-50 animate-pulse rounded-2xl" />}>
-            <SummaryCard />
-          </Suspense>
-        </ErrorBoundary>
+      {/* Bottom Summary Placeholder */}
+      <div className="p-6">
+        <div className="w-full h-[180px] border-2 border-dashed border-gray-200 rounded-2xl flex items-center justify-center text-gray-400 text-sm">
+          내 보험 요약 영역
+        </div>
       </div>
     </aside>
   );
