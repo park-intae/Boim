@@ -22,7 +22,7 @@ export function Sidebar() {
   const activeInsuranceCount = insurances.length;
 
   return (
-    <aside className="w-[260px] h-full bg-white border-r border-gray-100 flex flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+    <aside className="hidden lg:flex w-[260px] h-full bg-white border-r border-gray-100 flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
       
       {/* 1. Logo Area */}
         <div className="h-[84px] flex items-center px-8 shrink-0">

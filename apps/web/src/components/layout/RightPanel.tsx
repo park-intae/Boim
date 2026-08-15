@@ -1,5 +1,6 @@
-import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse, Trash2 } from 'lucide-react';
+import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse, Trash2, X, ChevronUp } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
+import { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQueries';
 import { InsuranceForm } from './InsuranceForm';
@@ -12,6 +13,7 @@ export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
   const panelMode = useAppStore(state => state.panelMode);
   const setPanelMode = useAppStore(state => state.setPanelMode);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   
   const { data: insurances = [] } = useGetInsurances();
   const { mutate: deleteInsurance } = useDeleteInsurance();
@@ -64,8 +66,27 @@ export function RightPanel() {
   });
 
   return (
-    <aside className="w-full lg:w-[380px] flex-shrink-0 px-4 lg:px-0 lg:pr-10 pb-12 flex flex-col h-[600px] lg:h-full mt-6 lg:mt-0">
-      <div className="w-full h-full bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] rounded-3xl flex flex-col overflow-hidden relative">
+    <>
+      {/* Mobile Accordion Toggle Button (Visible only when closed on mobile) */}
+      {!isMobileOpen && (
+        <div className="lg:hidden w-full bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.02)] p-4 flex justify-between items-center cursor-pointer active:bg-gray-50 rounded-t-2xl z-20 shrink-0" onClick={() => setIsMobileOpen(true)}>
+          <div className="flex items-center gap-2">
+            <span className="text-[15px] font-bold text-gray-900">
+              {panelMode === 'form' ? '새 보험 등록' : panelMode === 'settings' ? '설정 보기' : `${format(selectedDate, 'M월 d일')} 일정 보기`}
+            </span>
+            {dayEvents.length > 0 && panelMode === 'view' && (
+              <span className="bg-indigo-100 text-indigo-700 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                {dayEvents.length}
+              </span>
+            )}
+          </div>
+          <ChevronUp className="w-5 h-5 text-gray-400" />
+        </div>
+      )}
+
+      {/* Main Panel Content (Hidden on mobile if not open) */}
+      <aside className={`w-full lg:w-[380px] flex-shrink-0 px-4 lg:px-0 lg:pr-10 pb-6 lg:pb-12 flex-col h-[70vh] lg:h-full mt-2 lg:mt-0 z-30 transition-all duration-300 ${isMobileOpen ? 'flex' : 'hidden lg:flex'}`}>
+        <div className="w-full h-full bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-3xl flex flex-col overflow-hidden relative">
         
         {/* 1. Header */}
         <div className="px-7 pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0">
@@ -79,14 +100,23 @@ export function RightPanel() {
               </span>
             )}
           </div>
-          {panelMode === 'form' && (
+          <div className="flex items-center gap-3">
+            {panelMode === 'form' && (
+              <button 
+                onClick={() => setPanelMode('view')}
+                className="text-[13px] font-bold text-gray-400 hover:text-gray-900 transition-colors"
+              >
+                취소
+              </button>
+            )}
+            {/* Mobile Close Button */}
             <button 
-              onClick={() => setPanelMode('view')}
-              className="text-[13px] font-bold text-gray-400 hover:text-gray-900 transition-colors"
+              onClick={() => setIsMobileOpen(false)}
+              className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
             >
-              취소
+              <X className="w-5 h-5" />
             </button>
-          )}
+          </div>
         </div>
 
         {/* 2. Content & Bottom Area */}
@@ -183,5 +213,6 @@ export function RightPanel() {
 
       </div>
     </aside>
+    </>
   );
 }
