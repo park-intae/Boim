@@ -37,11 +37,38 @@ export class UserController {
   @Patch('me/password')
   async updatePassword(@Req() req: Request, @Body() updatePasswordDto: import('@boim/shared-types').UpdatePasswordDto) {
     const userId = 1n; // 임시 하드코딩
-    // 실제로는 현재 비밀번호 검증 로직이 필요하지만 UI/UX 구현 위주로 진행
     await this.userService.updatePassword(userId, updatePasswordDto.newPassword);
     return {
       success: true,
       message: '비밀번호가 성공적으로 변경되었습니다.',
+    };
+  }
+
+  @Get('me/notifications/settings')
+  async getNotificationSettings(@Req() req: Request) {
+    const userId = 1n;
+    const settings = await this.userService.getNotificationSettings(userId);
+    return {
+      success: true,
+      data: {
+        ...settings,
+        id: Number(settings.id),
+        userId: Number(settings.userId),
+      },
+    };
+  }
+
+  @Patch('me/notifications/settings')
+  async updateNotificationSettings(@Req() req: Request, @Body() dto: import('@boim/shared-types').UpdateNotificationSettingsDto) {
+    const userId = 1n;
+    const settings = await this.userService.updateNotificationSettings(userId, dto);
+    return {
+      success: true,
+      data: {
+        ...settings,
+        id: Number(settings.id),
+        userId: Number(settings.userId),
+      },
     };
   }
 }

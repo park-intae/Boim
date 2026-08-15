@@ -2,9 +2,11 @@ import React, { useState, Suspense } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { ProfileSettings } from './ProfileSettings';
 import { PasswordSettings } from './PasswordSettings';
+import { NotificationSettingsSection } from './NotificationSettingsSection';
+import { NotificationTimeSettings } from './NotificationTimeSettings';
 
 export const SettingsPanel = () => {
-  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime'>('menu');
 
   if (activeView === 'profile') {
     return (
@@ -20,6 +22,14 @@ export const SettingsPanel = () => {
     return (
       <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
         <PasswordSettings onBack={() => setActiveView('menu')} />
+      </div>
+    );
+  }
+
+  if (activeView === 'notificationTime') {
+    return (
+      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+        <NotificationTimeSettings onBack={() => setActiveView('menu')} />
       </div>
     );
   }
@@ -54,36 +64,12 @@ export const SettingsPanel = () => {
       <hr className="my-6 border-gray-100" />
 
       {/* 2. 알림 설정 */}
-      <section className="mb-8">
+      <div className="mb-8">
         <h3 className="mb-4 text-xs font-semibold text-gray-400">알림 설정</h3>
-        <div className="flex flex-col space-y-5">
-          <div className="flex items-center justify-between text-[14px] text-gray-800">
-            <span>푸시 알림</span>
-            {/* 임시 토글 스위치 UI (On) */}
-            <div className="flex h-5 w-9 cursor-pointer items-center rounded-full bg-indigo-600 p-0.5">
-              <div className="h-4 w-4 translate-x-4 rounded-full bg-white shadow-sm transition-transform"></div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-[14px] text-gray-800">
-            <span>이메일 알림</span>
-            {/* 임시 토글 스위치 UI (Off) */}
-            <div className="flex h-5 w-9 cursor-pointer items-center rounded-full bg-gray-200 p-0.5">
-              <div className="h-4 w-4 rounded-full bg-white shadow-sm transition-transform"></div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-[14px] text-gray-800">
-            <span>카카오톡 알림</span>
-            {/* 임시 토글 스위치 UI (On) */}
-            <div className="flex h-5 w-9 cursor-pointer items-center rounded-full bg-indigo-600 p-0.5">
-              <div className="h-4 w-4 translate-x-4 rounded-full bg-white shadow-sm transition-transform"></div>
-            </div>
-          </div>
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
-            <span>알림 시간 설정</span>
-            <span className="text-gray-400 text-xs">오전 9시 &gt;</span>
-          </button>
-        </div>
-      </section>
+        <Suspense fallback={<div className="text-sm text-gray-500 font-semibold animate-pulse">알림 설정을 불러오는 중...</div>}>
+          <NotificationSettingsSection setActiveView={setActiveView} />
+        </Suspense>
+      </div>
 
       <hr className="my-6 border-gray-100" />
 

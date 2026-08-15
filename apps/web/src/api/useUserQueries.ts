@@ -58,3 +58,43 @@ export const useUpdatePassword = () => {
     },
   });
 };
+
+export const useGetNotificationSettings = () => {
+  return useSuspenseQuery({
+    queryKey: [...userKeys.me(), 'notificationSettings'],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings');
+      if (!data.success || !data.data) {
+        throw new Error(data.error?.message || 'Failed to fetch settings');
+      }
+      return data.data;
+    },
+  });
+};
+
+export const useUpdateNotificationSettings = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (dto: import('@boim/shared-types').UpdateNotificationSettingsDto) => {
+      const { data } = await api.patch<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings', dto);
+      if (!data.success || !data.data) {
+        throw new Error(data.error?.message || 'Failed to update settings');
+      }
+      return data.data;
+    },
+    onMutate: async (newSettings) => {
+      await queryClient.cancelQueries({ queryKey: [...userKeys.me(), 'notificationSettings'] });
+      const previous = queryClient.getQueryData([...userKeys.me(), 'notificationSettings']);
+      queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], (old: any) => ({ ...old, ...newSettings }));
+      return { previous };
+    },
+    onError: (err, newSettings, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.me(), 'notificationSettings'] });
+    },
+  });
+};

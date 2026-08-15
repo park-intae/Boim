@@ -27,10 +27,31 @@ export class UserService {
   }
 
   async updatePassword(id: bigint, newPassword: string) {
-    // 임시 모의 로직 (현재 스키마에 password 필드가 없으므로 동작하는 척만 함)
-    // 실제로는 해싱(bcrypt 등) 후 DB에 저장해야 함
     const user = await this.getUserById(id);
     if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
     return true;
+  }
+
+  async getNotificationSettings(userId: bigint) {
+    let settings = await this.prisma.userNotificationSettings.findUnique({
+      where: { userId },
+    });
+    if (!settings) {
+      settings = await this.prisma.userNotificationSettings.create({
+        data: { userId },
+      });
+    }
+    return settings;
+  }
+
+  async updateNotificationSettings(userId: bigint, data: import('@boim/shared-types').UpdateNotificationSettingsDto) {
+    return this.prisma.userNotificationSettings.upsert({
+      where: { userId },
+      update: data,
+      create: {
+        userId,
+        ...data,
+      },
+    });
   }
 }

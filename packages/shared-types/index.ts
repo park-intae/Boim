@@ -12,6 +12,16 @@ export interface UpdatePasswordDto {
   newPassword: string;
 }
 
+export interface NotificationSettingsDto {
+  pushEnabled: boolean;
+  emailEnabled: boolean;
+  kakaoEnabled: boolean;
+  quietHoursStart: string | null;
+  quietHoursEnd: string | null;
+}
+
+export type UpdateNotificationSettingsDto = Partial<NotificationSettingsDto>;
+
 export interface InsuranceProductDto {
   id: bigint | number;
   userId: bigint | number;
