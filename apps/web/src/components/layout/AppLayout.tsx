@@ -15,10 +15,10 @@ export function AppLayout() {
         <Header />
         
         {/* Content Split (Center + Right) */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           
           {/* Center Column: Main Routing Area */}
-          <main className="flex-1 overflow-auto px-10 pb-12">
+          <main className="flex-1 overflow-auto px-4 lg:px-10 pb-12">
             <Outlet />
           </main>
           

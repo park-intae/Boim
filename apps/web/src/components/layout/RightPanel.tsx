@@ -64,7 +64,7 @@ export function RightPanel() {
   });
 
   return (
-    <aside className="w-[380px] flex-shrink-0 pr-10 pb-12 flex flex-col h-full">
+    <aside className="w-full lg:w-[380px] flex-shrink-0 px-4 lg:px-0 lg:pr-10 pb-12 flex flex-col h-[600px] lg:h-full mt-6 lg:mt-0">
       <div className="w-full h-full bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] rounded-3xl flex flex-col overflow-hidden relative">
         
         {/* 1. Header */}
