@@ -40,11 +40,11 @@ export interface DocumentDto {
   productId: bigint | number;
   fileUrl: string;
   ocrText?: string | null;
-  parsedData?: any | null;
+  parsedData?: Record<string, unknown> | null;
   uploadedAt: Date;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: {
