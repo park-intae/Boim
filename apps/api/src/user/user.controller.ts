@@ -1,4 +1,5 @@
 import { Controller, Get, Patch, Body, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { UserService } from './user.service';
 import type { UpdateUserDto } from '@boim/shared-types';
 
@@ -7,7 +8,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('me')
-  async getProfile(@Req() req: any) {
+  async getProfile(@Req() req: Request) {
     // TODO: JWT Auth Guard 연동 후 req.user.id 사용
     const userId = 1n; // 임시 하드코딩
     const user = await this.userService.getUserById(userId);
@@ -21,7 +22,7 @@ export class UserController {
   }
 
   @Patch('me')
-  async updateProfile(@Req() req: any, @Body() updateUserDto: UpdateUserDto) {
+  async updateProfile(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
     const userId = 1n; // 임시 하드코딩
     const user = await this.userService.updateUser(userId, updateUserDto);
     return {
