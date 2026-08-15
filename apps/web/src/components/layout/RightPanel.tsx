@@ -1,6 +1,5 @@
 import { Plus, Umbrella, ShieldCheck, ChevronRight, Car, Activity, HeartPulse, Trash2, X, ChevronUp } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
-import { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances, useDeleteInsurance } from '../../api/useInsuranceQueries';
 import { InsuranceForm } from './InsuranceForm';
@@ -10,10 +9,12 @@ import { NotificationList } from './NotificationList';
 import { SettingsPanel } from '../../features/settings/components/SettingsPanel';
 
 export function RightPanel() {
+  // Vite HMR 갱신 트리거용 주석
   const selectedDate = useAppStore(state => state.selectedDate);
   const panelMode = useAppStore(state => state.panelMode);
   const setPanelMode = useAppStore(state => state.setPanelMode);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const isMobileOpen = useAppStore(state => state.isMobilePanelOpen);
+  const setIsMobileOpen = useAppStore(state => state.setIsMobilePanelOpen);
   
   const { data: insurances = [] } = useGetInsurances();
   const { mutate: deleteInsurance } = useDeleteInsurance();
