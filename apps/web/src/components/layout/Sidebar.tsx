@@ -1,23 +1,19 @@
-import { useState } from 'react';
 import { CalendarDays, ShieldCheck, Activity, Bell, Settings } from 'lucide-react';
 import { useGetInsurances } from '../../api/useInsuranceQueries';
 import { useAppStore } from '../../store/useAppStore';
-import { SettingsModal } from '../../features/settings/components/SettingsModal';
 
 export function Sidebar() {
   const panelMode = useAppStore(state => state.panelMode);
   const setPanelMode = useAppStore(state => state.setPanelMode);
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const activeMenu = panelMode === 'my-insurance' ? '내 보험' : panelMode === 'analysis' ? '보험료 분석' : panelMode === 'notifications' ? '알림' : '보험 일정';
+  const activeMenu = panelMode === 'my-insurance' ? '내 보험' : panelMode === 'analysis' ? '보험료 분석' : panelMode === 'notifications' ? '알림' : panelMode === 'settings' ? '설정' : '보험 일정';
 
   const menuItems = [
     { name: '보험 일정', icon: CalendarDays, action: () => setPanelMode('view') },
     { name: '내 보험', icon: ShieldCheck, action: () => setPanelMode('my-insurance') },
     { name: '보험료 분석', icon: Activity, action: () => setPanelMode('analysis') },
     { name: '알림', icon: Bell, action: () => setPanelMode('notifications') },
-    { name: '설정', icon: Settings, action: () => setIsSettingsOpen(true) },
+    { name: '설정', icon: Settings, action: () => setPanelMode('settings') },
   ];
 
   const { data: insurances = [] } = useGetInsurances();
@@ -26,10 +22,9 @@ export function Sidebar() {
   const activeInsuranceCount = insurances.length;
 
   return (
-    <>
-      <aside className="w-[260px] h-full bg-white border-r border-gray-100 flex flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
-        
-        {/* 1. Logo Area */}
+    <aside className="w-[260px] h-full bg-white border-r border-gray-100 flex flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+      
+      {/* 1. Logo Area */}
         <div className="h-[84px] flex items-center px-8 shrink-0">
           <div className="flex items-center gap-2.5 cursor-pointer">
             <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-extrabold text-[16px] shadow-sm">
@@ -101,7 +96,5 @@ export function Sidebar() {
         </div>
         
       </aside>
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-    </>
   );
 }

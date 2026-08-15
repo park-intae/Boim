@@ -6,6 +6,7 @@ import { InsuranceForm } from './InsuranceForm';
 import { MyInsuranceList } from './MyInsuranceList';
 import { PremiumAnalysis } from './PremiumAnalysis';
 import { NotificationList } from './NotificationList';
+import { SettingsPanel } from '../../features/settings/components/SettingsPanel';
 
 export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
@@ -70,7 +71,7 @@ export function RightPanel() {
         <div className="px-7 pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-[22px] font-extrabold text-gray-900 tracking-tight">
-              {panelMode === 'form' ? '보험 등록' : format(selectedDate, 'M월 d일')}
+              {panelMode === 'form' ? '보험 등록' : panelMode === 'settings' ? '설정' : format(selectedDate, 'M월 d일')}
             </h2>
             {isToday && panelMode === 'view' && (
               <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full uppercase tracking-widest">
@@ -174,6 +175,8 @@ export function RightPanel() {
           <PremiumAnalysis />
         ) : panelMode === 'notifications' ? (
           <NotificationList />
+        ) : panelMode === 'settings' ? (
+          <SettingsPanel />
         ) : (
           <InsuranceForm />
         )}
