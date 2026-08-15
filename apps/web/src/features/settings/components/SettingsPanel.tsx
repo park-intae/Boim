@@ -1,5 +1,5 @@
 import React, { useState, Suspense } from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useAppStore } from '../../../store/useAppStore';
 import { ProfileSettings } from './ProfileSettings';
 
 export const SettingsPanel = () => {
