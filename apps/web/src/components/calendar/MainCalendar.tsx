@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
 import {
   format,
@@ -22,6 +22,18 @@ export function MainCalendar() {
   const selectedDate = useAppStore(state => state.selectedDate);
   const setSelectedDate = useAppStore(state => state.setSelectedDate);
   const setPanelMode = useAppStore(state => state.setPanelMode);
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedWeekRef = useRef<HTMLDivElement>(null);
+
+  // 현재 날짜(월)가 변경되거나 처음 렌더링될 때 선택된 주간으로 자동 스크롤
+  useEffect(() => {
+    if (selectedWeekRef.current) {
+      setTimeout(() => {
+        selectedWeekRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+    }
+  }, [currentDate]);
 
   const { data: insurances = [] } = useGetInsurances();
 
@@ -148,8 +160,10 @@ export function MainCalendar() {
     let days = [];
     let day = startDate;
     let formattedDate = '';
+    let weekHasSelectedDate = false;
 
     while (day <= endDate) {
+      weekHasSelectedDate = false;
       for (let i = 0; i < 7; i++) {
         formattedDate = format(day, 'd');
         const cloneDay = day;
@@ -158,6 +172,10 @@ export function MainCalendar() {
         const isCurrentMonth = isSameMonth(day, monthStart);
         const isSelected = isSameDay(day, selectedDate);
         const isToday = isSameDay(day, new Date());
+        
+        if (isSelected) {
+          weekHasSelectedDate = true;
+        }
         
         const dayEvents = apiEvents[dateKey] || [];
         
@@ -209,13 +227,13 @@ export function MainCalendar() {
         day = addDays(day, 1);
       }
       rows.push(
-        <div key={day.toString()} className="grid grid-cols-7">
+        <div key={day.toString()} ref={weekHasSelectedDate ? selectedWeekRef : null} className="grid grid-cols-7">
           {days}
         </div>
       );
       days = [];
     }
-    return <div className="flex-1 overflow-y-auto">{rows}</div>;
+    return <div ref={scrollContainerRef} className="flex-1 overflow-y-auto overflow-x-hidden">{rows}</div>;
   };
 
   return (
