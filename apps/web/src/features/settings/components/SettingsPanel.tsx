@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useState, Suspense } from 'react';
+import { useAppStore } from '../../store/useAppStore';
+import { ProfileSettings } from './ProfileSettings';
 
 export const SettingsPanel = () => {
+  const [activeView, setActiveView] = useState<'menu' | 'profile'>('menu');
+
+  if (activeView === 'profile') {
+    return (
+      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+        <Suspense fallback={<div className="text-sm text-gray-500 font-semibold animate-pulse p-4">사용자 정보를 불러오는 중...</div>}>
+          <ProfileSettings onBack={() => setActiveView('menu')} />
+        </Suspense>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto px-6 py-6 pb-20">
       {/* 1. 계정 설정 */}
       <section className="mb-8">
         <h3 className="mb-4 text-xs font-semibold text-gray-400">계정 설정</h3>
         <div className="flex flex-col space-y-5">
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button 
+            onClick={() => setActiveView('profile')}
+            className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
+          >
             <span>내 정보 관리</span>
             <span className="text-gray-300">&gt;</span>
           </button>

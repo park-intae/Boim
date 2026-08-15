@@ -5,6 +5,8 @@ export interface UserDto {
   createdAt: Date;
 }
 
+export type UpdateUserDto = Partial<Pick<UserDto, 'name' | 'email'>>;
+
 export interface InsuranceProductDto {
   id: bigint | number;
   userId: bigint | number;
