@@ -22,9 +22,9 @@ const LoginHistoryList = () => {
               <Smartphone className="w-5 h-5" />
             )}
           </div>
-          <div className="flex flex-col flex-1">
-            <span className="text-[14px] font-bold text-gray-900">{record.device}</span>
-            <span className="text-[12px] text-gray-500 mt-0.5">{record.location || '알 수 없는 위치'} • {record.ipAddress}</span>
+          <div className="flex flex-col flex-1 min-w-0">
+            <span className="text-[14px] font-bold text-gray-900 truncate">{record.device}</span>
+            <span className="text-[12px] text-gray-500 mt-0.5 break-words">{record.location || '알 수 없는 위치'} • {record.ipAddress}</span>
             <span className="text-[11px] text-gray-400 mt-1.5">{format(new Date(record.loginAt), 'yyyy년 MM월 dd일 a h:mm', { locale: ko })}</span>
           </div>
         </div>

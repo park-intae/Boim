@@ -61,7 +61,7 @@ export const NotificationTimeSettings = ({ onBack }: { onBack: () => void }) => 
                 type="time" 
                 value={start}
                 onChange={(e) => handleTimeChange('start', e.target.value)}
-                className="bg-transparent text-[15px] font-semibold text-gray-900 outline-none text-right w-24"
+                className="bg-transparent text-[15px] font-semibold text-gray-900 outline-none text-right w-24 sm:w-32"
               />
             </div>
             <div className="h-[1px] bg-gray-200/60 w-full"></div>
@@ -71,7 +71,7 @@ export const NotificationTimeSettings = ({ onBack }: { onBack: () => void }) => 
                 type="time" 
                 value={end}
                 onChange={(e) => handleTimeChange('end', e.target.value)}
-                className="bg-transparent text-[15px] font-semibold text-gray-900 outline-none text-right w-24"
+                className="bg-transparent text-[15px] font-semibold text-gray-900 outline-none text-right w-24 sm:w-32"
               />
             </div>
           </div>

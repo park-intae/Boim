@@ -73,7 +73,7 @@ export const SettingsPanel = () => {
 
   if (activeView === 'profile') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <Suspense fallback={<div className="text-sm text-gray-500 font-semibold animate-pulse p-4">사용자 정보를 불러오는 중...</div>}>
           <ProfileSettings onBack={() => setActiveView('menu')} />
         </Suspense>
@@ -83,7 +83,7 @@ export const SettingsPanel = () => {
 
   if (activeView === 'password') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <PasswordSettings onBack={() => setActiveView('menu')} />
       </div>
     );
@@ -91,7 +91,7 @@ export const SettingsPanel = () => {
 
   if (activeView === 'loginHistory') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <LoginHistorySettings onBack={() => setActiveView('menu')} />
       </div>
     );
@@ -99,7 +99,7 @@ export const SettingsPanel = () => {
 
   if (activeView === 'notificationTime') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <NotificationTimeSettings onBack={() => setActiveView('menu')} />
       </div>
     );
@@ -107,7 +107,7 @@ export const SettingsPanel = () => {
 
   if (activeView === 'terms') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <PolicyViewer type="terms" onBack={() => setActiveView('menu')} />
       </div>
     );
@@ -115,14 +115,14 @@ export const SettingsPanel = () => {
 
   if (activeView === 'privacy') {
     return (
-      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
         <PolicyViewer type="privacy" onBack={() => setActiveView('menu')} />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-6 pb-20">
+    <div className="flex-1 overflow-y-auto w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20">
       {/* 1. 계정 설정 */}
       <div className="mb-8">
         <h2 className="text-[14px] font-bold text-gray-900 mb-4 px-2">계정 설정</h2>
