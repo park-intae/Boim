@@ -14,8 +14,11 @@ export function HomePage() {
   let renewalCount = 0;
   
   insurances.forEach((ins) => {
-    if (ins.maturityDate && isSameMonth(parseISO(ins.maturityDate), today)) {
-      renewalCount++;
+    if (ins.maturityDate) {
+      const dateObj = typeof ins.maturityDate === 'string' ? parseISO(ins.maturityDate) : ins.maturityDate;
+      if (isSameMonth(dateObj, today)) {
+        renewalCount++;
+      }
     }
   });
 
@@ -27,22 +30,22 @@ export function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col h-full space-y-6 pt-2">
+    <div className="flex flex-col h-full space-y-4 lg:space-y-6 pt-2">
       {/* 4 Summary Cards Area */}
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-6">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 cursor-pointer flex flex-col gap-4">
+            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 cursor-pointer flex flex-col gap-2 lg:gap-4 justify-between">
               <div className="flex items-center justify-between">
-                <span className="text-[14px] font-semibold text-gray-500">{card.title}</span>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${card.bg}`}>
-                  <Icon className={`w-5 h-5 ${card.color}`} strokeWidth={2.5} />
+                <span className="text-[12px] lg:text-[14px] font-semibold text-gray-500">{card.title}</span>
+                <div className={`w-7 h-7 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0 ${card.bg}`}>
+                  <Icon className={`w-3.5 h-3.5 lg:w-5 lg:h-5 ${card.color}`} strokeWidth={2.5} />
                 </div>
               </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-[28px] font-extrabold text-gray-900 tracking-tight">{card.value}</span>
-                <span className="text-[15px] font-bold text-gray-400">{card.unit}</span>
+              <div className="flex items-baseline gap-1 mt-1 lg:mt-0">
+                <span className="text-[18px] lg:text-[28px] font-extrabold text-gray-900 tracking-tight line-clamp-1 break-all">{card.value}</span>
+                <span className="text-[12px] lg:text-[15px] font-bold text-gray-400 shrink-0">{card.unit}</span>
               </div>
             </div>
           );
