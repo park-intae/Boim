@@ -8,6 +8,12 @@
 - **해결 및 예방:** 기존에 구축되어 환경변수를 자동 주입받는 `apiClient`(`apps/web/src/api/client.ts`)를 재사용하여 일관된 호출을 보장해야 함. 새로운 API 훅을 작성할 때 **절대로 로컬호스트 주소를 직접 하드코딩하지 말 것**.
 
 ## 2. 백엔드 응답 인터셉터 이중 래핑(Double Wrapping) 오류
+## [2026-08-15] 백엔드 TS2307, TS1272 에러: Cannot find module 및 import type 에러
+- **발생 위치:** `apps/api/src/user/user.controller.ts`
+- **원인:** `@nestjs/common` 임포트를 수정하면서 존재하지 않는 `JwtAuthGuard`를 잘못 추가했고, 인터페이스/타입(DTO)을 `import type`이 아닌 일반 `import`로 가져옴(`isolatedModules` 환경에서 에러 발생).
+- **해결책:** 불필요한 `JwtAuthGuard`, `UseGuards` 임포트를 제거하고, DTO 임포트 문에 `import type` 키워드를 명시.
+- **예방책:** 순수 타입(interface, type)을 가져올 때는 반드시 `import type` 문법을 사용해야 하며(GEMINI.md 모델 지식 참조), 존재하지 않는 파일을 임의로 임포트하지 않도록 주의할 것.
+
 - **발생 상황:** 백엔드 알림 컨트롤러 생성 후.
 - **오류 내용:** 백엔드 전역 설정(`main.ts`)에 `TransformInterceptor`가 적용되어 있어 모든 반환값이 자동으로 `{ success: true, data: [...] }` 형태로 감싸짐. 그러나 `NotificationController`에서 수동으로 `{ success: true, data: ... }` 구조를 또 리턴해버림.
 - **결과:** 프론트엔드가 데이터를 받을 때 `response.data`가 배열이 아닌 객체가 되어 `.filter is not a function` 런타임 에러 발생.

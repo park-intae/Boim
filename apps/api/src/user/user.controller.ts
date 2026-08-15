@@ -1,8 +1,7 @@
-import { Controller, Get, Patch, Post, Delete, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Delete, Body, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { UpdateUserDto, UpdatePasswordDto, UpdateNotificationSettingsDto } from '@boim/shared-types';
+import type { UpdateUserDto, UpdatePasswordDto, UpdateNotificationSettingsDto } from '@boim/shared-types';
 
 @Controller('users')
 export class UserController {
