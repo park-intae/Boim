@@ -9,8 +9,8 @@ vi.mock('../api/useInsuranceQueries', () => ({
 
 // Recharts 모킹 (ResponsiveContainer를 포함하여 내부의 차트가 렌더링되지 않도록 함)
 vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: any) => <div data-testid="responsive-container">{children}</div>,
-  PieChart: ({ children }: any) => <div data-testid="pie-chart">{children}</div>,
+  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
+  PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
   Pie: () => <div data-testid="pie" />,
   Cell: () => <div data-testid="cell" />,
   Tooltip: () => <div data-testid="tooltip" />
@@ -22,7 +22,7 @@ describe('PremiumAnalysis Component', () => {
   });
 
   it('가입한 보험이 없을 경우(Empty State) 안내 문구와 새 보험 등록 버튼이 노출되어야 한다.', () => {
-    (useGetInsurances as any).mockReturnValue({ data: [] });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: [] } as unknown as ReturnType<typeof useGetInsurances>);
     render(<PremiumAnalysis />);
     
     expect(screen.getByText('분석할 데이터가 없습니다')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('PremiumAnalysis Component', () => {
       { id: 1, name: '실비보험', category: '실비', monthlyPayment: 30000 },
       { id: 2, name: '자동차보험', category: '자동차', monthlyPayment: 70000 },
     ];
-    (useGetInsurances as any).mockReturnValue({ data: mockData });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: mockData } as unknown as ReturnType<typeof useGetInsurances>);
     render(<PremiumAnalysis />);
     
     // 30000 + 70000 = 100,000

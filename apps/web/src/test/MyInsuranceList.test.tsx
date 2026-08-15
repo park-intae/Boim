@@ -15,7 +15,7 @@ describe('MyInsuranceList Component', () => {
   });
 
   it('가입한 보험이 없을 경우(Empty State) 안내 문구가 노출되어야 한다.', () => {
-    (useGetInsurances as any).mockReturnValue({ data: [] });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: [] } as unknown as ReturnType<typeof useGetInsurances>);
     render(<MyInsuranceList />);
     
     expect(screen.getByText('등록된 보험이 없습니다')).toBeInTheDocument();
@@ -26,7 +26,7 @@ describe('MyInsuranceList Component', () => {
       { id: 1, name: '무배당 실손의료비보험', category: '실비', institution: 'A생명', monthlyPayment: 30000 },
       { id: 2, name: '다이렉트 자동차보험', category: '자동차', institution: 'B손보', monthlyPayment: 85000 },
     ];
-    (useGetInsurances as any).mockReturnValue({ data: mockData });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: mockData } as unknown as ReturnType<typeof useGetInsurances>);
     render(<MyInsuranceList />);
     
     expect(screen.getByText('무배당 실손의료비보험')).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('MyInsuranceList Component', () => {
       { id: 1, name: '실비보험', category: '실비', institution: 'A생명', monthlyPayment: 30000 },
       { id: 2, name: '자동차보험', category: '자동차', institution: 'B손보', monthlyPayment: 85000 },
     ];
-    (useGetInsurances as any).mockReturnValue({ data: mockData });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: mockData } as unknown as ReturnType<typeof useGetInsurances>);
     render(<MyInsuranceList />);
     
     // 처음엔 전체가 보이므로 두 개 모두 렌더링됨
@@ -69,7 +69,7 @@ describe('MyInsuranceList Component', () => {
     const mockData = [
       { id: 1, name: '실비보험', category: '실비', institution: 'A생명', monthlyPayment: 30000 },
     ];
-    (useGetInsurances as any).mockReturnValue({ data: mockData });
+    vi.mocked(useGetInsurances).mockReturnValue({ data: mockData } as unknown as ReturnType<typeof useGetInsurances>);
     render(<MyInsuranceList />);
 
     fireEvent.click(screen.getByText('실비보험').closest('.group') as HTMLElement);

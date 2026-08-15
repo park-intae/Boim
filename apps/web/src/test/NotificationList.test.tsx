@@ -17,9 +17,9 @@ const mockNotifications = [
 
 describe('NotificationList Component', () => {
   it('알림 데이터가 화면에 정상적으로 렌더링되어야 한다.', () => {
-    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: mockNotifications } as any);
-    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: vi.fn() } as any);
-    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as any);
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: mockNotifications } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: vi.fn() } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as never);
 
     render(<NotificationList />);
     
@@ -31,9 +31,9 @@ describe('NotificationList Component', () => {
 
   it('읽지 않은 알림을 클릭하면 markAsRead가 호출되어야 한다.', () => {
     const mockMarkAsRead = vi.fn();
-    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: mockNotifications } as any);
-    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: mockMarkAsRead } as any);
-    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as any);
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: mockNotifications } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: mockMarkAsRead } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as never);
 
     render(<NotificationList />);
     
@@ -44,9 +44,9 @@ describe('NotificationList Component', () => {
   });
 
   it('데이터가 비어있을 때 Empty State 안내 문구가 올바르게 렌더링되어야 한다.', () => {
-    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: [] } as any);
-    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: vi.fn() } as any);
-    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as any);
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({ data: [] } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({ mutate: vi.fn() } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({ mutate: vi.fn() } as never);
 
     render(<NotificationList />);
     

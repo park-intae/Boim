@@ -14,8 +14,8 @@ export function useGetNotifications() {
   return useQuery<NotificationDto[]>({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const response: any = await apiClient.get('/notifications');
-      return response.data;
+      const { data } = await apiClient.get<NotificationDto[]>('/notifications');
+      return data;
     },
   });
 }
@@ -25,8 +25,8 @@ export function useMarkNotificationRead() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const response: any = await apiClient.patch(`/notifications/${id}/read`);
-      return response.data;
+      const { data } = await apiClient.patch<NotificationDto>(`/notifications/${id}/read`);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -39,8 +39,8 @@ export function useDeleteNotification() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const response: any = await apiClient.delete(`/notifications/${id}`);
-      return response.data;
+      const { data } = await apiClient.delete<boolean>(`/notifications/${id}`);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });

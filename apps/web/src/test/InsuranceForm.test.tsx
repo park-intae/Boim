@@ -18,8 +18,8 @@ describe('InsuranceForm Component', () => {
     vi.clearAllMocks();
     useAppStore.setState(useAppStore.getState(), true);
     
-    (useCreateInsurance as any).mockReturnValue({ mutate: mockCreate, isPending: false });
-    (useUpdateInsurance as any).mockReturnValue({ mutate: mockUpdate, isPending: false });
+    vi.mocked(useCreateInsurance).mockReturnValue({ mutate: mockCreate, isPending: false } as unknown as ReturnType<typeof useCreateInsurance>);
+    vi.mocked(useUpdateInsurance).mockReturnValue({ mutate: mockUpdate, isPending: false } as unknown as ReturnType<typeof useUpdateInsurance>);
   });
 
   it('폼의 필수 항목들을 입력하지 않고 제출하면 유효성 검사 에러 메시지가 표시되어야 한다.', async () => {
