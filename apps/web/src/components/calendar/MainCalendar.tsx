@@ -42,46 +42,55 @@ export function MainCalendar() {
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-      <div className="flex items-center gap-2">
-        <h2 className="text-[22px] font-extrabold text-gray-900 tracking-tight">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 lg:px-6 py-4 lg:py-5 border-b border-gray-100 gap-3 sm:gap-0">
+      <div className="flex items-center justify-between sm:justify-start gap-2">
+        <h2 className="text-[20px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight">
           {format(currentDate, 'yyyy년 M월')}
         </h2>
-      </div>
-      <div className="flex items-center gap-2">
+        {/* 모바일 전용 추가 버튼 */}
         <button
           onClick={() => setPanelMode('form')}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm"
+          className="sm:hidden flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           추가
         </button>
-        <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+      </div>
+      <div className="flex items-center justify-between sm:justify-end gap-2">
+        {/* PC 전용 추가 버튼 */}
+        <button
+          onClick={() => setPanelMode('form')}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          추가
+        </button>
+        <div className="flex items-center justify-between w-full sm:w-auto gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
           <button
             onClick={prevYear}
             title="이전 연도"
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronsLeft className="w-5 h-5" />
           </button>
           <button
             onClick={prevMonth}
             title="이전 달"
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextMonth}
             title="다음 달"
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
           <button
             onClick={nextYear}
             title="다음 연도"
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
           >
             <ChevronsRight className="w-5 h-5" />
           </button>
