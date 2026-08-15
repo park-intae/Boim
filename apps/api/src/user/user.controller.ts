@@ -98,4 +98,18 @@ export class UserController {
     await this.userService.softDeleteUser(userId);
     return { success: true, message: '계정이 안전하게 탈퇴 처리되었습니다.' };
   }
+
+  @Get('me/login-history')
+  async getLoginHistory() {
+    const userId = 1n;
+    const history = await this.userService.getLoginHistory(userId);
+    return {
+      success: true,
+      data: history.map(h => ({
+        ...h,
+        id: Number(h.id),
+        userId: Number(h.userId),
+      })),
+    };
+  }
 }

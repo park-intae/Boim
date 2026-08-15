@@ -22,6 +22,15 @@ export interface NotificationSettingsDto {
 
 export type UpdateNotificationSettingsDto = Partial<NotificationSettingsDto>;
 
+export interface LoginHistoryDto {
+  id: bigint | number;
+  userId: bigint | number;
+  device: string;
+  ipAddress: string;
+  location?: string | null;
+  loginAt: string; // ISO 8601 string
+}
+
 export interface InsuranceProductDto {
   id: bigint | number;
   userId: bigint | number;

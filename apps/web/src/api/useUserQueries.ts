@@ -128,3 +128,16 @@ export const useDeleteAccount = () => {
     },
   });
 };
+
+export const useGetLoginHistory = () => {
+  return useSuspenseQuery({
+    queryKey: [...userKeys.me(), 'loginHistory'],
+    queryFn: async () => {
+      const { data } = await api.get<ApiResponse<import('@boim/shared-types').LoginHistoryDto[]>>('/users/me/login-history');
+      if (!data.success || !data.data) {
+        throw new Error(data.error?.message || 'Failed to fetch login history');
+      }
+      return data.data;
+    },
+  });
+};
