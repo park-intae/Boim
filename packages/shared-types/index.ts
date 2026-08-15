@@ -7,6 +7,11 @@ export interface UserDto {
 
 export type UpdateUserDto = Partial<Pick<UserDto, 'name' | 'email'>>;
 
+export interface UpdatePasswordDto {
+  currentPassword?: string;
+  newPassword: string;
+}
+
 export interface InsuranceProductDto {
   id: bigint | number;
   userId: bigint | number;

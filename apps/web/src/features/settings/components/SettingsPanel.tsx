@@ -1,9 +1,10 @@
 import React, { useState, Suspense } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { ProfileSettings } from './ProfileSettings';
+import { PasswordSettings } from './PasswordSettings';
 
 export const SettingsPanel = () => {
-  const [activeView, setActiveView] = useState<'menu' | 'profile'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password'>('menu');
 
   if (activeView === 'profile') {
     return (
@@ -15,12 +16,20 @@ export const SettingsPanel = () => {
     );
   }
 
+  if (activeView === 'password') {
+    return (
+      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+        <PasswordSettings onBack={() => setActiveView('menu')} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto px-6 py-6 pb-20">
       {/* 1. 계정 설정 */}
-      <section className="mb-8">
-        <h3 className="mb-4 text-xs font-semibold text-gray-400">계정 설정</h3>
-        <div className="flex flex-col space-y-5">
+      <div className="mb-8">
+        <h2 className="text-[14px] font-bold text-gray-900 mb-4 px-2">계정 설정</h2>
+        <div className="bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col gap-4">
           <button 
             onClick={() => setActiveView('profile')}
             className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
@@ -28,7 +37,10 @@ export const SettingsPanel = () => {
             <span>내 정보 관리</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button 
+            onClick={() => setActiveView('password')}
+            className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
+          >
             <span>비밀번호 변경</span>
             <span className="text-gray-300">&gt;</span>
           </button>
@@ -37,7 +49,7 @@ export const SettingsPanel = () => {
             <span className="text-gray-300">&gt;</span>
           </button>
         </div>
-      </section>
+      </div>
 
       <hr className="my-6 border-gray-100" />
 

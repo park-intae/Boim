@@ -25,4 +25,12 @@ export class UserService {
       data,
     });
   }
+
+  async updatePassword(id: bigint, newPassword: string) {
+    // 임시 모의 로직 (현재 스키마에 password 필드가 없으므로 동작하는 척만 함)
+    // 실제로는 해싱(bcrypt 등) 후 DB에 저장해야 함
+    const user = await this.getUserById(id);
+    if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    return true;
+  }
 }

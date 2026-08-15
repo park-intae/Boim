@@ -46,3 +46,15 @@ export const useUpdateProfile = () => {
     },
   });
 };
+
+export const useUpdatePassword = () => {
+  return useMutation({
+    mutationFn: async (data: import('@boim/shared-types').UpdatePasswordDto) => {
+      const response = await api.patch<ApiResponse<null>>('/users/me/password', data);
+      if (!response.data.success) {
+        throw new Error(response.data.error?.message || '비밀번호 변경에 실패했습니다');
+      }
+      return true;
+    },
+  });
+};
