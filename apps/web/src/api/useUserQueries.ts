@@ -2,15 +2,7 @@ import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import axios from 'axios';
 import type { UserDto, UpdateUserDto, ApiResponse } from '@boim/shared-types';
 
-// TODO: 환경변수 및 공통 axios 인스턴스 연동
-const api = axios.create({ baseURL: 'http://localhost:3000' });
-
-api.interceptors.response.use(
-  (response) => {
-    // 백엔드 BigInt 처리 (단순화: JSON.stringify 에서 처리되거나 서버에서 Number로 내려옴)
-    return response;
-  }
-);
+import { apiClient as api } from './client';
 
 export const userKeys = {
   all: ['users'] as const,
