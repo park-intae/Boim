@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateUserDto } from 'shared-types';
+import { UpdateUserDto } from '@boim/shared-types';
 
 @Injectable()
 export class UserService {

@@ -1,6 +1,6 @@
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { UserDto, UpdateUserDto, ApiResponse } from 'shared-types';
+import { UserDto, UpdateUserDto, ApiResponse } from '@boim/shared-types';
 
 // TODO: 환경변수 및 공통 axios 인스턴스 연동
 const api = axios.create({ baseURL: 'http://localhost:3000' });

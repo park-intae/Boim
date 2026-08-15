@@ -1,6 +1,6 @@
 import { Controller, Get, Patch, Body, Req } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDto } from 'shared-types';
+import { UpdateUserDto } from '@boim/shared-types';
 
 @Controller('users')
 export class UserController {
