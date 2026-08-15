@@ -7,7 +7,9 @@ export function Header() {
 
   return (
     <header className="relative h-[60px] flex-shrink-0 flex items-center justify-end px-4 lg:px-10 border-b border-transparent z-40">
-      <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[18px] lg:text-[20px] font-bold text-gray-900 tracking-tight">보험 일정</h2>
+      <h2 className="absolute left-1/2 lg:left-[calc(50%-190px)] top-1/2 -translate-x-1/2 -translate-y-1/2 text-[18px] lg:text-[20px] font-bold text-gray-900 tracking-tight">
+        보험 일정
+      </h2>
       
       {/* Right Icons (Mobile & PC) */}
       <div className="flex items-center gap-1.5 lg:gap-3">
