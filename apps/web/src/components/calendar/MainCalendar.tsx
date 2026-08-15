@@ -62,7 +62,7 @@ export function MainCalendar() {
         {/* 모바일 전용 추가 버튼 */}
         <button
           onClick={() => setPanelMode('form')}
-          className="sm:hidden flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm shrink-0"
+          className="sm:hidden flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-lg text-[13px] font-bold transition-all duration-200 shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4" />
           추가
@@ -72,7 +72,7 @@ export function MainCalendar() {
         {/* PC 전용 추가 버튼 */}
         <button
           onClick={() => setPanelMode('form')}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[13px] font-bold transition-all shadow-sm"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-lg text-[13px] font-bold transition-all duration-200 shadow-sm"
         >
           <Plus className="w-4 h-4" />
           추가
@@ -81,28 +81,28 @@ export function MainCalendar() {
           <button
             onClick={prevYear}
             title="이전 연도"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
           >
             <ChevronsLeft className="w-5 h-5" />
           </button>
           <button
             onClick={prevMonth}
             title="이전 달"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={nextMonth}
             title="다음 달"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
           <button
             onClick={nextYear}
             title="다음 연도"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm text-gray-500 hover:text-gray-900 transition-all"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
           >
             <ChevronsRight className="w-5 h-5" />
           </button>
@@ -183,7 +183,7 @@ export function MainCalendar() {
           <div
             key={day.toString()}
             onClick={() => onDateClick(cloneDay)}
-            className={`min-h-[120px] p-2 border-r border-b border-gray-100 transition-colors cursor-pointer group hover:bg-gray-50 flex flex-col gap-1.5
+            className={`min-h-[120px] p-2 border-r border-b border-gray-100 transition-colors duration-200 cursor-pointer group hover:bg-gray-50 active:bg-gray-100 flex flex-col gap-1.5
               ${!isCurrentMonth ? 'bg-gray-50/30' : 'bg-white'}
               ${i === 6 ? 'border-r-0' : ''}
             `}

@@ -70,9 +70,12 @@ export function RightPanel() {
     <>
       {/* Mobile Accordion Toggle Button (Visible only when closed on mobile) */}
       {!isMobileOpen && (
-        <div className="lg:hidden w-full bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.02)] p-4 flex justify-between items-center cursor-pointer active:bg-gray-50 rounded-t-2xl z-20 shrink-0" onClick={() => setIsMobileOpen(true)}>
+        <div 
+          className="lg:hidden w-full bg-white border-t border-gray-100 shadow-[0_-8px_20px_rgba(0,0,0,0.04)] p-4 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors rounded-t-3xl z-20 shrink-0 mt-auto" 
+          onClick={() => setIsMobileOpen(true)}
+        >
           <div className="flex items-center gap-2">
-            <span className="text-[15px] font-bold text-gray-900">
+            <span className="text-[15px] font-extrabold text-gray-900">
               {panelMode === 'form' ? '새 보험 등록' : panelMode === 'settings' ? '설정 보기' : `${format(selectedDate, 'M월 d일')} 일정 보기`}
             </span>
             {dayEvents.length > 0 && panelMode === 'view' && (
@@ -85,14 +88,31 @@ export function RightPanel() {
         </div>
       )}
 
-      {/* Main Panel Content (Hidden on mobile if not open) */}
-      <aside className={`w-full lg:w-[380px] flex-shrink-0 px-4 lg:px-0 lg:pr-10 pb-6 lg:pb-12 flex-col h-[70vh] lg:h-full mt-2 lg:mt-0 z-30 transition-all duration-300 ${isMobileOpen ? 'flex' : 'hidden lg:flex'}`}>
-        <div className="w-full h-full bg-white border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.05)] rounded-3xl flex flex-col overflow-hidden relative">
+      {/* Dimmed Background Overlay for Mobile Bottom Sheet */}
+      <div 
+        className={`lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsMobileOpen(false)}
+      />
+
+      {/* Main Panel Content (Slide-up Bottom Sheet on Mobile, Static Aside on PC) */}
+      <aside className={`
+        fixed inset-x-0 bottom-0 z-50 h-[85vh] flex flex-col bg-white rounded-t-[32px] shadow-[0_-12px_40px_rgba(0,0,0,0.12)]
+        transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+        ${isMobileOpen ? 'translate-y-0' : 'translate-y-full'}
+        
+        lg:relative lg:inset-auto lg:transform-none lg:h-full lg:shadow-none lg:rounded-none lg:bg-transparent lg:w-[380px] lg:flex-shrink-0 lg:px-0 lg:pr-10 lg:pb-12 lg:z-30 lg:mt-0 lg:transition-none lg:translate-y-0
+      `}>
+        {/* Handle for mobile sheet (visual only) */}
+        <div className="lg:hidden w-full flex justify-center pt-3 pb-2 shrink-0">
+          <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
+        </div>
+
+        <div className="w-full h-full lg:bg-white lg:border lg:border-gray-100 lg:shadow-[0_2px_12px_rgba(0,0,0,0.05)] lg:rounded-3xl flex flex-col overflow-hidden relative">
         
         {/* 1. Header */}
-        <div className="px-7 pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0">
+        <div className="px-6 lg:px-7 pt-4 lg:pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0">
           <div className="flex items-center gap-3">
-            <h2 className="text-[22px] font-extrabold text-gray-900 tracking-tight">
+            <h2 className="text-[20px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight">
               {panelMode === 'form' ? '보험 등록' : panelMode === 'settings' ? '설정' : format(selectedDate, 'M월 d일')}
             </h2>
             {isToday && panelMode === 'view' && (
@@ -105,7 +125,7 @@ export function RightPanel() {
             {panelMode === 'form' && (
               <button 
                 onClick={() => setPanelMode('view')}
-                className="text-[13px] font-bold text-gray-400 hover:text-gray-900 transition-colors"
+                className="text-[13px] font-bold text-gray-400 hover:text-gray-900 active:scale-95 transition-all"
               >
                 취소
               </button>
@@ -113,7 +133,7 @@ export function RightPanel() {
             {/* Mobile Close Button */}
             <button 
               onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 rounded-full transition-colors"
+              className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-all"
             >
               <X className="w-5 h-5" />
             </button>

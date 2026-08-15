@@ -36,7 +36,7 @@ export function HomePage() {
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 cursor-pointer flex flex-col gap-2 lg:gap-4 justify-between">
+            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 active:shadow-sm cursor-pointer flex flex-col gap-2 lg:gap-4 justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[12px] lg:text-[14px] font-semibold text-gray-500">{card.title}</span>
                 <div className={`w-7 h-7 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0 ${card.bg}`}>
