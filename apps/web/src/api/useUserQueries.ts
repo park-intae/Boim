@@ -98,3 +98,33 @@ export const useUpdateNotificationSettings = () => {
     },
   });
 };
+
+export const useExportData = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.get<ApiResponse<any>>('/users/me/export');
+      if (!data.success) throw new Error(data.error?.message || 'Export failed');
+      return data.data;
+    },
+  });
+};
+
+export const useImportData = () => {
+  return useMutation({
+    mutationFn: async (importData: any) => {
+      const { data } = await api.post<ApiResponse<null>>('/users/me/import', importData);
+      if (!data.success) throw new Error(data.error?.message || 'Import failed');
+      return true;
+    },
+  });
+};
+
+export const useDeleteAccount = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.delete<ApiResponse<null>>('/users/me');
+      if (!data.success) throw new Error(data.error?.message || 'Delete account failed');
+      return true;
+    },
+  });
+};

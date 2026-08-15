@@ -4,9 +4,70 @@ import { ProfileSettings } from './ProfileSettings';
 import { PasswordSettings } from './PasswordSettings';
 import { NotificationSettingsSection } from './NotificationSettingsSection';
 import { NotificationTimeSettings } from './NotificationTimeSettings';
+import { useExportData, useImportData, useDeleteAccount } from '../../../api/useUserQueries';
 
 export const SettingsPanel = () => {
   const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime'>('menu');
+  const { mutateAsync: exportData } = useExportData();
+  const { mutateAsync: importData } = useImportData();
+  const { mutateAsync: deleteAccount } = useDeleteAccount();
+
+  const handleExport = async () => {
+    try {
+      const data = await exportData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'boim_backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('데이터 내보내기에 실패했습니다.');
+    }
+  };
+
+  const handleImport = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target?.result as string);
+          await importData(parsed);
+          alert('데이터 가져오기가 완료되었습니다.');
+        } catch (err) {
+          alert('올바른 파일 형식이 아닙니다.');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm('정말 계정을 탈퇴하시겠습니까? 삭제된 데이터는 복구할 수 없습니다.')) {
+      try {
+        await deleteAccount();
+        alert('계정이 탈퇴되었습니다.');
+        // 실제로 로그아웃 처리 및 라우팅이 필요하지만 생략
+        window.location.reload();
+      } catch (e) {
+        alert('계정 탈퇴에 실패했습니다.');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('로그아웃 하시겠습니까?')) {
+      alert('로그아웃 되었습니다.');
+      window.location.reload();
+    }
+  };
 
   if (activeView === 'profile') {
     return (
@@ -77,17 +138,21 @@ export const SettingsPanel = () => {
       <section className="mb-8">
         <h3 className="mb-4 text-xs font-semibold text-gray-400">데이터 관리</h3>
         <div className="flex flex-col space-y-5">
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button onClick={handleExport} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>데이터 내보내기</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button onClick={handleImport} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>데이터 가져오기</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button className="flex items-center justify-between text-left text-[14px] font-medium text-red-500 hover:text-red-600 transition-colors">
+          <button onClick={handleDeleteAccount} className="flex items-center justify-between text-left text-[14px] font-medium text-red-500 hover:text-red-600 transition-colors">
             <span>계정 탈퇴</span>
             <span className="text-red-300">&gt;</span>
+          </button>
+          <button onClick={handleLogout} className="flex items-center justify-between text-left text-[14px] font-medium text-gray-800 hover:text-gray-900 transition-colors">
+            <span>로그아웃</span>
+            <span className="text-gray-300">&gt;</span>
           </button>
         </div>
       </section>

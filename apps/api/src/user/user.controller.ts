@@ -71,4 +71,31 @@ export class UserController {
       },
     };
   }
+
+  @Get('me/export')
+  async exportData() {
+    const userId = 1n; // 임시 하드코딩
+    const data = await this.userService.exportData(userId);
+    return {
+      success: true,
+      data: {
+        ...data,
+        id: Number(data?.id),
+      },
+    };
+  }
+
+  @Post('me/import')
+  async importData(@Body() data: any) {
+    const userId = 1n;
+    await this.userService.importData(userId, data);
+    return { success: true, message: '데이터 가져오기가 완료되었습니다.' };
+  }
+
+  @Delete('me')
+  async deleteAccount() {
+    const userId = 1n;
+    await this.userService.softDeleteUser(userId);
+    return { success: true, message: '계정이 안전하게 탈퇴 처리되었습니다.' };
+  }
 }
