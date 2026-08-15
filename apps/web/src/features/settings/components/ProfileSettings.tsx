@@ -1,6 +1,6 @@
 import React, { useState, useTransition } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { useGetProfile, useUpdateProfile } from '../../api/useUserQueries';
+import { useGetProfile, useUpdateProfile } from '../../../api/useUserQueries';
 
 export const ProfileSettings = ({ onBack }: { onBack: () => void }) => {
   const { data: user } = useGetProfile();
