@@ -4,10 +4,11 @@ import { ProfileSettings } from './ProfileSettings';
 import { PasswordSettings } from './PasswordSettings';
 import { NotificationSettingsSection } from './NotificationSettingsSection';
 import { NotificationTimeSettings } from './NotificationTimeSettings';
+import { PolicyViewer } from './PolicyViewer';
 import { useExportData, useImportData, useDeleteAccount } from '../../../api/useUserQueries';
 
 export const SettingsPanel = () => {
-  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime' | 'terms' | 'privacy'>('menu');
   const { mutateAsync: exportData } = useExportData();
   const { mutateAsync: importData } = useImportData();
   const { mutateAsync: deleteAccount } = useDeleteAccount();
@@ -95,6 +96,22 @@ export const SettingsPanel = () => {
     );
   }
 
+  if (activeView === 'terms') {
+    return (
+      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+        <PolicyViewer type="terms" onBack={() => setActiveView('menu')} />
+      </div>
+    );
+  }
+
+  if (activeView === 'privacy') {
+    return (
+      <div className="flex-1 px-6 py-6 pb-20 flex flex-col h-full">
+        <PolicyViewer type="privacy" onBack={() => setActiveView('menu')} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto px-6 py-6 pb-20">
       {/* 1. 계정 설정 */}
@@ -163,11 +180,11 @@ export const SettingsPanel = () => {
       <section>
         <h3 className="mb-4 text-xs font-semibold text-gray-400">기타</h3>
         <div className="flex flex-col space-y-5">
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button onClick={() => setActiveView('terms')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>이용약관</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+          <button onClick={() => setActiveView('privacy')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>개인정보처리방침</span>
             <span className="text-gray-300">&gt;</span>
           </button>
