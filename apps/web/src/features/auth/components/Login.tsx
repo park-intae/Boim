@@ -54,9 +54,10 @@ export const Login: React.FC = () => {
         login({ id: 'user_id', email: data.email, isPassVerified: false }, response.data.accessToken);
         navigate('/dashboard', { replace: true });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login failed:', error);
-      alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      const errorMessage = error?.error?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.';
+      alert(errorMessage);
     }
   };
 

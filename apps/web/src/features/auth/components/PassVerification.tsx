@@ -28,7 +28,7 @@ export const PassVerification: React.FC<PassVerificationProps> = ({ onVerifySucc
         alert(res.message || '인증 요청 실패');
       }
     } catch (e: any) {
-      alert(e.message || '인증 요청 중 오류가 발생했습니다.');
+      alert(e?.error?.message || '인증 요청 중 오류가 발생했습니다.');
     } finally {
       setStatus('idle');
     }
@@ -49,7 +49,7 @@ export const PassVerification: React.FC<PassVerificationProps> = ({ onVerifySucc
         alert(res.message || '인증 실패');
       }
     } catch (e: any) {
-      alert(e.message || '인증 검증 중 오류가 발생했습니다.');
+      alert(e?.error?.message || '인증 검증 중 오류가 발생했습니다.');
     } finally {
       setStatus('idle');
     }

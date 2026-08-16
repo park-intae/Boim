@@ -41,7 +41,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
         setError(response.message || '비밀번호가 일치하지 않습니다.');
       }
     } catch (err: any) {
-      setError(err.message || '재인증 요청 중 오류가 발생했습니다.');
+      setError(err?.error?.message || '재인증 요청 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
