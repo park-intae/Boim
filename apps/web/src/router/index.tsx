@@ -1,6 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
+import { Login } from '../features/auth/components/Login';
+import { Onboarding } from '../features/auth/components/Onboarding';
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +17,10 @@ export const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <div className="p-4">로그인 페이지</div>,
+    element: <Login />,
+  },
+  {
+    path: '/onboarding',
+    element: <Onboarding onComplete={() => window.location.href = '/login'} />,
   }
 ]);
