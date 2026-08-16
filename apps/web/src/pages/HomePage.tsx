@@ -36,16 +36,16 @@ export function HomePage() {
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-6 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 active:shadow-sm cursor-pointer flex flex-col gap-2 lg:gap-4 justify-between">
-              <div className="flex items-center justify-between">
-                <span className="text-[12px] lg:text-[14px] font-semibold text-gray-500">{card.title}</span>
-                <div className={`w-7 h-7 lg:w-10 lg:h-10 rounded-full flex items-center justify-center shrink-0 ${card.bg}`}>
-                  <Icon className={`w-3.5 h-3.5 lg:w-5 lg:h-5 ${card.color}`} strokeWidth={2.5} />
-                </div>
+            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 active:shadow-sm cursor-pointer flex flex-col gap-3 lg:gap-4">
+              <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center shrink-0 ${card.bg}`}>
+                <Icon className={`w-4 h-4 ${card.color}`} strokeWidth={2.5} />
               </div>
-              <div className="flex items-baseline gap-1 mt-1 lg:mt-0">
-                <span className="text-[18px] lg:text-[28px] font-extrabold text-gray-900 tracking-tight line-clamp-1 break-all">{card.value}</span>
-                <span className="text-[12px] lg:text-[15px] font-bold text-gray-400 shrink-0">{card.unit}</span>
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] lg:text-[12px] font-bold text-gray-500">{card.title}</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[18px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight truncate">{card.value}</span>
+                  <span className="text-[11px] lg:text-[13px] font-bold text-gray-400 shrink-0">{card.unit}</span>
+                </div>
               </div>
             </div>
           );
