@@ -1,10 +1,20 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('login')
+  async login(
+    @Body('email') email: string, 
+    @Body('password') password?: string, 
+    @Body('rememberMe') rememberMe?: boolean
+  ) {
+    return this.authService.login(email, password, rememberMe);
+  }
 
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
@@ -14,14 +24,13 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(@Req() req, @Res() res) {
-    // req.user는 KakaoStrategy의 validate에서 반환한 유저 객체입니다.
+  async kakaoAuthCallback(@Req() req: Request, @Res() res: Response) {
+    const user = req.user as any;
     const tokens = this.authService.generateTokens({ 
-      id: req.user.providerId, 
-      email: req.user.email || ''
+      id: user.providerId, 
+      email: user.email || ''
     });
     
-    // JWT 토큰을 프론트엔드로 전달하며 리다이렉트 (실제 운영 시 Cookie 전달 등 보안 고려)
     res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);
   }
 
@@ -33,10 +42,11 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(@Req() req, @Res() res) {
+  async naverAuthCallback(@Req() req: Request, @Res() res: Response) {
+    const user = req.user as any;
     const tokens = this.authService.generateTokens({ 
-      id: req.user.providerId, 
-      email: req.user.email || ''
+      id: user.providerId, 
+      email: user.email || ''
     });
     
     res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);

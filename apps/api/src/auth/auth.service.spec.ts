@@ -40,4 +40,14 @@ describe('AuthService', () => {
       expect(tokens.accessToken).toBe('mockToken_test-user-id');
     });
   });
+
+  describe('login', () => {
+    it('should generate tokens and return success response', async () => {
+      const result = await service.login('test@test.com', 'password', true);
+      expect(result.success).toBe(true);
+      expect(result.data).toHaveProperty('accessToken');
+      expect(result.data).toHaveProperty('refreshToken');
+      expect(result.data.accessToken).toBe('mockToken_mock_user_1');
+    });
+  });
 });

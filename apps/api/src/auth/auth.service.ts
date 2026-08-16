@@ -12,12 +12,30 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     // Refresh Token 로직 뼈대 
-    // TODO: Refresh Token의 경우 별도의 긴 만료기한을 주거나, Redis 등에 저장하여 관리해야 합니다.
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '60d' });
 
     return {
       accessToken,
       refreshToken,
+    };
+  }
+
+  async login(email: string, password?: string, rememberMe?: boolean) {
+    // 임시 모의 유저
+    const user = { id: 'mock_user_1', email };
+
+    const tokens = this.generateTokens(user);
+
+    if (rememberMe) {
+      // TODO: tokens.refreshToken을 DB의 user.refreshToken에 저장하여 기기 기억 구현
+    }
+
+    return {
+      success: true,
+      data: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
     };
   }
 }

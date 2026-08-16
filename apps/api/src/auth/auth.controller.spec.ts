@@ -17,6 +17,13 @@ describe('AuthController', () => {
               accessToken: 'mock_access_token',
               refreshToken: 'mock_refresh_token',
             }),
+            login: jest.fn().mockReturnValue({
+              success: true,
+              data: {
+                accessToken: 'mock_access_token',
+                refreshToken: 'mock_refresh_token',
+              },
+            }),
           },
         },
       ],
@@ -30,10 +37,18 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('login', () => {
+    it('should call authService.login and return result', async () => {
+      const result = await controller.login('test@test.com', 'password123', true);
+      expect(authService.login).toHaveBeenCalledWith('test@test.com', 'password123', true);
+      expect(result.data.accessToken).toBe('mock_access_token');
+    });
+  });
+
   describe('kakaoAuthCallback', () => {
     it('should generate token and redirect to frontend', async () => {
-      const req = { user: { providerId: 'kakao123', email: 'test@kakao.com' } };
-      const res = { redirect: jest.fn() };
+      const req = { user: { providerId: 'kakao123', email: 'test@kakao.com' } } as any;
+      const res = { redirect: jest.fn() } as any;
 
       await controller.kakaoAuthCallback(req, res);
 
@@ -44,8 +59,8 @@ describe('AuthController', () => {
 
   describe('naverAuthCallback', () => {
     it('should generate token and redirect to frontend', async () => {
-      const req = { user: { providerId: 'naver456', email: 'test@naver.com' } };
-      const res = { redirect: jest.fn() };
+      const req = { user: { providerId: 'naver456', email: 'test@naver.com' } } as any;
+      const res = { redirect: jest.fn() } as any;
 
       await controller.naverAuthCallback(req, res);
 
