@@ -47,8 +47,8 @@ describe('AuthController', () => {
 
   describe('kakaoAuthCallback', () => {
     it('should generate token and redirect to frontend', async () => {
-      const req = { user: { providerId: 'kakao123', email: 'test@kakao.com' } } as any;
-      const res = { redirect: jest.fn() } as any;
+      const req = { user: { providerId: 'kakao123', email: 'test@kakao.com' } } as unknown as import('./auth.controller').RequestWithOAuthUser;
+      const res = { redirect: jest.fn() } as unknown as import('express').Response;
 
       await controller.kakaoAuthCallback(req, res);
 
@@ -59,8 +59,8 @@ describe('AuthController', () => {
 
   describe('naverAuthCallback', () => {
     it('should generate token and redirect to frontend', async () => {
-      const req = { user: { providerId: 'naver456', email: 'test@naver.com' } } as any;
-      const res = { redirect: jest.fn() } as any;
+      const req = { user: { providerId: 'naver456', email: 'test@naver.com' } } as unknown as import('./auth.controller').RequestWithOAuthUser;
+      const res = { redirect: jest.fn() } as unknown as import('express').Response;
 
       await controller.naverAuthCallback(req, res);
 

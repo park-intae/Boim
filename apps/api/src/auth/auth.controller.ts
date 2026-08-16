@@ -3,6 +3,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 
+export interface OAuthUser {
+  providerId: string;
+  email?: string;
+}
+
+export interface RequestWithOAuthUser extends Request {
+  user: OAuthUser;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -24,8 +33,8 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(@Req() req: Request, @Res() res: Response) {
-    const user = req.user as any;
+  async kakaoAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
+    const user = req.user;
     const tokens = this.authService.generateTokens({ 
       id: user.providerId, 
       email: user.email || ''
@@ -42,8 +51,8 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(@Req() req: Request, @Res() res: Response) {
-    const user = req.user as any;
+  async naverAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
+    const user = req.user;
     const tokens = this.authService.generateTokens({ 
       id: user.providerId, 
       email: user.email || ''
