@@ -12,9 +12,24 @@ export interface RequestWithOAuthUser extends Request {
   user: OAuthUser;
 }
 
+export interface JwtUser {
+  userId: string;
+  email?: string;
+}
+
+export interface RequestWithJwtUser extends Request {
+  user: JwtUser;
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('reauth')
+  @UseGuards(AuthGuard('jwt'))
+  async reauthenticate(@Req() req: RequestWithJwtUser, @Body('password') password?: string) {
+    return this.authService.reauthenticate(req.user.userId, password);
+  }
 
   @Post('login')
   async login(

@@ -24,6 +24,10 @@ describe('AuthController', () => {
                 refreshToken: 'mock_refresh_token',
               },
             }),
+            reauthenticate: jest.fn().mockResolvedValue({
+              success: true,
+              message: '재인증에 성공했습니다.',
+            }),
           },
         },
       ],
@@ -42,6 +46,15 @@ describe('AuthController', () => {
       const result = await controller.login('test@test.com', 'password123', true);
       expect(authService.login).toHaveBeenCalledWith('test@test.com', 'password123', true);
       expect(result.data.accessToken).toBe('mock_access_token');
+    });
+  });
+
+  describe('reauthenticate', () => {
+    it('should call authService.reauthenticate and return result', async () => {
+      const req = { user: { userId: 'user123', email: 'test@test.com' } } as unknown as import('./auth.controller').RequestWithJwtUser;
+      const result = await controller.reauthenticate(req, 'mypassword');
+      expect(authService.reauthenticate).toHaveBeenCalledWith('user123', 'mypassword');
+      expect(result.success).toBe(true);
     });
   });
 

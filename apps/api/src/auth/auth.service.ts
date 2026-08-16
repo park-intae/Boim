@@ -38,4 +38,14 @@ export class AuthService {
       },
     };
   }
+
+  async reauthenticate(userId: string, password?: string) {
+    // 임시 모의 로직 (실제로는 DB에서 userId로 유저를 찾아 비밀번호를 검증)
+    if (password === 'wrong') {
+      return { success: false, message: '비밀번호가 일치하지 않습니다.' };
+    }
+    
+    // 소셜 로그인 등 비밀번호가 없는 유저의 경우 추가적인 검증 로직이 들어갈 수 있음
+    return { success: true, message: '재인증에 성공했습니다.' };
+  }
 }

@@ -50,4 +50,18 @@ describe('AuthService', () => {
       expect(result.data.accessToken).toBe('mockToken_mock_user_1');
     });
   });
+
+  describe('reauthenticate', () => {
+    it('should return success if password is correct', async () => {
+      const result = await service.reauthenticate('user123', 'correct_password');
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('재인증에 성공했습니다.');
+    });
+
+    it('should return failure if password is wrong', async () => {
+      const result = await service.reauthenticate('user123', 'wrong');
+      expect(result.success).toBe(false);
+      expect(result.message).toBe('비밀번호가 일치하지 않습니다.');
+    });
+  });
 });
