@@ -6,6 +6,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { KakaoStrategy } from './kakao.strategy';
 import { NaverStrategy } from './naver.strategy';
+import { PassController } from './pass.controller';
+import { PassService } from './pass.service';
 
 @Module({
   imports: [
@@ -17,8 +19,8 @@ import { NaverStrategy } from './naver.strategy';
       signOptions: { expiresIn: '30d' },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, KakaoStrategy, NaverStrategy],
+  controllers: [AuthController, PassController],
+  providers: [AuthService, JwtStrategy, KakaoStrategy, NaverStrategy, PassService],
   exports: [AuthService],
 })
 export class AuthModule {}
