@@ -3,6 +3,7 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
 import { Login } from '../features/auth/components/Login';
 import { Onboarding } from '../features/auth/components/Onboarding';
+import { PassVerification } from '../features/auth/components/PassVerification';
 
 export const router = createBrowserRouter([
   {
@@ -22,5 +23,9 @@ export const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: <Onboarding onComplete={() => window.location.href = '/login'} />,
+  },
+  {
+    path: '/pass-verify',
+    element: <PassVerification onVerifySuccess={() => window.location.href = '/'} />,
   }
 ]);
