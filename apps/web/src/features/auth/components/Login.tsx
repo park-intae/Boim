@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ShieldCheck, Mail, Lock } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
+import { apiClient } from '../../../api/client';
 
 const loginSchema = z.object({
   email: z.string().email({ message: '올바른 이메일 형식을 입력해주세요.' }),
@@ -13,6 +16,11 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const login = useAuthStore((state) => state.login);
+  const setRememberMe = useAuthStore((state) => state.setRememberMe);
+
   const {
     register,
     handleSubmit,
@@ -26,15 +34,35 @@ export const Login: React.FC = () => {
     },
   });
 
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      // 소셜 로그인 후 리다이렉트 된 경우
+      // TODO: 백엔드에서 user 정보를 받아오는 API(예: /users/me) 호출 필요, 일단 임시 유저 사용
+      login({ id: 'social_user', email: 'social@example.com', isPassVerified: false }, token);
+      navigate('/dashboard', { replace: true });
+    }
+  }, [searchParams, login, navigate]);
+
   const onSubmit = async (data: LoginFormValues) => {
-    // API 연동 전 콘솔 로그 테스트
-    console.log('Login Data:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 모의 로딩
+    try {
+      setRememberMe(!!data.rememberMe);
+      const response = await apiClient.post('/auth/login', data);
+      
+      if (response.success && response.data?.accessToken) {
+        // 임시로 이메일 정보를 유저 객체에 넣음
+        login({ id: 'user_id', email: data.email, isPassVerified: false }, response.data.accessToken);
+        navigate('/dashboard', { replace: true });
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Social Login with ${provider}`);
-    // 소셜 로그인 처리 로직 연동 예정
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+    window.location.href = `${baseUrl}/auth/${provider}`;
   };
 
   return (
