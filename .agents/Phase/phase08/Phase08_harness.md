@@ -13,7 +13,7 @@
 - [x] 최초 가입 시 PASS 휴대폰 본인인증 UI 및 흐름 구현
 - [x] 온보딩 및 로그인 페이지 라우팅 설정
 - [x] 민감 정보 접근 시 띄울 재인증 UI 모달/페이지 구현
-- [ ] 인증 상태 관리(기기 기억 상태 포함)를 위한 Zustand/Context API 스토어 구성
+- [x] 인증 상태 관리(기기 기억 상태 포함)를 위한 Zustand/Context API 스토어 구성
 
 ## 2. 백엔드 (Backend) - 인증 API 구현
 - [ ] NestJS AuthModule 기반 JWT 인증 세팅 (토큰 유효기간 30일 적용 및 Refresh 로직)
