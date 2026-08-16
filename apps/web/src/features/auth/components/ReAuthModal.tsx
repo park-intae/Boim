@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, X, AlertTriangle } from 'lucide-react';
+import { apiClient } from '../../../api/client';
 
 interface ReAuthModalProps {
   isOpen: boolean;
@@ -30,18 +31,20 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
     setIsLoading(true);
     setError('');
 
-    // TODO: 백엔드 재인증 API 연동 예정
-    // 현재는 간이 테스트용 모의 구현
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    
-    if (password === 'password') { // 테스트용 임시 비밀번호
-      onSuccess();
-      setPassword('');
-    } else {
-      setError('비밀번호가 일치하지 않습니다. (테스트용: password)');
+    try {
+      const response = await apiClient.post<{ success: boolean; message?: string }>('/auth/reauth', { password });
+      
+      if (response.success) {
+        onSuccess();
+        setPassword('');
+      } else {
+        setError(response.message || '비밀번호가 일치하지 않습니다.');
+      }
+    } catch (err: any) {
+      setError(err.message || '재인증 요청 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
