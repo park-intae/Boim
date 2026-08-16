@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   generateTokens(user: { id: string; email: string }) {
     const payload = { sub: user.id, email: user.email };
@@ -21,13 +26,28 @@ export class AuthService {
   }
 
   async login(email: string, password?: string, rememberMe?: boolean) {
-    // 임시 모의 유저
-    const user = { id: 'mock_user_1', email };
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
+    }
+    
+    if (user.password && password) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new UnauthorizedException('이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+    } else if (!user.password && password) {
+      throw new UnauthorizedException('비밀번호가 설정되지 않은 계정입니다. 소셜 로그인을 이용해주세요.');
+    }
 
-    const tokens = this.generateTokens(user);
+    const payloadUser = { id: user.id.toString(), email: user.email! };
+    const tokens = this.generateTokens(payloadUser);
 
     if (rememberMe) {
-      // TODO: tokens.refreshToken을 DB의 user.refreshToken에 저장하여 기기 기억 구현
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken: tokens.refreshToken },
+      });
     }
 
     return {
@@ -40,12 +60,20 @@ export class AuthService {
   }
 
   async reauthenticate(userId: string, password?: string) {
-    // 임시 모의 로직 (실제로는 DB에서 userId로 유저를 찾아 비밀번호를 검증)
-    if (password === 'wrong') {
-      return { success: false, message: '비밀번호가 일치하지 않습니다.' };
+    const user = await this.prisma.user.findUnique({ where: { id: BigInt(userId) } });
+    if (!user) {
+      return { success: false, message: '사용자를 찾을 수 없습니다.' };
+    }
+
+    if (user.password && password) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return { success: false, message: '비밀번호가 일치하지 않습니다.' };
+      }
+    } else {
+      return { success: false, message: '비밀번호 검증을 할 수 없는 계정입니다.' };
     }
     
-    // 소셜 로그인 등 비밀번호가 없는 유저의 경우 추가적인 검증 로직이 들어갈 수 있음
     return { success: true, message: '재인증에 성공했습니다.' };
   }
 }

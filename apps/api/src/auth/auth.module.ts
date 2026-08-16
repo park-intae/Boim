@@ -8,9 +8,11 @@ import { KakaoStrategy } from './kakao.strategy';
 import { NaverStrategy } from './naver.strategy';
 import { PassController } from './pass.controller';
 import { PassService } from './pass.service';
+import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     PassportModule,
     JwtModule.register({
       // TODO: 환경변수(ConfigService) 연동
