@@ -17,7 +17,7 @@
 
 ## 2. 백엔드 (Backend) - 인증 API 구현
 - [x] NestJS AuthModule 기반 JWT 인증 세팅 (토큰 유효기간 30일 적용 및 Refresh 로직)
-- [ ] 소셜 로그인(OAuth) 연동 전략(Strategy) 및 콜백 API 구현
+- [x] 소셜 로그인(OAuth) 연동 전략(Strategy) 및 콜백 API 구현
 - [ ] PASS 휴대폰 본인인증 간이 구현 (터미널 기반 테스트 및 Mock 우회 기능)
 - [ ] 사용자 엔티티/스키마(소셜 식별자, PASS 인증 정보, 로그인 기기 식별자 등) 구성
 - [ ] 로그인(기기 기억 여부 연동) 및 토큰 발급 API 엔드포인트 개발
