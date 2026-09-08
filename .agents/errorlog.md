@@ -43,4 +43,13 @@
   2. 데코레이터에서 참조하는 타입은 반드시 **`import type`**으로 가져올 것(기존 3번 규칙 재상기).
   3. **기능 구현과 테스트 코드는 반드시 한 호흡으로 작성하여 단일 커밋**으로 묶을 것 (하네스 원칙 절대 준수).
 
+## 8. Node 25 환경 Vitest localStorage 미초기화 및 JSDOM 폼 서브밋 이벤트 미트리거 오류
+- **발생 상황:** Node.js 25 환경에서 프론트엔드 단위 테스트(`Login.spec.tsx`) 수행 중.
+- **오류 내용:**
+  1. Node 25의 기본 내장 `localStorage`가 JSDOM 환경의 스토리지와 충돌하여 Zustand persist 미들웨어에서 `TypeError: storage.setItem is not a function` 발생.
+  2. JSDOM 환경에서 `<button type="submit">`에 `fireEvent.click`을 가할 때 실제 브라우저와 달리 폼의 `submit` 이벤트가 자동으로 연쇄 발화하지 않아 폼 제출 핸들러가 미호출됨.
+- **해결 및 예방:**
+  1. `apps/web/src/test/setup.ts`에 완전한 인터페이스를 갖춘 In-Memory `storageMock`을 구성하여 `window` 및 `globalThis`에 주입함으로써 Node 버전과 무관한 안정적인 테스트 환경 구축.
+  2. 폼 제출 검증 시에는 JSDOM 합성 이벤트 특성을 고려하여 `fireEvent.submit(form)`을 명시적으로 호출하도록 테스트 코드 작성.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

@@ -38,13 +38,13 @@ describe('Login Component', () => {
     });
     
     render(<BrowserRouter><Login /></BrowserRouter>);
+    const emailInput = screen.getByPlaceholderText('example@boim.com') as HTMLInputElement;
+    fireEvent.change(emailInput, { target: { value: 'test@test.com' } });
+    const pwInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
+    fireEvent.change(pwInput, { target: { value: 'password123' } });
     
-    fireEvent.change(screen.getByPlaceholderText('example@boim.com'), { target: { value: 'test@test.com' } });
-    fireEvent.change(screen.getByPlaceholderText('••••••••'), { target: { value: 'password123' } });
-    
-    // Checkbox is unchecked by default
-    
-    fireEvent.click(screen.getByRole('button', { name: '로그인' }));
+    const submitBtn = screen.getByRole('button', { name: '로그인' });
+    fireEvent.submit(submitBtn.closest('form')!);
     
     await waitFor(() => {
       expect(apiClient.post).toHaveBeenCalledWith('/auth/login', {
