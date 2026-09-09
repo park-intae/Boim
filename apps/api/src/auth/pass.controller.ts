@@ -10,12 +10,16 @@ export class PassController {
     if (!phoneNumber) {
       return { success: false, message: '전화번호를 입력해주세요.' };
     }
-    const transactionId = await this.passService.requestMockVerification(phoneNumber);
+    const transactionId =
+      await this.passService.requestMockVerification(phoneNumber);
     return { success: true, data: { transactionId } };
   }
 
   @Post('verify')
-  async verifyCode(@Body('transactionId') transactionId: string, @Body('code') code: string) {
+  async verifyCode(
+    @Body('transactionId') transactionId: string,
+    @Body('code') code: string,
+  ) {
     const isValid = await this.passService.verifyMockCode(transactionId, code);
     if (isValid) {
       return { success: true, message: 'PASS 본인인증이 완료되었습니다.' };

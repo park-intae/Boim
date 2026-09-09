@@ -22,7 +22,13 @@ import { PrismaModule } from '../prisma/prisma.module';
     }),
   ],
   controllers: [AuthController, PassController],
-  providers: [AuthService, JwtStrategy, KakaoStrategy, NaverStrategy, PassService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    KakaoStrategy,
+    NaverStrategy,
+    PassService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

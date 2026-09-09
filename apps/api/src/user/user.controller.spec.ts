@@ -13,15 +13,25 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: {
-            getUserById: jest.fn().mockResolvedValue({ id: 1n, email: 'test@example.com' }),
-            updateUser: jest.fn().mockResolvedValue({ id: 1n, name: 'newName' }),
+            getUserById: jest
+              .fn()
+              .mockResolvedValue({ id: 1n, email: 'test@example.com' }),
+            updateUser: jest
+              .fn()
+              .mockResolvedValue({ id: 1n, name: 'newName' }),
             updatePassword: jest.fn().mockResolvedValue(true),
-            getNotificationSettings: jest.fn().mockResolvedValue({ id: 1n, userId: 1n }),
-            updateNotificationSettings: jest.fn().mockResolvedValue({ id: 1n, userId: 1n, marketingPush: true }),
+            getNotificationSettings: jest
+              .fn()
+              .mockResolvedValue({ id: 1n, userId: 1n }),
+            updateNotificationSettings: jest
+              .fn()
+              .mockResolvedValue({ id: 1n, userId: 1n, marketingPush: true }),
             exportData: jest.fn().mockResolvedValue({ id: 1n }),
             importData: jest.fn().mockResolvedValue(true),
             softDeleteUser: jest.fn().mockResolvedValue(true),
-            getLoginHistory: jest.fn().mockResolvedValue([{ id: 1n, userId: 1n }]),
+            getLoginHistory: jest
+              .fn()
+              .mockResolvedValue([{ id: 1n, userId: 1n }]),
           },
         },
       ],
@@ -48,7 +58,10 @@ describe('UserController', () => {
   });
 
   it('updatePassword should return success message', async () => {
-    const res = await controller.updatePassword({} as any, { oldPassword: 'old', newPassword: 'new' });
+    const res = await controller.updatePassword({} as any, {
+      oldPassword: 'old',
+      newPassword: 'new',
+    });
     expect(res.success).toBe(true);
   });
 
@@ -58,7 +71,9 @@ describe('UserController', () => {
   });
 
   it('updateNotificationSettings should return updated settings', async () => {
-    const res = await controller.updateNotificationSettings({} as any, { marketingPush: true });
+    const res = await controller.updateNotificationSettings({} as any, {
+      marketingPush: true,
+    });
     expect(res.success).toBe(true);
   });
 

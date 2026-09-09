@@ -50,7 +50,10 @@ describe('AuthService', () => {
       const mockUser = { id: 'test-user-id', email: 'test@example.com' };
       const tokens = service.generateTokens(mockUser);
 
-      expect(jwtService.sign).toHaveBeenCalledWith({ sub: mockUser.id, email: mockUser.email });
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: mockUser.id,
+        email: mockUser.email,
+      });
       expect(tokens).toHaveProperty('accessToken');
       expect(tokens).toHaveProperty('refreshToken');
       expect(tokens.accessToken).toBe('mockToken_test-user-id');
@@ -59,7 +62,11 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should generate tokens and return success response', async () => {
-      const mockUser = { id: BigInt(1), email: 'test@test.com', password: 'hashed_password' };
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@test.com',
+        password: 'hashed_password',
+      };
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (prismaService.user.update as jest.Mock).mockResolvedValue(mockUser);
@@ -71,13 +78,19 @@ describe('AuthService', () => {
 
     it('should throw exception if user not found', async () => {
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
-      await expect(service.login('test@test.com', 'password')).rejects.toThrow(UnauthorizedException);
+      await expect(service.login('test@test.com', 'password')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
   describe('reauthenticate', () => {
     it('should return success if password is correct', async () => {
-      const mockUser = { id: BigInt(1), email: 'test@test.com', password: 'hashed_password' };
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@test.com',
+        password: 'hashed_password',
+      };
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
@@ -87,7 +100,11 @@ describe('AuthService', () => {
     });
 
     it('should return failure if password is wrong', async () => {
-      const mockUser = { id: BigInt(1), email: 'test@test.com', password: 'hashed_password' };
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@test.com',
+        password: 'hashed_password',
+      };
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 

@@ -1,7 +1,19 @@
-import { Controller, Get, Patch, Post, Delete, Body, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Delete,
+  Body,
+  Req,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { UserService } from './user.service';
-import type { UpdateUserDto, UpdatePasswordDto, UpdateNotificationSettingsDto } from '@boim/shared-types';
+import type {
+  UpdateUserDto,
+  UpdatePasswordDto,
+  UpdateNotificationSettingsDto,
+} from '@boim/shared-types';
 
 @Controller('users')
 export class UserController {
@@ -22,7 +34,10 @@ export class UserController {
   }
 
   @Patch('me')
-  async updateProfile(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
+  async updateProfile(
+    @Req() req: Request,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     const userId = 1n; // 임시 하드코딩
     const user = await this.userService.updateUser(userId, updateUserDto);
     return {
@@ -35,9 +50,15 @@ export class UserController {
   }
 
   @Patch('me/password')
-  async updatePassword(@Req() req: Request, @Body() updatePasswordDto: import('@boim/shared-types').UpdatePasswordDto) {
+  async updatePassword(
+    @Req() req: Request,
+    @Body() updatePasswordDto: import('@boim/shared-types').UpdatePasswordDto,
+  ) {
     const userId = 1n; // 임시 하드코딩
-    await this.userService.updatePassword(userId, updatePasswordDto.newPassword);
+    await this.userService.updatePassword(
+      userId,
+      updatePasswordDto.newPassword,
+    );
     return {
       success: true,
       message: '비밀번호가 성공적으로 변경되었습니다.',
@@ -59,9 +80,15 @@ export class UserController {
   }
 
   @Patch('me/notifications/settings')
-  async updateNotificationSettings(@Req() req: Request, @Body() dto: import('@boim/shared-types').UpdateNotificationSettingsDto) {
+  async updateNotificationSettings(
+    @Req() req: Request,
+    @Body() dto: import('@boim/shared-types').UpdateNotificationSettingsDto,
+  ) {
     const userId = 1n;
-    const settings = await this.userService.updateNotificationSettings(userId, dto);
+    const settings = await this.userService.updateNotificationSettings(
+      userId,
+      dto,
+    );
     return {
       success: true,
       data: {
@@ -105,7 +132,7 @@ export class UserController {
     const history = await this.userService.getLoginHistory(userId);
     return {
       success: true,
-      data: history.map(h => ({
+      data: history.map((h) => ({
         ...h,
         id: Number(h.id),
         userId: Number(h.userId),

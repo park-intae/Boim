@@ -44,7 +44,10 @@ export class UserService {
     return settings;
   }
 
-  async updateNotificationSettings(userId: bigint, data: import('@boim/shared-types').UpdateNotificationSettingsDto) {
+  async updateNotificationSettings(
+    userId: bigint,
+    data: import('@boim/shared-types').UpdateNotificationSettingsDto,
+  ) {
     return this.prisma.userNotificationSettings.upsert({
       where: { userId },
       update: data,
@@ -57,7 +60,10 @@ export class UserService {
 
   async exportData(userId: bigint) {
     // 실제로는 사용자의 모든 데이터(보험, 캘린더 등)를 쿼리해서 반환해야 함
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, include: { insuranceProducts: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { insuranceProducts: true },
+    });
     return user;
   }
 
@@ -75,12 +81,26 @@ export class UserService {
 
   async getLoginHistory(userId: bigint) {
     // 임시 모의 데이터 삽입 (테스트용)
-    const count = await this.prisma.userLoginHistory.count({ where: { userId } });
+    const count = await this.prisma.userLoginHistory.count({
+      where: { userId },
+    });
     if (count === 0) {
       await this.prisma.userLoginHistory.createMany({
         data: [
-          { userId, device: 'iPhone 14 Pro', ipAddress: '192.168.0.1', location: '서울, 대한민국', loginAt: new Date() },
-          { userId, device: 'MacBook Pro 16"', ipAddress: '110.12.34.56', location: '서울, 대한민국', loginAt: new Date(Date.now() - 86400000) },
+          {
+            userId,
+            device: 'iPhone 14 Pro',
+            ipAddress: '192.168.0.1',
+            location: '서울, 대한민국',
+            loginAt: new Date(),
+          },
+          {
+            userId,
+            device: 'MacBook Pro 16"',
+            ipAddress: '110.12.34.56',
+            location: '서울, 대한민국',
+            loginAt: new Date(Date.now() - 86400000),
+          },
         ],
       });
     }

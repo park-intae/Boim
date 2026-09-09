@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
@@ -27,15 +35,18 @@ export class AuthController {
 
   @Post('reauth')
   @UseGuards(AuthGuard('jwt'))
-  async reauthenticate(@Req() req: RequestWithJwtUser, @Body('password') password?: string) {
+  async reauthenticate(
+    @Req() req: RequestWithJwtUser,
+    @Body('password') password?: string,
+  ) {
     return this.authService.reauthenticate(req.user.userId, password);
   }
 
   @Post('login')
   async login(
-    @Body('email') email: string, 
-    @Body('password') password?: string, 
-    @Body('rememberMe') rememberMe?: boolean
+    @Body('email') email: string,
+    @Body('password') password?: string,
+    @Body('rememberMe') rememberMe?: boolean,
   ) {
     return this.authService.login(email, password, rememberMe);
   }
@@ -48,13 +59,16 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
+  async kakaoAuthCallback(
+    @Req() req: RequestWithOAuthUser,
+    @Res() res: Response,
+  ) {
     const user = req.user;
-    const tokens = this.authService.generateTokens({ 
-      id: user.providerId, 
-      email: user.email || ''
+    const tokens = this.authService.generateTokens({
+      id: user.providerId,
+      email: user.email || '',
     });
-    
+
     res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);
   }
 
@@ -66,13 +80,16 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
+  async naverAuthCallback(
+    @Req() req: RequestWithOAuthUser,
+    @Res() res: Response,
+  ) {
     const user = req.user;
-    const tokens = this.authService.generateTokens({ 
-      id: user.providerId, 
-      email: user.email || ''
+    const tokens = this.authService.generateTokens({
+      id: user.providerId,
+      email: user.email || '',
     });
-    
+
     res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);
   }
 }

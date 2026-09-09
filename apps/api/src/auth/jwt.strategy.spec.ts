@@ -26,7 +26,9 @@ describe('JwtStrategy', () => {
 
   it('should throw UnauthorizedException if sub is missing', async () => {
     const payload = { email: 'test@example.com' };
-    
-    await expect(strategy.validate(payload)).rejects.toThrow(UnauthorizedException);
+
+    await expect(strategy.validate(payload)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 });

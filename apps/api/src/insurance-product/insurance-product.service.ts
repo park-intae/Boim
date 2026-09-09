@@ -42,7 +42,9 @@ export class InsuranceProductService {
 
   async update(id: number, dto: UpdateInsuranceProductDto) {
     await this.findOne(id);
-    const data: import('@prisma/client').Prisma.InsuranceProductUpdateInput = { ...dto };
+    const data: import('@prisma/client').Prisma.InsuranceProductUpdateInput = {
+      ...dto,
+    };
     if (dto.startDate) data.startDate = new Date(dto.startDate);
     if (dto.maturityDate) data.maturityDate = new Date(dto.maturityDate);
 

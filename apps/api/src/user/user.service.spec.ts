@@ -43,20 +43,26 @@ describe('UserService', () => {
   });
 
   it('getUserById should return user', async () => {
-    jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({ id: 1n, email: 'test@test.com' } as any);
+    jest
+      .spyOn(prisma.user, 'findUnique')
+      .mockResolvedValue({ id: 1n, email: 'test@test.com' } as any);
     const user = await service.getUserById(1n);
     expect(user).toEqual({ id: 1n, email: 'test@test.com' });
   });
 
   it('getUserById should create dummy user if not exists', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-    jest.spyOn(prisma.user, 'create').mockResolvedValue({ id: 1n, email: 'user@example.com' } as any);
+    jest
+      .spyOn(prisma.user, 'create')
+      .mockResolvedValue({ id: 1n, email: 'user@example.com' } as any);
     const user = await service.getUserById(1n);
     expect(user.email).toBe('user@example.com');
   });
 
   it('updateUser should call update', async () => {
-    jest.spyOn(prisma.user, 'update').mockResolvedValue({ id: 1n, name: 'newName' } as any);
+    jest
+      .spyOn(prisma.user, 'update')
+      .mockResolvedValue({ id: 1n, name: 'newName' } as any);
     const user = await service.updateUser(1n, { name: 'newName' });
     expect(user.name).toBe('newName');
   });
@@ -70,25 +76,37 @@ describe('UserService', () => {
   it('updatePassword should throw NotFoundException if user not exists', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
     jest.spyOn(prisma.user, 'create').mockResolvedValue(null);
-    await expect(service.updatePassword(1n, 'newPass')).rejects.toThrow(NotFoundException);
+    await expect(service.updatePassword(1n, 'newPass')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('getNotificationSettings should return settings', async () => {
-    jest.spyOn(prisma.userNotificationSettings, 'findUnique').mockResolvedValue({ userId: 1n } as any);
+    jest
+      .spyOn(prisma.userNotificationSettings, 'findUnique')
+      .mockResolvedValue({ userId: 1n } as any);
     const settings = await service.getNotificationSettings(1n);
     expect(settings).toEqual({ userId: 1n });
   });
 
   it('getNotificationSettings should create if not exists', async () => {
-    jest.spyOn(prisma.userNotificationSettings, 'findUnique').mockResolvedValue(null);
-    jest.spyOn(prisma.userNotificationSettings, 'create').mockResolvedValue({ userId: 1n } as any);
+    jest
+      .spyOn(prisma.userNotificationSettings, 'findUnique')
+      .mockResolvedValue(null);
+    jest
+      .spyOn(prisma.userNotificationSettings, 'create')
+      .mockResolvedValue({ userId: 1n } as any);
     const settings = await service.getNotificationSettings(1n);
     expect(settings.userId).toBe(1n);
   });
 
   it('updateNotificationSettings should call upsert', async () => {
-    jest.spyOn(prisma.userNotificationSettings, 'upsert').mockResolvedValue({ userId: 1n, marketingPush: true } as any);
-    const result = await service.updateNotificationSettings(1n, { marketingPush: true });
+    jest
+      .spyOn(prisma.userNotificationSettings, 'upsert')
+      .mockResolvedValue({ userId: 1n, marketingPush: true } as any);
+    const result = await service.updateNotificationSettings(1n, {
+      marketingPush: true,
+    });
     expect(result.marketingPush).toBe(true);
   });
 
@@ -104,22 +122,30 @@ describe('UserService', () => {
   });
 
   it('softDeleteUser should set deletedAt', async () => {
-    jest.spyOn(prisma.user, 'update').mockResolvedValue({ id: 1n, deletedAt: new Date() } as any);
+    jest
+      .spyOn(prisma.user, 'update')
+      .mockResolvedValue({ id: 1n, deletedAt: new Date() } as any);
     const user = await service.softDeleteUser(1n);
     expect(user.deletedAt).toBeDefined();
   });
 
   it('getLoginHistory should return list', async () => {
     jest.spyOn(prisma.userLoginHistory, 'count').mockResolvedValue(1);
-    jest.spyOn(prisma.userLoginHistory, 'findMany').mockResolvedValue([{ id: 1n }] as any);
+    jest
+      .spyOn(prisma.userLoginHistory, 'findMany')
+      .mockResolvedValue([{ id: 1n }] as any);
     const history = await service.getLoginHistory(1n);
     expect(history.length).toBe(1);
   });
 
   it('getLoginHistory should create dummy if 0', async () => {
     jest.spyOn(prisma.userLoginHistory, 'count').mockResolvedValue(0);
-    jest.spyOn(prisma.userLoginHistory, 'createMany').mockResolvedValue({ count: 2 } as any);
-    jest.spyOn(prisma.userLoginHistory, 'findMany').mockResolvedValue([{ id: 1n }] as any);
+    jest
+      .spyOn(prisma.userLoginHistory, 'createMany')
+      .mockResolvedValue({ count: 2 });
+    jest
+      .spyOn(prisma.userLoginHistory, 'findMany')
+      .mockResolvedValue([{ id: 1n }] as any);
     const history = await service.getLoginHistory(1n);
     expect(history.length).toBe(1);
   });

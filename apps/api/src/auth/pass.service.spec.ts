@@ -18,7 +18,8 @@ describe('PassService', () => {
 
   describe('requestMockVerification', () => {
     it('should generate a transactionId and log auth code', async () => {
-      const transactionId = await service.requestMockVerification('01012345678');
+      const transactionId =
+        await service.requestMockVerification('01012345678');
       expect(transactionId).toContain('MOCK_TX_');
     });
   });
