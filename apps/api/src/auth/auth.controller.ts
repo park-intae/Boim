@@ -51,15 +51,31 @@ export class AuthController {
     return this.authService.login(email, password, rememberMe);
   }
 
+  @Post('logout')
+  async logout(@Req() req: Request) {
+    const authHeader = req.headers.authorization;
+    let userId: string | undefined;
+
+    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const payload = this.authService.verifyToken(token);
+      if (payload?.sub) {
+        userId = payload.sub;
+      }
+    }
+
+    return this.authService.logout(userId);
+  }
+
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuth() {
+  kakaoAuth() {
     // AuthGuard가 카카오 로그인 페이지로 리다이렉트합니다.
   }
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoAuthCallback(
+  kakaoAuthCallback(
     @Req() req: RequestWithOAuthUser,
     @Res() res: Response,
   ) {
@@ -74,13 +90,13 @@ export class AuthController {
 
   @Get('naver')
   @UseGuards(AuthGuard('naver'))
-  async naverAuth() {
+  naverAuth() {
     // AuthGuard가 네이버 로그인 페이지로 리다이렉트합니다.
   }
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverAuthCallback(
+  naverAuthCallback(
     @Req() req: RequestWithOAuthUser,
     @Res() res: Response,
   ) {

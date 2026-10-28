@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
@@ -19,8 +20,14 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: {
-            sign: jest.fn().mockImplementation((payload) => {
+            sign: jest.fn().mockImplementation((payload: { sub: string }) => {
               return `mockToken_${payload.sub}`;
+            }),
+            verify: jest.fn().mockImplementation((token: string) => {
+              if (token === 'valid_token') {
+                return { sub: '1', email: 'test@test.com' };
+              }
+              throw new Error('invalid token');
             }),
           },
         },
@@ -57,6 +64,39 @@ describe('AuthService', () => {
       expect(tokens).toHaveProperty('accessToken');
       expect(tokens).toHaveProperty('refreshToken');
       expect(tokens.accessToken).toBe('mockToken_test-user-id');
+    });
+  });
+
+  describe('verifyToken', () => {
+    it('should return payload if token is valid', () => {
+      const payload = service.verifyToken('valid_token');
+      expect(payload).toEqual({ sub: '1', email: 'test@test.com' });
+    });
+
+    it('should return null if token is invalid or throws', () => {
+      const payload = service.verifyToken('invalid_token');
+      expect(payload).toBeNull();
+    });
+  });
+
+  describe('logout', () => {
+    it('should clear refresh token in database if userId is provided', async () => {
+      (prismaService.user.update as jest.Mock).mockResolvedValue({ id: BigInt(1) });
+
+      const result = await service.logout('1');
+
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(1) },
+        data: { refreshToken: null },
+      });
+      expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+    });
+
+    it('should return success message even if userId is not provided', async () => {
+      const result = await service.logout();
+
+      expect(prismaService.user.update).not.toHaveBeenCalled();
+      expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
     });
   });
 

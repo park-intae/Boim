@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -28,6 +29,15 @@ describe('AuthController', () => {
               success: true,
               message: '재인증에 성공했습니다.',
             }),
+            verifyToken: jest.fn().mockImplementation((token: string) => {
+              if (token === 'mock_access_token') {
+                return { sub: 'user123', email: 'test@test.com' };
+              }
+              return null;
+            }),
+            logout: jest.fn().mockResolvedValue({
+              message: '성공적으로 로그아웃되었습니다.',
+            }),
           },
         },
       ],
@@ -57,6 +67,33 @@ describe('AuthController', () => {
     });
   });
 
+  describe('logout', () => {
+    it('should extract userId from Bearer token and call authService.logout', async () => {
+      const req = {
+        headers: {
+          authorization: 'Bearer mock_access_token',
+        },
+      } as unknown as import('express').Request;
+
+      const result = await controller.logout(req);
+
+      expect(authService.verifyToken).toHaveBeenCalledWith('mock_access_token');
+      expect(authService.logout).toHaveBeenCalledWith('user123');
+      expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+    });
+
+    it('should call authService.logout with undefined if no header is present', async () => {
+      const req = {
+        headers: {},
+      } as unknown as import('express').Request;
+
+      const result = await controller.logout(req);
+
+      expect(authService.logout).toHaveBeenCalledWith(undefined);
+      expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+    });
+  });
+
   describe('reauthenticate', () => {
     it('should call authService.reauthenticate and return result', async () => {
       const req = {
@@ -80,7 +117,7 @@ describe('AuthController', () => {
         redirect: jest.fn(),
       } as unknown as import('express').Response;
 
-      await controller.kakaoAuthCallback(req, res);
+      controller.kakaoAuthCallback(req, res);
 
       expect(authService.generateTokens).toHaveBeenCalledWith({
         id: 'kakao123',
@@ -101,7 +138,7 @@ describe('AuthController', () => {
         redirect: jest.fn(),
       } as unknown as import('express').Response;
 
-      await controller.naverAuthCallback(req, res);
+      controller.naverAuthCallback(req, res);
 
       expect(authService.generateTokens).toHaveBeenCalledWith({
         id: 'naver456',

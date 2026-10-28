@@ -25,6 +25,30 @@ export class AuthService {
     };
   }
 
+  verifyToken(token: string): { sub: string; email: string } | null {
+    try {
+      return this.jwtService.verify<{ sub: string; email: string }>(token);
+    } catch {
+      return null;
+    }
+  }
+
+  async logout(userId?: string) {
+    if (userId) {
+      try {
+        await this.prisma.user.update({
+          where: { id: BigInt(userId) },
+          data: { refreshToken: null },
+        });
+      } catch {
+        // 유저가 DB에 없거나 에러인 경우에도 로그아웃 자체는 정상 완료 처리
+      }
+    }
+    return {
+      message: '성공적으로 로그아웃되었습니다.',
+    };
+  }
+
   async login(email: string, password?: string, rememberMe?: boolean) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
