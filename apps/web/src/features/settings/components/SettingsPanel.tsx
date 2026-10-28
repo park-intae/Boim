@@ -1,5 +1,4 @@
-import React, { useState, Suspense } from 'react';
-import { useAppStore } from '../../../store/useAppStore';
+import { useState, Suspense } from 'react';
 import { ProfileSettings } from './ProfileSettings';
 import { PasswordSettings } from './PasswordSettings';
 import { NotificationSettingsSection } from './NotificationSettingsSection';
@@ -7,12 +6,14 @@ import { NotificationTimeSettings } from './NotificationTimeSettings';
 import { PolicyViewer } from './PolicyViewer';
 import { LoginHistorySettings } from './LoginHistorySettings';
 import { useExportData, useImportData, useDeleteAccount } from '../../../api/useUserQueries';
+import { useLogout } from '../../auth/hooks/useLogout';
 
 export const SettingsPanel = () => {
   const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime' | 'terms' | 'privacy' | 'loginHistory'>('menu');
   const { mutateAsync: exportData } = useExportData();
   const { mutateAsync: importData } = useImportData();
   const { mutateAsync: deleteAccount } = useDeleteAccount();
+  const { logout } = useLogout();
 
   const handleExport = async () => {
     try {
@@ -24,7 +25,7 @@ export const SettingsPanel = () => {
       a.download = 'boim_backup.json';
       a.click();
       URL.revokeObjectURL(url);
-    } catch (e) {
+    } catch {
       alert('데이터 내보내기에 실패했습니다.');
     }
   };
@@ -33,8 +34,9 @@ export const SettingsPanel = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
-    input.onchange = async (e: any) => {
-      const file = e.target.files?.[0];
+    input.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = async (ev) => {
@@ -42,7 +44,7 @@ export const SettingsPanel = () => {
           const parsed = JSON.parse(ev.target?.result as string);
           await importData(parsed);
           alert('데이터 가져오기가 완료되었습니다.');
-        } catch (err) {
+        } catch {
           alert('올바른 파일 형식이 아닙니다.');
         }
       };
@@ -56,18 +58,16 @@ export const SettingsPanel = () => {
       try {
         await deleteAccount();
         alert('계정이 탈퇴되었습니다.');
-        // 실제로 로그아웃 처리 및 라우팅이 필요하지만 생략
-        window.location.reload();
-      } catch (e) {
+        await logout();
+      } catch {
         alert('계정 탈퇴에 실패했습니다.');
       }
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
-      alert('로그아웃 되었습니다.');
-      window.location.reload();
+      await logout();
     }
   };
 
@@ -122,30 +122,23 @@ export const SettingsPanel = () => {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20">
-      {/* 1. 계정 설정 */}
+    <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full overflow-y-auto">
+      <h2 className="text-xl font-bold text-gray-900 mb-6">설정</h2>
+
+      {/* 1. 계정 및 보안 */}
       <div className="mb-8">
-        <h2 className="text-[14px] font-bold text-gray-900 mb-4 px-2">계정 설정</h2>
-        <div className="bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] flex flex-col gap-4">
-          <button 
-            onClick={() => setActiveView('profile')}
-            className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
-          >
-            <span>내 정보 관리</span>
+        <h3 className="mb-4 text-xs font-semibold text-gray-400">계정 및 보안</h3>
+        <div className="flex flex-col space-y-5">
+          <button onClick={() => setActiveView('profile')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+            <span>내 프로필 관리</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button 
-            onClick={() => setActiveView('password')}
-            className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
-          >
+          <button onClick={() => setActiveView('password')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>비밀번호 변경</span>
             <span className="text-gray-300">&gt;</span>
           </button>
-          <button 
-            onClick={() => setActiveView('loginHistory')}
-            className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors"
-          >
-            <span>로그인 기록</span>
+          <button onClick={() => setActiveView('loginHistory')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+            <span>로그인 기기 관리</span>
             <span className="text-gray-300">&gt;</span>
           </button>
         </div>
