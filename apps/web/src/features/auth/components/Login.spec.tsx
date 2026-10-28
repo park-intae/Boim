@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Login } from './Login';
 import { apiClient } from '../../../api/client';
-import { vi } from 'vitest';
 
 vi.mock('../../../api/client', () => ({
   apiClient: {

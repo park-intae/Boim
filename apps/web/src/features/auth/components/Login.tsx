@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ShieldCheck, Mail, Lock } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import type { ApiResponse } from '@boim/shared-types';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../../../api/client';
 
@@ -38,25 +39,28 @@ export const Login: React.FC = () => {
     const token = searchParams.get('token');
     if (token) {
       // 소셜 로그인 후 리다이렉트 된 경우
-      // TODO: 백엔드에서 user 정보를 받아오는 API(예: /users/me) 호출 필요, 일단 임시 유저 사용
+      // 임시 소셜 사용자 정보 세팅
       login({ id: 'social_user', email: 'social@example.com', isPassVerified: false }, token);
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [searchParams, login, navigate]);
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setRememberMe(!!data.rememberMe);
-      const response = await apiClient.post('/auth/login', data);
+      const response = (await apiClient.post(
+        '/auth/login',
+        data
+      )) as unknown as ApiResponse<{ accessToken: string; refreshToken?: string }>;
       
       if (response.success && response.data?.accessToken) {
-        // 임시로 이메일 정보를 유저 객체에 넣음
         login({ id: 'user_id', email: data.email, isPassVerified: false }, response.data.accessToken);
-        navigate('/dashboard', { replace: true });
+        navigate('/', { replace: true });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login failed:', error);
-      const errorMessage = error?.error?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.';
+      const apiError = error as { error?: { message?: string } } | undefined;
+      const errorMessage = apiError?.error?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.';
       alert(errorMessage);
     }
   };
@@ -106,64 +110,62 @@ export const Login: React.FC = () => {
             {errors.password && <p className="text-red-500 text-[11px] mt-1">{errors.password.message}</p>}
           </div>
 
-          <div className="flex items-center justify-between pt-1">
-            <label className="flex items-center space-x-2 cursor-pointer group">
+          <div className="flex items-center justify-between py-1">
+            <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 {...register('rememberMe')}
-                className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
               />
-              <span className="text-xs text-slate-600 group-hover:text-slate-800 transition-colors">
-                로그인 기기 기억
-              </span>
+              <span className="text-xs text-slate-600 font-medium">로그인 기기 기억하기</span>
             </label>
-            <a href="#" className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors">
-              비밀번호 찾기
-            </a>
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-semibold rounded-xl transition-all active:scale-[0.98]"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-sm transition-colors shadow-sm disabled:opacity-50"
           >
             {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-white text-slate-400">간편 로그인</span>
-            </div>
+        <div className="relative my-5">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-100"></div>
           </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleSocialLogin('kakao')}
-              className="w-full py-2.5 bg-[#FEE500] hover:bg-[#F4DC00] text-[#000000] text-sm font-semibold rounded-xl transition-all active:scale-[0.98]"
-            >
-              카카오
-            </button>
-            <button
-              onClick={() => handleSocialLogin('naver')}
-              className="w-full py-2.5 bg-[#03C75A] hover:bg-[#02B350] text-white text-sm font-semibold rounded-xl transition-all active:scale-[0.98]"
-            >
-              네이버
-            </button>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-slate-400">간편 로그인</span>
           </div>
         </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('kakao')}
+            className="flex items-center justify-center py-2 px-3 bg-[#FEE500] text-[#191919] font-medium rounded-xl text-xs hover:bg-[#FDD835] transition-colors"
+          >
+            카카오 로그인
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('naver')}
+            className="flex items-center justify-center py-2 px-3 bg-[#03C75A] text-white font-medium rounded-xl text-xs hover:bg-[#02b351] transition-colors"
+          >
+            네이버 로그인
+          </button>
+        </div>
+
+        <div className="mt-5 text-center">
+          <button
+            type="button"
+            onClick={() => navigate('/pass-verify')}
+            className="text-xs text-slate-500 hover:text-blue-600 font-medium"
+          >
+            처음이신가요? 본인인증으로 시작하기
+          </button>
+        </div>
       </div>
-      
-      <p className="text-xs text-slate-500 mt-6">
-        아직 계정이 없으신가요?{' '}
-        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium underline underline-offset-4">
-          회원가입
-        </a>
-      </p>
     </div>
   );
 };

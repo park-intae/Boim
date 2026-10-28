@@ -9,10 +9,10 @@
 - [x] 백엔드 빌드(`pnpm --filter api build`) 및 린트(`pnpm --filter api lint`) 검증 후 커밋
 
 ## 2. 프론트엔드 (Frontend) - 스토어 초기화 및 공통 로그아웃 처리
-- [ ] `useAuthStore`의 `logout` 액션 검증 및 로컬 스토리지(`boim-auth-storage`) 상태 초기화
-- [ ] API 호출(`POST /auth/logout`), TanStack Query 캐시 초기화(`queryClient.clear()`), 로그인 화면(`/login`) 이동을 포함한 공통 로그아웃 로직 작성
-- [ ] `Login.tsx`의 로그인 성공 후 라우트 이동 경로 정상화 (`/dashboard` -> `/`)
-- [ ] 프론트엔드 인증 스토어/유틸 단위 테스트 작성 및 통과 검증 후 커밋
+- [x] `useAuthStore`의 `logout` 액션 검증 및 로컬 스토리지(`boim-auth-storage`) 상태 초기화
+- [x] API 호출(`POST /auth/logout`), TanStack Query 캐시 초기화(`queryClient.clear()`), 로그인 화면(`/login`) 이동을 포함한 공통 로그아웃 로직 작성
+- [x] `Login.tsx`의 로그인 성공 후 라우트 이동 경로 정상화 (`/dashboard` -> `/`)
+- [x] 프론트엔드 인증 스토어/유틸 단위 테스트 작성 및 통과 검증 후 커밋
 
 ## 3. 프론트엔드 UI (Header & SettingsPanel) - 로그아웃 연동
 - [ ] `Header.tsx` 우측 상단 프로필 영역에 드롭다운 메뉴(내 정보, 설정, 로그아웃 버튼) UI 구현
