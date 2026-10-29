@@ -60,8 +60,8 @@ describe('SocialAccountsSettings Component', () => {
 
     // 로딩 완료 대기
     await waitFor(() => {
-      expect(screen.getByText('카카오 계정')).toBeInTheDocument();
-      expect(screen.getByText('네이버 계정')).toBeInTheDocument();
+      expect(screen.getByText('카카오')).toBeInTheDocument();
+      expect(screen.getByText('네이버')).toBeInTheDocument();
     });
 
     expect(screen.getByText('미연동')).toBeInTheDocument();
@@ -69,7 +69,7 @@ describe('SocialAccountsSettings Component', () => {
     expect(screen.getByText('test@naver.com')).toBeInTheDocument();
 
     // 카카오 간이 연동하기 클릭 (추후 공식 SDK 버튼 삽입 시 해당 버튼 클릭 테스트로 대체)
-    const linkBtn = screen.getByRole('button', { name: '간이 연동하기' });
+    const linkBtn = screen.getByRole('button', { name: '연동하기' });
     fireEvent.click(linkBtn);
 
     await waitFor(() => {
@@ -95,7 +95,7 @@ describe('SocialAccountsSettings Component', () => {
     });
 
     // 연동 해제 버튼 클릭 (실제 연동 해제 API 호출 시에도 동일한 액션 트리거)
-    const unlinkBtn = screen.getByRole('button', { name: '연동 해제' });
+    const unlinkBtn = screen.getByRole('button', { name: '해제' });
     fireEvent.click(unlinkBtn);
 
     await waitFor(() => {
