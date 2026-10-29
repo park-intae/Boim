@@ -18,6 +18,16 @@ describe('AuthController', () => {
               accessToken: 'mock_access_token',
               refreshToken: 'mock_refresh_token',
             }),
+            register: jest.fn().mockResolvedValue({
+              accessToken: 'mock_access_token',
+              refreshToken: 'mock_refresh_token',
+              user: {
+                id: '10',
+                email: 'new@boim.com',
+                name: '신규유저',
+                isPassVerified: false,
+              },
+            }),
             login: jest.fn().mockReturnValue({
               accessToken: 'mock_access_token',
               refreshToken: 'mock_refresh_token',
@@ -52,6 +62,15 @@ describe('AuthController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('register', () => {
+    it('should call authService.register and return result', async () => {
+      const result = await controller.register('new@boim.com', 'pw123', '신규유저');
+      expect(authService.register).toHaveBeenCalledWith('new@boim.com', 'pw123', '신규유저');
+      expect(result.accessToken).toBe('mock_access_token');
+      expect(result.user.name).toBe('신규유저');
+    });
   });
 
   describe('login', () => {

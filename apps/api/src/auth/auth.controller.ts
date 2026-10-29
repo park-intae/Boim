@@ -42,6 +42,15 @@ export class AuthController {
     return this.authService.reauthenticate(req.user.userId, password);
   }
 
+  @Post('register')
+  async register(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Body('name') name?: string,
+  ) {
+    return this.authService.register(email, password, name);
+  }
+
   @Post('login')
   async login(
     @Body('email') email: string,

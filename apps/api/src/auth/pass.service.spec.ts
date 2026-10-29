@@ -1,15 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
 import { PassService } from './pass.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('PassService', () => {
   let service: PassService;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PassService],
+      providers: [
+        PassService,
+        {
+          provide: PrismaService,
+          useValue: {
+            user: {
+              update: jest.fn().mockResolvedValue({ id: BigInt(1), isPassVerified: true }),
+            },
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<PassService>(PassService);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -25,19 +39,27 @@ describe('PassService', () => {
   });
 
   describe('verifyMockCode', () => {
-    it('should return true for bypass code 000000', async () => {
-      const isValid = await service.verifyMockCode('tx_123', '000000');
-      expect(isValid).toBe(true);
+    it('should return success message for bypass code 000000 and update user', async () => {
+      const result = await service.verifyMockCode('tx_123', '000000', '1');
+      expect(result).toEqual({ message: 'PASS 본인인증이 완료되었습니다.' });
+      expect(prismaService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: BigInt(1) },
+          data: expect.objectContaining({ isPassVerified: true }),
+        }),
+      );
     });
 
-    it('should return true for hardcoded code 123456', async () => {
-      const isValid = await service.verifyMockCode('tx_123', '123456');
-      expect(isValid).toBe(true);
+    it('should return success message for code 123456 without userId', async () => {
+      const result = await service.verifyMockCode('tx_123', '123456');
+      expect(result).toEqual({ message: 'PASS 본인인증이 완료되었습니다.' });
+      expect(prismaService.user.update).not.toHaveBeenCalled();
     });
 
-    it('should return false for invalid code', async () => {
-      const isValid = await service.verifyMockCode('tx_123', '999999');
-      expect(isValid).toBe(false);
+    it('should throw BadRequestException for invalid code', async () => {
+      await expect(service.verifyMockCode('tx_123', '999999')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });

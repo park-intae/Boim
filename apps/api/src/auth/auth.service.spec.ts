@@ -37,6 +37,7 @@ describe('AuthService', () => {
             user: {
               findUnique: jest.fn(),
               update: jest.fn(),
+              create: jest.fn(),
             },
           },
         },
@@ -97,6 +98,33 @@ describe('AuthService', () => {
 
       expect(prismaService.user.update).not.toHaveBeenCalled();
       expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+    });
+  });
+
+  describe('register', () => {
+    it('should create new user and return tokens with profile', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
+      (prismaService.user.create as jest.Mock).mockResolvedValue({
+        id: BigInt(10),
+        email: 'new@boim.com',
+        name: '신규유저',
+        isPassVerified: false,
+      });
+
+      const result = await service.register('new@boim.com', 'password123', '신규유저');
+      expect(result.accessToken).toBe('mockToken_10');
+      expect(result.user).toEqual({
+        id: '10',
+        email: 'new@boim.com',
+        name: '신규유저',
+        isPassVerified: false,
+      });
+      expect(prismaService.user.create).toHaveBeenCalled();
+    });
+
+    it('should throw ConflictException if email already exists', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue({ id: BigInt(1) });
+      await expect(service.register('existing@boim.com', 'pw')).rejects.toThrow();
     });
   });
 

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -31,6 +31,38 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  async register(email: string, password: string, name?: string) {
+    const existing = await this.prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      throw new ConflictException('이미 가입된 이메일입니다.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name: name || undefined,
+        provider: 'local',
+        isPassVerified: false,
+      },
+    });
+
+    const payloadUser = { id: user.id.toString(), email: user.email! };
+    const tokens = this.generateTokens(payloadUser);
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id.toString(),
+        email: user.email!,
+        name: user.name ?? undefined,
+        isPassVerified: user.isPassVerified,
+      },
+    };
   }
 
   async logout(userId?: string) {
