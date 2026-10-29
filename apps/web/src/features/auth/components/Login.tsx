@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ShieldCheck, Mail, Lock } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import type { ApiResponse } from '@boim/shared-types';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../../../api/client';
@@ -183,14 +183,22 @@ export const Login: React.FC = () => {
           </button>
         </div>
 
-        <div className="mt-5 text-center">
-          <button
-            type="button"
-            onClick={() => navigate('/pass-verify')}
-            className="text-xs text-slate-500 hover:text-blue-600 font-medium"
-          >
-            처음이신가요? 본인인증으로 시작하기
-          </button>
+        <div className="mt-5 text-center space-y-2">
+          <p className="text-xs text-slate-500">
+            아직 계정이 없으신가요?{' '}
+            <Link to="/signup" className="text-blue-600 font-semibold hover:underline">
+              회원가입
+            </Link>
+          </p>
+          <div>
+            <button
+              type="button"
+              onClick={() => navigate('/pass-verify')}
+              className="text-[11px] text-slate-400 hover:text-slate-600 underline"
+            >
+              간이 본인인증 테스트 바로가기
+            </button>
+          </div>
         </div>
       </div>
     </div>
