@@ -17,6 +17,8 @@
 ## 2. 프론트엔드 (Frontend) - 소셜 계정 연동 UI 구현
 - [x] `SocialAccountsSettings.tsx` 컴포넌트 구현
   - 카카오/네이버 계정 연동 상태 카드(로고, 연동 상태 뱃지, 간이 연동하기/해제 버튼)
+  - 380px 사이드 패널 맞춤형 반응형 레이아웃 (`min-w-0`, `shrink-0`, `truncate`, 여백 최적화)
+  - 텍스트 깨짐 방지를 위한 공식 벡터 SVG 아이콘(`KakaoLogo`, `NaverLogo`) 적용
   - 실제 상용 OAuth2 연동 컴포넌트 삽입 및 API 교체를 위한 상세 가이드 주석 삽입
   - TanStack/Fetch 기반 실시간 상태 조회 및 연동/해제 처리
 - [x] `SettingsPanel.tsx` 메뉴에 "소셜 계정 연동" 항목 추가 및 화면 전환 연동
