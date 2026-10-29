@@ -51,6 +51,20 @@ describe('AuthController', () => {
             logout: jest.fn().mockResolvedValue({
               message: '성공적으로 로그아웃되었습니다.',
             }),
+            getSocialLinkStatus: jest.fn().mockResolvedValue({
+              kakao: { linked: true, email: 'test@kakao.com' },
+              naver: { linked: false, email: null },
+            }),
+            mockLinkSocial: jest.fn().mockResolvedValue({
+              message: '카카오 계정이 간이로 성공적으로 연동되었습니다.',
+              provider: 'kakao',
+              linked: true,
+            }),
+            mockUnlinkSocial: jest.fn().mockResolvedValue({
+              message: '카카오 계정 연동이 성공적으로 해제되었습니다.',
+              provider: 'kakao',
+              linked: false,
+            }),
           },
         },
       ],
@@ -170,6 +184,29 @@ describe('AuthController', () => {
       expect(res.redirect).toHaveBeenCalledWith(
         'http://localhost:5173/login?token=mock_access_token',
       );
+    });
+  });
+
+  describe('social link', () => {
+    it('should call getSocialLinkStatus with userId', async () => {
+      const mockReq = { user: { userId: '1' } } as any;
+      const result = await controller.getSocialStatus(mockReq);
+      expect(authService.getSocialLinkStatus).toHaveBeenCalledWith('1');
+      expect(result.kakao.linked).toBe(true);
+    });
+
+    it('should call mockLinkSocial with userId and provider', async () => {
+      const mockReq = { user: { userId: '1' } } as any;
+      const result = await controller.mockLinkSocial(mockReq, 'kakao');
+      expect(authService.mockLinkSocial).toHaveBeenCalledWith('1', 'kakao');
+      expect(result.linked).toBe(true);
+    });
+
+    it('should call mockUnlinkSocial with userId and provider', async () => {
+      const mockReq = { user: { userId: '1' } } as any;
+      const result = await controller.mockUnlinkSocial(mockReq, 'kakao');
+      expect(authService.mockUnlinkSocial).toHaveBeenCalledWith('1', 'kakao');
+      expect(result.linked).toBe(false);
     });
   });
 });

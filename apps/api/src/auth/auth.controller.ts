@@ -76,6 +76,30 @@ export class AuthController {
     return this.authService.logout(userId);
   }
 
+  @Get('social/status')
+  @UseGuards(AuthGuard('jwt'))
+  async getSocialStatus(@Req() req: RequestWithJwtUser) {
+    return this.authService.getSocialLinkStatus(req.user.userId);
+  }
+
+  @Post('social/mock-link')
+  @UseGuards(AuthGuard('jwt'))
+  async mockLinkSocial(
+    @Req() req: RequestWithJwtUser,
+    @Body('provider') provider: 'kakao' | 'naver',
+  ) {
+    return this.authService.mockLinkSocial(req.user.userId, provider);
+  }
+
+  @Post('social/mock-unlink')
+  @UseGuards(AuthGuard('jwt'))
+  async mockUnlinkSocial(
+    @Req() req: RequestWithJwtUser,
+    @Body('provider') provider: 'kakao' | 'naver',
+  ) {
+    return this.authService.mockUnlinkSocial(req.user.userId, provider);
+  }
+
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
   kakaoAuth() {

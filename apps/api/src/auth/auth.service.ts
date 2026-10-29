@@ -143,4 +143,88 @@ export class AuthService {
 
     return { success: true, message: '재인증에 성공했습니다.' };
   }
+
+  async getSocialLinkStatus(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(userId) },
+    });
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    const providerIdStr = user.providerId || '';
+    const isKakao = user.provider === 'kakao' || providerIdStr.includes('kakao:');
+    const isNaver = user.provider === 'naver' || providerIdStr.includes('naver:');
+
+    const prefix = user.email?.split('@')[0] || 'user';
+    return {
+      kakao: {
+        linked: isKakao,
+        email: isKakao ? `${prefix}@kakao.com` : null,
+      },
+      naver: {
+        linked: isNaver,
+        email: isNaver ? `${prefix}@naver.com` : null,
+      },
+    };
+  }
+
+  async mockLinkSocial(userId: string, provider: 'kakao' | 'naver') {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(userId) },
+    });
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    const currentIds = (user.providerId || '').split('|').filter(Boolean);
+    const prefix = `${provider}:`;
+    if (!currentIds.some((id) => id.startsWith(prefix))) {
+      currentIds.push(`${prefix}mock_${provider}_${userId}`);
+    }
+
+    await this.prisma.user.update({
+      where: { id: BigInt(userId) },
+      data: {
+        providerId: currentIds.join('|'),
+      },
+    });
+
+    const providerName = provider === 'kakao' ? '카카오' : '네이버';
+    return {
+      message: `${providerName} 계정이 간이로 성공적으로 연동되었습니다.`,
+      provider,
+      linked: true,
+    };
+  }
+
+  async mockUnlinkSocial(userId: string, provider: 'kakao' | 'naver') {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(userId) },
+    });
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    const prefix = `${provider}:`;
+    let currentIds = (user.providerId || '').split('|').filter(Boolean);
+    currentIds = currentIds.filter((id) => !id.startsWith(prefix));
+
+    const newProvider = user.provider === provider ? 'local' : user.provider;
+
+    await this.prisma.user.update({
+      where: { id: BigInt(userId) },
+      data: {
+        provider: newProvider,
+        providerId: currentIds.length > 0 ? currentIds.join('|') : null,
+      },
+    });
+
+    const providerName = provider === 'kakao' ? '카카오' : '네이버';
+    return {
+      message: `${providerName} 계정 연동이 성공적으로 해제되었습니다.`,
+      provider,
+      linked: false,
+    };
+  }
 }

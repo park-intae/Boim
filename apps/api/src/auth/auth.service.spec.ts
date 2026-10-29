@@ -186,4 +186,56 @@ describe('AuthService', () => {
       await expect(service.reauthenticate('1', 'wrong')).rejects.toThrow(UnauthorizedException);
     });
   });
+
+  describe('social link', () => {
+    it('should return social link status correctly', async () => {
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@boim.com',
+        provider: 'local',
+        providerId: 'kakao:mock_kakao_1',
+      };
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+      const status = await service.getSocialLinkStatus('1');
+      expect(status.kakao.linked).toBe(true);
+      expect(status.naver.linked).toBe(false);
+    });
+
+    it('should mock link social provider', async () => {
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@boim.com',
+        provider: 'local',
+        providerId: null,
+      };
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prismaService.user.update as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await service.mockLinkSocial('1', 'kakao');
+      expect(result.linked).toBe(true);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(1) },
+        data: expect.objectContaining({ providerId: expect.stringContaining('kakao:') }),
+      });
+    });
+
+    it('should mock unlink social provider', async () => {
+      const mockUser = {
+        id: BigInt(1),
+        email: 'test@boim.com',
+        provider: 'local',
+        providerId: 'kakao:mock_kakao_1|naver:mock_naver_1',
+      };
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      (prismaService.user.update as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await service.mockUnlinkSocial('1', 'kakao');
+      expect(result.linked).toBe(false);
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(1) },
+        data: expect.objectContaining({ providerId: 'naver:mock_naver_1' }),
+      });
+    });
+  });
 });
