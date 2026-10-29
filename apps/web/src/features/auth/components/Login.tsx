@@ -54,12 +54,11 @@ export const Login: React.FC = () => {
       )) as unknown as ApiResponse<{ accessToken: string; refreshToken?: string }> | { accessToken: string; refreshToken?: string };
       
       const resObj = response as Record<string, unknown>;
-      const nestedData = resObj?.data as Record<string, unknown> | undefined;
+      const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
+      const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
       const token =
-        (typeof nestedData?.accessToken === 'string' ? nestedData.accessToken : undefined) ||
-        (typeof (nestedData?.data as Record<string, unknown> | undefined)?.accessToken === 'string'
-          ? (nestedData?.data as Record<string, unknown>).accessToken as string
-          : undefined) ||
+        (typeof dataLevel1?.accessToken === 'string' ? dataLevel1.accessToken : undefined) ||
+        (typeof dataLevel2?.accessToken === 'string' ? dataLevel2.accessToken : undefined) ||
         (typeof resObj?.accessToken === 'string' ? resObj.accessToken : undefined);
 
       if (token) {

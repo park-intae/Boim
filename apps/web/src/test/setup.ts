@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-const storageMock = (() => {
+const createStorageMock = () => {
   let store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] ?? null,
@@ -18,19 +18,31 @@ const storageMock = (() => {
     },
     key: (index: number) => Object.keys(store)[index] ?? null,
   };
-})();
+};
+
+const localStorageMock = createStorageMock();
+const sessionStorageMock = createStorageMock();
 
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'localStorage', {
-    value: storageMock,
+    value: localStorageMock,
+    writable: true,
+    configurable: true,
+  });
+  Object.defineProperty(window, 'sessionStorage', {
+    value: sessionStorageMock,
     writable: true,
     configurable: true,
   });
 }
+
 Object.defineProperty(globalThis, 'localStorage', {
-  value: storageMock,
+  value: localStorageMock,
   writable: true,
   configurable: true,
 });
-
-
+Object.defineProperty(globalThis, 'sessionStorage', {
+  value: sessionStorageMock,
+  writable: true,
+  configurable: true,
+});

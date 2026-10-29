@@ -4,11 +4,16 @@ import { HomePage } from '../pages/HomePage';
 import { Login } from '../features/auth/components/Login';
 import { Onboarding } from '../features/auth/components/Onboarding';
 import { PassVerification } from '../features/auth/components/PassVerification';
+import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppLayout />,
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '',

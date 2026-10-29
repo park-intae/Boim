@@ -20,6 +20,7 @@ export function useLogout() {
       logout();
       try {
         localStorage.removeItem('boim-auth-storage');
+        sessionStorage.removeItem('boim-auth-storage');
       } catch {
         // 스토리지 접근 예외 무시
       }

@@ -1,14 +1,14 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   name?: string;
   isPassVerified: boolean;
 }
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;
@@ -21,6 +21,35 @@ interface AuthState {
   setPassVerified: (status: boolean) => void;
 }
 
+const hybridStorage: StateStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    const local = localStorage.getItem(name);
+    if (local) return local;
+    return sessionStorage.getItem(name);
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed?.state?.rememberMe) {
+        localStorage.setItem(name, value);
+        sessionStorage.removeItem(name);
+      } else {
+        sessionStorage.setItem(name, value);
+        localStorage.removeItem(name);
+      }
+    } catch {
+      sessionStorage.setItem(name, value);
+    }
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(name);
+    sessionStorage.removeItem(name);
+  },
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -32,8 +61,13 @@ export const useAuthStore = create<AuthState>()(
       login: (user, token) => 
         set({ user, accessToken: token, isAuthenticated: true }),
         
-      logout: () => 
-        set({ user: null, accessToken: null, isAuthenticated: false }),
+      logout: () => {
+        set({ user: null, accessToken: null, isAuthenticated: false, rememberMe: false });
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('boim-auth-storage');
+          sessionStorage.removeItem('boim-auth-storage');
+        }
+      },
         
       setRememberMe: (status) => 
         set({ rememberMe: status }),
@@ -44,17 +78,13 @@ export const useAuthStore = create<AuthState>()(
         })),
     }),
     {
-      name: 'boim-auth-storage', // localStorage에 저장될 키 이름
-      storage: createJSONStorage(() => localStorage),
+      name: 'boim-auth-storage',
+      storage: createJSONStorage(() => hybridStorage),
       partialize: (state) => ({
-        // 기기 기억이 true일 때만 로컬 스토리지에 토큰과 유저 정보 저장
-        // false일 경우에는 상태만 초기화 시 유지하도록 설계
+        user: state.user,
+        accessToken: state.accessToken,
+        isAuthenticated: state.isAuthenticated,
         rememberMe: state.rememberMe,
-        ...(state.rememberMe && {
-          user: state.user,
-          accessToken: state.accessToken,
-          isAuthenticated: state.isAuthenticated,
-        }),
       }),
     }
   )
