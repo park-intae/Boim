@@ -16,3 +16,4 @@
 - [x] [Phase 09-03](Phase09-03_harness.md): 세션 스토리지 기반 인증 유지 및 라우트 보호(ProtectedRoute)
 - [x] [Phase 09-04](Phase09-04_harness.md): 로그인 응답 사용자 프로필(name, isPassVerified) DB 동기화
 - [x] [Phase 09-05](Phase09-05_harness.md): 회원가입 플로우 구축 및 PASS 본인인증 DB 연동
+- [x] [Phase 09-06](Phase09-06_harness.md): 설정 패널 내 간이(Mock) 소셜 계정(카카오/네이버) 연동 구현

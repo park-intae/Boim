@@ -1,6 +1,7 @@
 import { useState, Suspense } from 'react';
 import { ProfileSettings } from './ProfileSettings';
 import { PasswordSettings } from './PasswordSettings';
+import { SocialAccountsSettings } from './SocialAccountsSettings';
 import { NotificationSettingsSection } from './NotificationSettingsSection';
 import { NotificationTimeSettings } from './NotificationTimeSettings';
 import { PolicyViewer } from './PolicyViewer';
@@ -9,7 +10,7 @@ import { useExportData, useImportData, useDeleteAccount } from '../../../api/use
 import { useLogout } from '../../auth/hooks/useLogout';
 
 export const SettingsPanel = () => {
-  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'notificationTime' | 'terms' | 'privacy' | 'loginHistory'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'profile' | 'password' | 'social' | 'notificationTime' | 'terms' | 'privacy' | 'loginHistory'>('menu');
   const { mutateAsync: exportData } = useExportData();
   const { mutateAsync: importData } = useImportData();
   const { mutateAsync: deleteAccount } = useDeleteAccount();
@@ -89,6 +90,14 @@ export const SettingsPanel = () => {
     );
   }
 
+  if (activeView === 'social') {
+    return (
+      <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
+        <SocialAccountsSettings onBack={() => setActiveView('menu')} />
+      </div>
+    );
+  }
+
   if (activeView === 'loginHistory') {
     return (
       <div className="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-20 flex flex-col h-full">
@@ -135,6 +144,10 @@ export const SettingsPanel = () => {
           </button>
           <button onClick={() => setActiveView('password')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
             <span>비밀번호 변경</span>
+            <span className="text-gray-300">&gt;</span>
+          </button>
+          <button onClick={() => setActiveView('social')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
+            <span>소셜 계정 연동</span>
             <span className="text-gray-300">&gt;</span>
           </button>
           <button onClick={() => setActiveView('loginHistory')} className="flex items-center justify-between text-left text-[14px] text-gray-800 hover:text-gray-900 transition-colors">
