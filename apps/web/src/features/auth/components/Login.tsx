@@ -61,8 +61,20 @@ export const Login: React.FC = () => {
         (typeof dataLevel2?.accessToken === 'string' ? dataLevel2.accessToken : undefined) ||
         (typeof resObj?.accessToken === 'string' ? resObj.accessToken : undefined);
 
+      const rawUser =
+        (dataLevel1?.user as Record<string, unknown> | undefined) ||
+        (dataLevel2?.user as Record<string, unknown> | undefined) ||
+        (resObj?.user as Record<string, unknown> | undefined);
+
+      const userInfo = {
+        id: typeof rawUser?.id === 'string' ? rawUser.id : 'user_id',
+        email: typeof rawUser?.email === 'string' ? rawUser.email : data.email,
+        name: typeof rawUser?.name === 'string' ? rawUser.name : undefined,
+        isPassVerified: typeof rawUser?.isPassVerified === 'boolean' ? rawUser.isPassVerified : false,
+      };
+
       if (token) {
-        login({ id: 'user_id', email: data.email, isPassVerified: false }, token);
+        login(userInfo, token);
         navigate('/', { replace: true });
       } else {
         alert('로그인 처리에 실패했습니다. 서버 응답 형식을 확인해주세요.');

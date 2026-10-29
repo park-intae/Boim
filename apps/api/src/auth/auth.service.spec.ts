@@ -105,6 +105,8 @@ describe('AuthService', () => {
       const mockUser = {
         id: BigInt(1),
         email: 'test@test.com',
+        name: '테스트유저',
+        isPassVerified: true,
         password: 'hashed_password',
       };
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
@@ -113,6 +115,12 @@ describe('AuthService', () => {
 
       const result = await service.login('test@test.com', 'password', true);
       expect(result.accessToken).toBe('mockToken_1');
+      expect(result.user).toEqual({
+        id: '1',
+        email: 'test@test.com',
+        name: '테스트유저',
+        isPassVerified: true,
+      });
     });
 
     it('should throw exception if user not found', async () => {

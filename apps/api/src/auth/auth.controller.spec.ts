@@ -21,6 +21,12 @@ describe('AuthController', () => {
             login: jest.fn().mockReturnValue({
               accessToken: 'mock_access_token',
               refreshToken: 'mock_refresh_token',
+              user: {
+                id: '1',
+                email: 'test@test.com',
+                name: '테스트유저',
+                isPassVerified: true,
+              },
             }),
             reauthenticate: jest.fn().mockResolvedValue({
               success: true,
@@ -61,6 +67,7 @@ describe('AuthController', () => {
         true,
       );
       expect(result.accessToken).toBe('mock_access_token');
+      expect(result.user.name).toBe('테스트유저');
     });
   });
 

@@ -83,6 +83,12 @@ export class AuthService {
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id.toString(),
+        email: user.email!,
+        name: user.name ?? undefined,
+        isPassVerified: user.isPassVerified,
+      },
     };
   }
 
