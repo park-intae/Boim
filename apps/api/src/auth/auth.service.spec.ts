@@ -112,8 +112,7 @@ describe('AuthService', () => {
       (prismaService.user.update as jest.Mock).mockResolvedValue(mockUser);
 
       const result = await service.login('test@test.com', 'password', true);
-      expect(result.success).toBe(true);
-      expect(result.data.accessToken).toBe('mockToken_1');
+      expect(result.accessToken).toBe('mockToken_1');
     });
 
     it('should throw exception if user not found', async () => {
@@ -148,9 +147,7 @@ describe('AuthService', () => {
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.reauthenticate('1', 'wrong');
-      expect(result.success).toBe(false);
-      expect(result.message).toBe('비밀번호가 일치하지 않습니다.');
+      await expect(service.reauthenticate('1', 'wrong')).rejects.toThrow(UnauthorizedException);
     });
   });
 });

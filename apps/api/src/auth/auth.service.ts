@@ -81,11 +81,8 @@ export class AuthService {
     }
 
     return {
-      success: true,
-      data: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
@@ -94,19 +91,16 @@ export class AuthService {
       where: { id: BigInt(userId) },
     });
     if (!user) {
-      return { success: false, message: '사용자를 찾을 수 없습니다.' };
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
     }
 
     if (user.password && password) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return { success: false, message: '비밀번호가 일치하지 않습니다.' };
+        throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       }
     } else {
-      return {
-        success: false,
-        message: '비밀번호 검증을 할 수 없는 계정입니다.',
-      };
+      throw new UnauthorizedException('비밀번호 검증을 할 수 없는 계정입니다.');
     }
 
     return { success: true, message: '재인증에 성공했습니다.' };

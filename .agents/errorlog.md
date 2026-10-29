@@ -52,4 +52,14 @@
   1. `apps/web/src/test/setup.ts`에 완전한 인터페이스를 갖춘 In-Memory `storageMock`을 구성하여 `window` 및 `globalThis`에 주입함으로써 Node 버전과 무관한 안정적인 테스트 환경 구축.
   2. 폼 제출 검증 시에는 JSDOM 합성 이벤트 특성을 고려하여 `fireEvent.submit(form)`을 명시적으로 호출하도록 테스트 코드 작성.
 
+## 9. 인증 서비스(AuthService) 응답 이중 래핑 및 클라이언트 미처리 오류
+- **발생 상황:** 로그인 화면에서 정상 계정 입력 후 로그인 버튼 클릭 시 다음 화면으로 전환되지 않는 현상.
+- **오류 내용:**
+  1. 백엔드 전역 인터셉터(`TransformInterceptor`)가 컨트롤러 반환값을 `{ success: true, data: T }`로 자동 감싸는데, `AuthService.login`에서 수동으로 `{ success: true, data: { accessToken, ... } }` 형태로 반환하여 이중 래핑(`response.data.data.accessToken`)이 발생함.
+  2. 프론트엔드 `Login.tsx`에서는 `response.data?.accessToken`만 확인하고 있었으며, 불일치 시 `else` 처리나 사용자 피드백이 없어 버튼을 눌러도 조용히 함수가 종료됨.
+  3. `AuthService.reauthenticate` 또한 예외를 던지지 않고 수동으로 `{ success: false, ... }`를 리턴하여 HTTP 200에 성공 응답으로 래핑되는 부작용 존재.
+- **해결 및 예방:**
+  1. 백엔드 서비스에서는 순수 페이로드(`{ accessToken, refreshToken }`)만 반환하도록 표준화하고, 검증 실패 시 `UnauthorizedException`을 throw하여 전역 `HttpExceptionFilter`가 올바른 `ApiResponse` 에러 구조로 변환하도록 수정.
+  2. 프론트엔드 `Login.tsx`는 다중 구조를 수용하는 방어적 토큰 파싱을 적용하고, 응답 실패 시 사용자에게 즉각 에러 피드백을 노출하도록 개선.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

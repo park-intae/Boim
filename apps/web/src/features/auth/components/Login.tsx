@@ -51,16 +51,30 @@ export const Login: React.FC = () => {
       const response = (await apiClient.post(
         '/auth/login',
         data
-      )) as unknown as ApiResponse<{ accessToken: string; refreshToken?: string }>;
+      )) as unknown as ApiResponse<{ accessToken: string; refreshToken?: string }> | { accessToken: string; refreshToken?: string };
       
-      if (response.success && response.data?.accessToken) {
-        login({ id: 'user_id', email: data.email, isPassVerified: false }, response.data.accessToken);
+      const resObj = response as Record<string, unknown>;
+      const nestedData = resObj?.data as Record<string, unknown> | undefined;
+      const token =
+        (typeof nestedData?.accessToken === 'string' ? nestedData.accessToken : undefined) ||
+        (typeof (nestedData?.data as Record<string, unknown> | undefined)?.accessToken === 'string'
+          ? (nestedData?.data as Record<string, unknown>).accessToken as string
+          : undefined) ||
+        (typeof resObj?.accessToken === 'string' ? resObj.accessToken : undefined);
+
+      if (token) {
+        login({ id: 'user_id', email: data.email, isPassVerified: false }, token);
         navigate('/', { replace: true });
+      } else {
+        alert('로그인 처리에 실패했습니다. 서버 응답 형식을 확인해주세요.');
       }
     } catch (error: unknown) {
       console.error('Login failed:', error);
-      const apiError = error as { error?: { message?: string } } | undefined;
-      const errorMessage = apiError?.error?.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.';
+      const apiError = error as { error?: { message?: string }; message?: string } | undefined;
+      const errorMessage =
+        apiError?.error?.message ||
+        apiError?.message ||
+        '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.';
       alert(errorMessage);
     }
   };

@@ -19,11 +19,8 @@ describe('AuthController', () => {
               refreshToken: 'mock_refresh_token',
             }),
             login: jest.fn().mockReturnValue({
-              success: true,
-              data: {
-                accessToken: 'mock_access_token',
-                refreshToken: 'mock_refresh_token',
-              },
+              accessToken: 'mock_access_token',
+              refreshToken: 'mock_refresh_token',
             }),
             reauthenticate: jest.fn().mockResolvedValue({
               success: true,
@@ -63,7 +60,7 @@ describe('AuthController', () => {
         'password123',
         true,
       );
-      expect(result.data.accessToken).toBe('mock_access_token');
+      expect(result.accessToken).toBe('mock_access_token');
     });
   });
 
