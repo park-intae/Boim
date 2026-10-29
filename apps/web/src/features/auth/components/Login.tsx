@@ -88,6 +88,7 @@ export const Login: React.FC = () => {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="email"
+                autoComplete="username"
                 {...register('email')}
                 className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                 placeholder="example@boim.com"
@@ -102,6 +103,7 @@ export const Login: React.FC = () => {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="password"
+                autoComplete="current-password"
                 {...register('password')}
                 className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
                 placeholder="••••••••"

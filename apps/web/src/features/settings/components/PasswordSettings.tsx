@@ -49,6 +49,7 @@ export const PasswordSettings = ({ onBack }: { onBack: () => void }) => {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all pr-12"
+              autoComplete="current-password"
               placeholder="현재 비밀번호를 입력해주세요"
             />
             <button 
@@ -69,6 +70,7 @@ export const PasswordSettings = ({ onBack }: { onBack: () => void }) => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-[14px] text-gray-900 font-medium focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all pr-12"
+              autoComplete="new-password"
               placeholder="영문, 숫자, 특수문자 조합 8자 이상"
             />
             <button 
@@ -90,6 +92,7 @@ export const PasswordSettings = ({ onBack }: { onBack: () => void }) => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               className={`w-full px-4 py-3 bg-white border rounded-xl text-[14px] font-medium outline-none transition-all pr-12
                 ${confirmPassword && newPassword !== confirmPassword ? 'border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-900' : 'border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-gray-900'}`}
+              autoComplete="new-password"
               placeholder="새 비밀번호를 다시 입력해주세요"
             />
             <button 

@@ -79,6 +79,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
           <form onSubmit={handleSubmit}>
             <input
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호 입력"
