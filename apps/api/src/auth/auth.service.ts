@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -153,8 +157,10 @@ export class AuthService {
     }
 
     const providerIdStr = user.providerId || '';
-    const isKakao = user.provider === 'kakao' || providerIdStr.includes('kakao:');
-    const isNaver = user.provider === 'naver' || providerIdStr.includes('naver:');
+    const isKakao =
+      user.provider === 'kakao' || providerIdStr.includes('kakao:');
+    const isNaver =
+      user.provider === 'naver' || providerIdStr.includes('naver:');
 
     const prefix = user.email?.split('@')[0] || 'user';
     return {
@@ -173,13 +179,13 @@ export class AuthService {
     /* -------------------------------------------------------------------------
      * 🚀 [PROD 전용 실제 OAuth2 연동 전환 가이드]
      * 실제 인가 코드(AuthCode) 또는 AccessToken을 검증하여 연동할 경우:
-     * 
+     *
      * 1) 카카오 유저 정보 조회:
      *    const kakaoRes = await axios.get('https://kapi.kakao.com/v2/user/me', {
      *      headers: { Authorization: `Bearer ${oauthAccessToken}` }
      *    });
      *    const realProviderId = `kakao:${kakaoRes.data.id}`;
-     * 
+     *
      * 2) 네이버 유저 정보 조회:
      *    const naverRes = await axios.get('https://openapi.naver.com/v1/nid/me', {
      *      headers: { Authorization: `Bearer ${oauthAccessToken}` }
@@ -219,13 +225,13 @@ export class AuthService {
     /* -------------------------------------------------------------------------
      * 🚀 [PROD 전용 실제 OAuth2 연동 해제 전환 가이드]
      * 실제 소셜 계정 연결 끊기 API 호출 시:
-     * 
+     *
      * 1) 카카오 연동 해제 API:
      *    await axios.post('https://kapi.kakao.com/v1/user/unlink', {}, {
      *      headers: { Authorization: `KakaoAK ${process.env.KAKAO_ADMIN_KEY}` },
      *      params: { target_id_type: 'user_id', target_id: targetKakaoId }
      *    });
-     * 
+     *
      * 2) 네이버 연동 해제 API:
      *    await axios.get(`https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=${...}&client_secret=${...}&access_token=${...}`);
      * ------------------------------------------------------------------------- */

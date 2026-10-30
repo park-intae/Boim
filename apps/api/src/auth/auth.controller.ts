@@ -108,10 +108,7 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  kakaoAuthCallback(
-    @Req() req: RequestWithOAuthUser,
-    @Res() res: Response,
-  ) {
+  kakaoAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
     const user = req.user;
     const tokens = this.authService.generateTokens({
       id: user.providerId,
@@ -129,10 +126,7 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  naverAuthCallback(
-    @Req() req: RequestWithOAuthUser,
-    @Res() res: Response,
-  ) {
+  naverAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
     const user = req.user;
     const tokens = this.authService.generateTokens({
       id: user.providerId,

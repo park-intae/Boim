@@ -6,6 +6,7 @@ import { InsuranceProductModule } from './insurance-product/insurance-product.mo
 import { NotificationModule } from './notification/notification.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -14,8 +15,10 @@ import { AuthModule } from './auth/auth.module';
     NotificationModule,
     UserModule,
     AuthModule,
+    DocumentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [],
 })
 export class AppModule {}

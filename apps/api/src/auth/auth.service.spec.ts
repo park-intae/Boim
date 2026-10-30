@@ -82,7 +82,9 @@ describe('AuthService', () => {
 
   describe('logout', () => {
     it('should clear refresh token in database if userId is provided', async () => {
-      (prismaService.user.update as jest.Mock).mockResolvedValue({ id: BigInt(1) });
+      (prismaService.user.update as jest.Mock).mockResolvedValue({
+        id: BigInt(1),
+      });
 
       const result = await service.logout('1');
 
@@ -111,7 +113,11 @@ describe('AuthService', () => {
         isPassVerified: false,
       });
 
-      const result = await service.register('new@boim.com', 'password123', '신규유저');
+      const result = await service.register(
+        'new@boim.com',
+        'password123',
+        '신규유저',
+      );
       expect(result.accessToken).toBe('mockToken_10');
       expect(result.user).toEqual({
         id: '10',
@@ -123,8 +129,12 @@ describe('AuthService', () => {
     });
 
     it('should throw ConflictException if email already exists', async () => {
-      (prismaService.user.findUnique as jest.Mock).mockResolvedValue({ id: BigInt(1) });
-      await expect(service.register('existing@boim.com', 'pw')).rejects.toThrow();
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
+        id: BigInt(1),
+      });
+      await expect(
+        service.register('existing@boim.com', 'pw'),
+      ).rejects.toThrow();
     });
   });
 
@@ -183,7 +193,9 @@ describe('AuthService', () => {
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.reauthenticate('1', 'wrong')).rejects.toThrow(UnauthorizedException);
+      await expect(service.reauthenticate('1', 'wrong')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -216,7 +228,9 @@ describe('AuthService', () => {
       expect(result.linked).toBe(true);
       expect(prismaService.user.update).toHaveBeenCalledWith({
         where: { id: BigInt(1) },
-        data: expect.objectContaining({ providerId: expect.stringContaining('kakao:') }),
+        data: expect.objectContaining({
+          providerId: expect.stringContaining('kakao:'),
+        }),
       });
     });
 

@@ -80,8 +80,16 @@ describe('AuthController', () => {
 
   describe('register', () => {
     it('should call authService.register and return result', async () => {
-      const result = await controller.register('new@boim.com', 'pw123', '신규유저');
-      expect(authService.register).toHaveBeenCalledWith('new@boim.com', 'pw123', '신규유저');
+      const result = await controller.register(
+        'new@boim.com',
+        'pw123',
+        '신규유저',
+      );
+      expect(authService.register).toHaveBeenCalledWith(
+        'new@boim.com',
+        'pw123',
+        '신규유저',
+      );
       expect(result.accessToken).toBe('mock_access_token');
       expect(result.user.name).toBe('신규유저');
     });

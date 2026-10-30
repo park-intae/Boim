@@ -23,6 +23,7 @@ model User {
   insuranceProducts    InsuranceProduct[]
   notificationSettings UserNotificationSettings?
   loginHistories       UserLoginHistory[]
+  documents            Document[]
 }
 
 model UserLoginHistory {
@@ -79,11 +80,16 @@ model Notification {
 
 model Document {
   id         BigInt   @id @default(autoincrement())
-  productId  BigInt
+  userId     BigInt
+  productId  BigInt?
+  fileName   String   @default("document") @db.VarChar(255)
   fileUrl    String   @db.VarChar(500)
+  fileSize   Int      @default(0)
+  mimeType   String   @default("application/pdf") @db.VarChar(100)
   ocrText    String?  @db.Text
   parsedData Json?
   uploadedAt DateTime @default(now()) @db.Timestamp(6)
 
-  product InsuranceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
 }

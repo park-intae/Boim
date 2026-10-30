@@ -49,7 +49,6 @@ export type CreateInsuranceProductDto = Omit<InsuranceProductDto, 'id' | 'create
 
 export type UpdateInsuranceProductDto = Partial<CreateInsuranceProductDto>;
 
-
 export interface NotificationDto {
   id: bigint | number;
   productId: bigint | number;
@@ -61,11 +60,40 @@ export interface NotificationDto {
 
 export interface DocumentDto {
   id: bigint | number;
-  productId: bigint | number;
+  userId: bigint | number;
+  productId?: bigint | number | null;
   fileUrl: string;
+  fileName?: string;
+  fileSize?: number;
+  mimeType?: string;
   ocrText?: string | null;
   parsedData?: Record<string, unknown> | null;
-  uploadedAt: Date;
+  uploadedAt: Date | string;
+}
+
+export interface ParsedInsuranceData {
+  institution: string;
+  name: string;
+  category: string;
+  monthlyPayment: number;
+  paymentDay?: number;
+  startDate: string;
+  maturityDate: string;
+  coverageAmount: number;
+  confidence?: number;
+}
+
+export interface DocumentUploadResponse {
+  documentId: number | string;
+  fileUrl: string;
+  fileName: string;
+  uploadedAt: string;
+}
+
+export interface DocumentParseResponse {
+  documentId: number | string;
+  ocrText: string;
+  parsedData: ParsedInsuranceData;
 }
 
 export interface ApiResponse<T = unknown> {

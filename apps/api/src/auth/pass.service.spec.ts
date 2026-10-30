@@ -15,7 +15,9 @@ describe('PassService', () => {
           provide: PrismaService,
           useValue: {
             user: {
-              update: jest.fn().mockResolvedValue({ id: BigInt(1), isPassVerified: true }),
+              update: jest
+                .fn()
+                .mockResolvedValue({ id: BigInt(1), isPassVerified: true }),
             },
           },
         },
