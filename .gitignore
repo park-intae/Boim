@@ -16,6 +16,8 @@ node_modules/
 dist/
 dist-ssr/
 build/
+.turbo/
+uploads/
 
 # IDE / OS
 .DS_Store
