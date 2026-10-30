@@ -4,6 +4,8 @@ import * as z from 'zod';
 import { useCreateInsurance, useUpdateInsurance } from '../../api/useInsuranceQueries';
 import { useAppStore } from '../../store/useAppStore';
 import { format } from 'date-fns';
+import { PolicyDocumentUploader } from './PolicyDocumentUploader';
+import type { ParsedInsuranceData } from '@boim/shared-types';
 
 const formSchema = z.object({
   category: z.string().min(1, '카테고리를 선택해주세요.'),
@@ -11,8 +13,8 @@ const formSchema = z.object({
   institution: z.string().min(1, '보험사명을 입력해주세요.'),
   startDate: z.string().min(1, '가입일을 선택해주세요.'),
   maturityDate: z.string().min(1, '만기일을 선택해주세요.'),
-  monthlyPayment: z.number({ invalid_type_error: '숫자만 입력 가능합니다.' }).min(0, '납입액은 0 이상이어야 합니다.'),
-  coverageAmount: z.number({ invalid_type_error: '숫자만 입력 가능합니다.' }).min(0, '보장 금액은 0 이상이어야 합니다.'),
+  monthlyPayment: z.number().min(0, '납입액은 0 이상이어야 합니다.'),
+  coverageAmount: z.number().min(0, '보장 금액은 0 이상이어야 합니다.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -26,8 +28,7 @@ export function InsuranceForm() {
   const { mutate: updateInsurance, isPending: isUpdating } = useUpdateInsurance();
   const isPending = isCreating || isUpdating;
 
-  // MVP 버전에서는 수정 시 데이터 로딩을 생략하고 빈 폼으로 시작하거나, 향후 보강합니다.
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: '',
@@ -38,10 +39,27 @@ export function InsuranceForm() {
     }
   });
 
+  const handleParsedData = (parsed: ParsedInsuranceData) => {
+    let mappedCategory = '실비보험';
+    if (parsed.category === 'CANCER') mappedCategory = '암보험';
+    else if (parsed.category === 'AUTO') mappedCategory = '자동차보험';
+    else if (parsed.category === 'LIFE') mappedCategory = '종신보험';
+    else if (parsed.category === 'SAVING') mappedCategory = '기타';
+    else if (parsed.category === 'HEALTH') mappedCategory = '실비보험';
+
+    setValue('institution', parsed.institution, { shouldValidate: true });
+    setValue('name', parsed.name, { shouldValidate: true });
+    setValue('category', mappedCategory, { shouldValidate: true });
+    setValue('startDate', parsed.startDate, { shouldValidate: true });
+    setValue('maturityDate', parsed.maturityDate, { shouldValidate: true });
+    setValue('monthlyPayment', parsed.monthlyPayment, { shouldValidate: true });
+    setValue('coverageAmount', parsed.coverageAmount, { shouldValidate: true });
+  };
+
   const onSubmit = (data: FormValues) => {
-    // String을 Date/ISO 포맷으로 백엔드가 받을 수 있게 가공
     const payload = {
       ...data,
+      userId: 1,
       startDate: new Date(data.startDate).toISOString(),
       maturityDate: new Date(data.maturityDate).toISOString(),
     };
@@ -61,8 +79,12 @@ export function InsuranceForm() {
   return (
     <>
       <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-5">
+        {/* 신규 등록 모드일 때 증권 자동 분석 업로더 표시 */}
+        {!editingProductId && (
+          <PolicyDocumentUploader onParsed={handleParsedData} />
+        )}
+
         <form id="insurance-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-bold text-gray-700">카테고리</label>
             <select 
@@ -148,11 +170,9 @@ export function InsuranceForm() {
             </div>
             {errors.coverageAmount && <span className="text-[11px] text-red-500 font-bold ml-1">{errors.coverageAmount.message}</span>}
           </div>
-
         </form>
       </div>
 
-      {/* 3. Bottom Sticky Action Button */}
       <div className="p-6 pt-2 bg-gradient-to-t from-white via-white to-transparent shrink-0">
         <button 
           type="submit"

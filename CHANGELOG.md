@@ -5,6 +5,28 @@
 
 ---
 
+## [Phase 10] - 2026-10-30
+
+### 🚀 Added (신규 기능)
+- **보험 증권 파일 업로드 & 패턴 매칭 데이터 자동 추출 ([Phase 10-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase10/Phase10-01_harness.md), [Phase 10-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase10/Phase10-02_harness.md))**
+  - 백엔드 `Multer` 기반 증권 파일(PDF, PNG, JPG, TXT) 안전 업로드 API (`POST /documents/upload`)
+  - `Tesseract.js` OCR 연동 및 고성능 정규식/휴리스틱 패턴 매칭 파서 엔진 구현
+  - 토큰 소모 없는 즉각적 보험 계약 데이터(보험사, 상품명, 카테고리, 월납입액, 만기일 등) 추출
+  - 가상 모의 증권 샘플 프리셋 및 즉시 분석 API (`POST /documents/sample/parse`)
+- **프론트엔드 증권 업로더 UI 및 폼 자동 채우기(Prefill)**
+  - 우측 패널 내 증권 파일 드래그 앤 드롭 및 원클릭 모의 증권 테스트 버튼(`PolicyDocumentUploader.tsx`)
+  - 분석 완료 시 `InsuranceForm` 입력 필드(보험사, 상품명, 카테고리, 납입액 등) 자동 채우기 연동
+  - TanStack Query 기반 `useDocumentQueries.ts` 훅 구현
+
+### 🔒 Security & Architecture
+- **Row-level 문서 소유권 통제**
+  - `Document` 테이블에 `userId` 컬럼 추가 및 JWT Guard 기반 본인 소유 문서만 조회/삭제/파싱하도록 보안 강제
+  - 상품 등록 전 사전 업로드를 지원하도록 `productId`를 nullable로 유연화
+- **AI 역할 최적화 재배치**
+  - 단순 증권 글자 파싱은 패턴 매칭으로 가볍게 처리하고, Gemini AI는 차기 '내 보험 종합 진단/분석 리포트' 전담으로 역할을 명확히 분리
+
+---
+
 ## [Phase 09] - 2026-10-29
 
 ### 🚀 Added (신규 기능)
