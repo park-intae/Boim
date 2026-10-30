@@ -49,13 +49,31 @@ export type CreateInsuranceProductDto = Omit<InsuranceProductDto, 'id' | 'create
 
 export type UpdateInsuranceProductDto = Partial<CreateInsuranceProductDto>;
 
+export type NotificationType = 'payment' | 'renewal' | 'info';
+export type NotificationChannel = 'in_app' | 'email' | 'push' | 'kakao';
+
 export interface NotificationDto {
-  id: bigint | number;
-  productId: bigint | number;
-  type: string;
-  channel: string;
-  sentAt: Date;
-  status: string;
+  id: string | number | bigint;
+  userId?: string | number | bigint;
+  productId?: string | number | bigint | null;
+  type: NotificationType | string;
+  title: string;
+  message: string;
+  channel?: NotificationChannel | string;
+  isRead: boolean;
+  sentAt?: Date | string;
+  status?: string;
+  createdAt: string;
+}
+
+export interface CreateNotificationDto {
+  userId: bigint | number;
+  productId?: bigint | number | null;
+  type: NotificationType | string;
+  title: string;
+  message: string;
+  channel?: NotificationChannel | string;
+  isRead?: boolean;
 }
 
 export interface DocumentDto {

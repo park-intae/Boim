@@ -24,6 +24,7 @@ model User {
   notificationSettings UserNotificationSettings?
   loginHistories       UserLoginHistory[]
   documents            Document[]
+  notifications        Notification[]
 }
 
 model UserLoginHistory {
@@ -69,13 +70,19 @@ model InsuranceProduct {
 
 model Notification {
   id        BigInt   @id @default(autoincrement())
-  productId BigInt
-  type      String   @db.VarChar(10)
-  channel   String   @db.VarChar(20)
-  sentAt    DateTime @db.Timestamp(6)
-  status    String   @db.VarChar(20)
+  userId    BigInt
+  productId BigInt?
+  type      String   @db.VarChar(20)
+  title     String   @db.VarChar(200)
+  message   String   @db.Text
+  channel   String   @default("in_app") @db.VarChar(20)
+  isRead    Boolean  @default(false)
+  sentAt    DateTime @default(now()) @db.Timestamp(6)
+  status    String   @default("sent") @db.VarChar(20)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
 
-  product InsuranceProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Document {
