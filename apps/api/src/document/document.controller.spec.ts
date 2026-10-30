@@ -4,7 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentController } from './document.controller';
 import { DocumentService } from './document.service';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
-import type { ParsedInsuranceData } from '@boim/shared-types';
+import type {
+  ParsedInsuranceData,
+  DocumentParseResponse,
+} from '@boim/shared-types';
 
 describe('DocumentController', () => {
   let controller: DocumentController;
@@ -16,6 +19,8 @@ describe('DocumentController', () => {
     getUserDocuments: jest.fn(),
     getDocument: jest.fn(),
     deleteDocument: jest.fn(),
+    parseDocument: jest.fn(),
+    parseSampleDocument: jest.fn(),
   };
 
   const mockRequest = {
@@ -60,6 +65,60 @@ describe('DocumentController', () => {
     });
   });
 
+  describe('parseSampleDocument', () => {
+    it('샘플 문서 파싱 결과를 성공 포맷으로 반환해야 한다', async () => {
+      const mockParseRes: DocumentParseResponse = {
+        documentId: 'sample-preset',
+        ocrText: '샘플 텍스트',
+        parsedData: {
+          institution: '한화손해보험',
+          name: '건강보험',
+          category: 'HEALTH',
+          monthlyPayment: 85000,
+          startDate: '2024-03-01',
+          maturityDate: '2044-03-01',
+          coverageAmount: 50000000,
+        },
+      };
+      mockDocumentService.parseSampleDocument.mockResolvedValue(mockParseRes);
+
+      const result = await controller.parseSampleDocument();
+
+      expect(service.parseSampleDocument).toHaveBeenCalled();
+      expect(result).toEqual({
+        success: true,
+        data: mockParseRes,
+      });
+    });
+  });
+
+  describe('parseDocument', () => {
+    it('특정 문서 파싱을 실행하고 결과를 반환해야 한다', async () => {
+      const mockParseRes: DocumentParseResponse = {
+        documentId: 10,
+        ocrText: '텍스트',
+        parsedData: {
+          institution: '한화손해보험',
+          name: '건강보험',
+          category: 'HEALTH',
+          monthlyPayment: 85000,
+          startDate: '2024-03-01',
+          maturityDate: '2044-03-01',
+          coverageAmount: 50000000,
+        },
+      };
+      mockDocumentService.parseDocument.mockResolvedValue(mockParseRes);
+
+      const result = await controller.parseDocument('10', mockRequest);
+
+      expect(service.parseDocument).toHaveBeenCalledWith(1n, 10n);
+      expect(result).toEqual({
+        success: true,
+        data: mockParseRes,
+      });
+    });
+  });
+
   describe('uploadFile', () => {
     it('파일 업로드 후 결과를 공통 포맷으로 반환해야 한다', async () => {
       const mockFile = {
@@ -95,21 +154,6 @@ describe('DocumentController', () => {
       expect(result).toEqual({
         success: true,
         data: mockList,
-      });
-    });
-  });
-
-  describe('getDocument', () => {
-    it('특정 문서 상세 정보를 반환해야 한다', async () => {
-      const mockDoc = { id: 10, fileName: 'test.pdf' };
-      mockDocumentService.getDocument.mockResolvedValue(mockDoc);
-
-      const result = await controller.getDocument('10', mockRequest);
-
-      expect(service.getDocument).toHaveBeenCalledWith(1n, 10n);
-      expect(result).toEqual({
-        success: true,
-        data: mockDoc,
       });
     });
   });

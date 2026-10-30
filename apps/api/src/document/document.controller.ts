@@ -28,6 +28,15 @@ export class DocumentController {
     };
   }
 
+  @Post('sample/parse')
+  async parseSampleDocument() {
+    const result = await this.documentService.parseSampleDocument();
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
   @Post('upload')
   @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(
@@ -47,6 +56,18 @@ export class DocumentController {
       file,
       productId ? BigInt(productId) : undefined,
     );
+
+    return {
+      success: true,
+      data: result,
+    };
+  }
+
+  @Post(':id/parse')
+  @UseGuards(AuthGuard('jwt'))
+  async parseDocument(@Param('id') id: string, @Req() req: RequestWithJwtUser) {
+    const userId = BigInt(req.user?.userId || '1');
+    const result = await this.documentService.parseDocument(userId, BigInt(id));
 
     return {
       success: true,

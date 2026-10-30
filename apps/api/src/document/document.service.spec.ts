@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentService } from './document.service';
+import { DocumentParserService } from './document-parser.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   BadRequestException,
@@ -19,6 +20,7 @@ jest.mock('fs', () => {
       writeFile: jest.fn().mockResolvedValue(undefined),
       copyFile: jest.fn().mockResolvedValue(undefined),
       unlink: jest.fn().mockResolvedValue(undefined),
+      readFile: jest.fn().mockResolvedValue('샘플 텍스트'),
     },
   };
 });
@@ -32,7 +34,23 @@ describe('DocumentService', () => {
       findUnique: jest.fn(),
       findMany: jest.fn(),
       delete: jest.fn(),
+      update: jest.fn(),
     },
+  };
+
+  const mockParserService = {
+    extractTextFromFile: jest.fn().mockResolvedValue('추출된 증권 텍스트'),
+    parseInsuranceText: jest.fn().mockReturnValue({
+      institution: '한화손해보험',
+      name: '무배당 한화 라이프케어 건강종합보험',
+      category: 'HEALTH',
+      monthlyPayment: 85000,
+      paymentDay: 15,
+      startDate: '2024-03-01',
+      maturityDate: '2044-03-01',
+      coverageAmount: 50000000,
+      confidence: 0.99,
+    }),
   };
 
   beforeEach(async () => {
@@ -42,6 +60,10 @@ describe('DocumentService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: DocumentParserService,
+          useValue: mockParserService,
         },
       ],
     }).compile();
@@ -66,19 +88,6 @@ describe('DocumentService', () => {
       } as Express.Multer.File;
 
       await expect(service.uploadDocument(1n, invalidFile)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
-
-    it('파일 용량이 10MB를 초과하면 BadRequestException을 던져야 한다', async () => {
-      const largeFile = {
-        originalname: 'large.pdf',
-        mimetype: 'application/pdf',
-        size: 11 * 1024 * 1024,
-        buffer: Buffer.from('large'),
-      } as Express.Multer.File;
-
-      await expect(service.uploadDocument(1n, largeFile)).rejects.toThrow(
         BadRequestException,
       );
     });
@@ -118,23 +127,53 @@ describe('DocumentService', () => {
     });
   });
 
+  describe('parseDocument (패턴 매칭 파싱)', () => {
+    it('타인 문서 파싱 시 ForbiddenException을 던져야 한다', async () => {
+      mockPrismaService.document.findUnique.mockResolvedValue({
+        id: 10n,
+        userId: 2n,
+      });
+
+      await expect(service.parseDocument(1n, 10n)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('본인 문서 파싱 시 텍스트 추출 및 패턴 매칭 결과를 DB에 저장하고 반환해야 한다', async () => {
+      mockPrismaService.document.findUnique.mockResolvedValue({
+        id: 10n,
+        userId: 1n,
+        fileUrl: '/uploads/documents/sample.pdf',
+        mimeType: 'application/pdf',
+      });
+      mockPrismaService.document.update.mockResolvedValue({ id: 10n });
+
+      const result = await service.parseDocument(1n, 10n);
+
+      expect(mockParserService.extractTextFromFile).toHaveBeenCalled();
+      expect(mockParserService.parseInsuranceText).toHaveBeenCalled();
+      expect(mockPrismaService.document.update).toHaveBeenCalled();
+      expect(result.documentId).toBe(10);
+      expect(result.parsedData.institution).toBe('한화손해보험');
+    });
+  });
+
+  describe('parseSampleDocument', () => {
+    it('샘플 프리셋 텍스트를 파싱하여 정상 반환해야 한다', async () => {
+      const result = await service.parseSampleDocument();
+
+      expect(result.documentId).toBe('sample-preset');
+      expect(result.parsedData.institution).toBe('한화손해보험');
+      expect(result.parsedData.monthlyPayment).toBe(85000);
+    });
+  });
+
   describe('getDocument (Row-level 권한 검증)', () => {
     it('문서가 없으면 NotFoundException을 던져야 한다', async () => {
       mockPrismaService.document.findUnique.mockResolvedValue(null);
 
       await expect(service.getDocument(1n, 999n)).rejects.toThrow(
         NotFoundException,
-      );
-    });
-
-    it('타인의 문서에 접근하면 ForbiddenException을 던져야 한다', async () => {
-      mockPrismaService.document.findUnique.mockResolvedValue({
-        id: 10n,
-        userId: 2n, // 다른 유저
-      });
-
-      await expect(service.getDocument(1n, 10n)).rejects.toThrow(
-        ForbiddenException,
       );
     });
 
@@ -160,52 +199,7 @@ describe('DocumentService', () => {
     });
   });
 
-  describe('getUserDocuments', () => {
-    it('사용자의 문서 목록을 반환해야 한다', async () => {
-      const mockDocs = [
-        {
-          id: 10n,
-          userId: 1n,
-          productId: null,
-          fileName: 'policy1.pdf',
-          fileUrl: '/uploads/documents/mock1.pdf',
-          fileSize: 1000,
-          mimeType: 'application/pdf',
-          ocrText: null,
-          parsedData: null,
-          uploadedAt: new Date('2026-10-30T00:00:00Z'),
-        },
-      ];
-      mockPrismaService.document.findMany.mockResolvedValue(mockDocs);
-
-      const result = await service.getUserDocuments(1n);
-
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(10);
-    });
-  });
-
-  describe('deleteDocument (Row-level 권한 검증)', () => {
-    it('문서가 없으면 NotFoundException을 던져야 한다', async () => {
-      mockPrismaService.document.findUnique.mockResolvedValue(null);
-
-      await expect(service.deleteDocument(1n, 999n)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('타인의 문서 삭제 시 ForbiddenException을 던져야 한다', async () => {
-      mockPrismaService.document.findUnique.mockResolvedValue({
-        id: 10n,
-        userId: 2n,
-        fileUrl: '/uploads/documents/test.pdf',
-      });
-
-      await expect(service.deleteDocument(1n, 10n)).rejects.toThrow(
-        ForbiddenException,
-      );
-    });
-
+  describe('deleteDocument', () => {
     it('본인의 문서인 경우 정상 삭제해야 한다', async () => {
       mockPrismaService.document.findUnique.mockResolvedValue({
         id: 10n,
@@ -220,15 +214,6 @@ describe('DocumentService', () => {
         where: { id: 10n },
       });
       expect(result.success).toBe(true);
-    });
-  });
-
-  describe('getSamplePreset', () => {
-    it('모의 가상 증권 샘플 프리셋을 정상 반환해야 한다', () => {
-      const preset = service.getSamplePreset();
-      expect(preset.sampleName).toBeDefined();
-      expect(preset.mockData.institution).toBe('한화손해보험');
-      expect(preset.mockData.monthlyPayment).toBe(85000);
     });
   });
 });

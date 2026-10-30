@@ -5,10 +5,15 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { DocumentParserService } from './document-parser.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import type { DocumentUploadResponse, DocumentDto } from '@boim/shared-types';
+import type {
+  DocumentUploadResponse,
+  DocumentParseResponse,
+  DocumentDto,
+} from '@boim/shared-types';
 
 @Injectable()
 export class DocumentService {
@@ -22,10 +27,14 @@ export class DocumentService {
     'image/png',
     'image/jpeg',
     'image/jpg',
+    'text/plain',
   ];
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly parserService: DocumentParserService,
+  ) {
     if (!fs.existsSync(this.uploadDir)) {
       fs.mkdirSync(this.uploadDir, { recursive: true });
     }
@@ -42,7 +51,7 @@ export class DocumentService {
 
     if (!this.allowedMimeTypes.includes(file.mimetype)) {
       throw new BadRequestException(
-        '지원하지 않는 파일 형식입니다. (지원 형식: PDF, PNG, JPG, JPEG)',
+        '지원하지 않는 파일 형식입니다. (지원 형식: PDF, PNG, JPG, JPEG, TXT)',
       );
     }
 
@@ -147,14 +156,13 @@ export class DocumentService {
       throw new ForbiddenException('해당 문서를 삭제할 권한이 없습니다.');
     }
 
-    // 파일 시스템에서 파일 삭제 시도
     const fileName = path.basename(document.fileUrl);
     const diskPath = path.join(this.uploadDir, fileName);
     if (fs.existsSync(diskPath)) {
       try {
         await fs.promises.unlink(diskPath);
       } catch {
-        // 파일 삭제 실패해도 DB 삭제는 진행
+        // ignore
       }
     }
 
@@ -169,13 +177,90 @@ export class DocumentService {
   }
 
   /**
-   * 개인정보 보호용 가상 모의 증권 프리셋 데이터 반환
+   * 업로드된 특정 문서를 패턴 매칭 엔진으로 파싱하고 DB에 결과 캐싱
    */
+  async parseDocument(
+    userId: bigint,
+    documentId: bigint,
+  ): Promise<DocumentParseResponse> {
+    const document = await this.prisma.document.findUnique({
+      where: { id: documentId },
+    });
+
+    if (!document) {
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    if (document.userId !== userId) {
+      throw new ForbiddenException('해당 문서에 대한 접근 권한이 없습니다.');
+    }
+
+    const fileName = path.basename(document.fileUrl);
+    const diskPath = path.join(this.uploadDir, fileName);
+
+    const ocrText = await this.parserService.extractTextFromFile(
+      diskPath,
+      document.mimeType,
+    );
+    const parsedData = this.parserService.parseInsuranceText(ocrText);
+
+    await this.prisma.document.update({
+      where: { id: documentId },
+      data: {
+        ocrText,
+        parsedData: JSON.parse(JSON.stringify(parsedData)),
+      },
+    });
+
+    return {
+      documentId: Number(document.id),
+      ocrText,
+      parsedData,
+    };
+  }
+
+  /**
+   * 개인정보 보호용 가상 모의 증권 샘플 즉시 파싱 테스트
+   */
+  async parseSampleDocument(): Promise<DocumentParseResponse> {
+    const samplePath = path.resolve(
+      process.cwd(),
+      '..',
+      'web',
+      'public',
+      'samples',
+      'sample_policy_preset.txt',
+    );
+
+    let text: string;
+    if (fs.existsSync(samplePath)) {
+      text = await fs.promises.readFile(samplePath, 'utf-8');
+    } else {
+      text = `
+증권번호: POL-2024-8839210
+보험회사: 한화손해보험 주식회사
+상 품 명: 무배당 한화 라이프케어 건강종합보험
+보 험 종: 건강보험 (HEALTH)
+보험기간: 2024년 03월 01일 ~ 2044년 03월 01일
+월 보험료: 85,000원 (매월 15일 자동이체)
+보장금액: 50,000,000원
+`;
+    }
+
+    const parsedData = this.parserService.parseInsuranceText(text);
+
+    return {
+      documentId: 'sample-preset',
+      ocrText: text,
+      parsedData,
+    };
+  }
+
   getSamplePreset() {
     return {
       sampleName: '무배당 한화 라이프케어 건강종합보험 증권 (모의 샘플)',
-      fileName: 'sample_policy_preset.pdf',
-      mimeType: 'application/pdf',
+      fileName: 'sample_policy_preset.txt',
+      mimeType: 'text/plain',
       mockData: {
         institution: '한화손해보험',
         name: '무배당 한화 라이프케어 건강종합보험',
@@ -185,7 +270,7 @@ export class DocumentService {
         startDate: '2024-03-01',
         maturityDate: '2044-03-01',
         coverageAmount: 50000000,
-        confidence: 0.98,
+        confidence: 0.99,
       },
     };
   }
