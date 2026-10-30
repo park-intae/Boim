@@ -5,6 +5,19 @@
 
 ---
 
+## [Phase 11-01] - 2026-10-30
+
+### 🚀 Added (신규 기능)
+- **Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD ([Phase 11-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-01_harness.md))**
+  - `Notification` 모델 필드 확장 (`userId`, `title`, `message`, `channel`, `isRead`, `createdAt`) 및 `User`, `InsuranceProduct` 관계 정립
+  - `NotificationService` 인메모리 더미 배열에서 PostgreSQL + Prisma 영속 저장소 연동으로 전면 전환
+  - 본인 소유 알림 최신순 조회(`findAll`), 개별 읽음 처리(`markAsRead`), 전체 일괄 읽음 처리(`markAllAsRead`), 삭제(`remove`), 알림 생성(`createNotification`) API 구현
+  - Swagger API 문서화 및 `OptionalJwtAuthGuard`를 통한 JWT 인증 및 데모 사용자 폴백 보안 로직 적용
+  - `packages/shared-types` 내 `NotificationDto`, `CreateNotificationDto` 인터페이스 최신화
+  - `NotificationService` 및 `NotificationController` 단위 테스트 13건 작성 및 100% 통과
+
+---
+
 ## [Phase 10] - 2026-10-30
 
 ### 🚀 Added (신규 기능)
