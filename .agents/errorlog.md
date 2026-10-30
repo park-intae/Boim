@@ -63,3 +63,13 @@
   2. 프론트엔드 `Login.tsx`는 다중 구조를 수용하는 방어적 토큰 파싱을 적용하고, 응답 실패 시 사용자에게 즉각 에러 피드백을 노출하도록 개선.
 
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
+## 9. 컨트롤러 응답 객체 직접 래핑에 따른 이중 래핑 및 프론트엔드 파싱 오류 (`reading 'category'`)
+- **발생 상황:** Phase 10 증권 파일 업로드 & 패턴 매칭 데이터 파싱 API 연동 중.
+- **오류 내용:**
+  1. 백엔드 `main.ts`에 `TransformInterceptor`가 전역 등록되어 있어 컨트롤러가 반환한 데이터를 자동으로 `{ success: true, data: result }`로 감싸줌에도 불구하고, `DocumentController`에서 수동으로 `{ success: true, data: result }` 객체를 감싸서 반환함 (2번 오류 재발).
+  2. 그 결과 응답이 `{ success: true, data: { success: true, data: result } }`로 이중 래핑되어 프론트엔드가 `res.data`를 참조할 때 실제 결과 객체가 아닌 중첩된 래퍼를 받아 `parseRes.parsedData`가 `undefined`가 됨.
+  3. 프론트엔드 `handleParsedData`에서 `parsed.category`를 바로 참조하다가 `Cannot read properties of undefined (reading 'category')` 런타임 오류 발생.
+- **해결 및 예방:**
+  1. **백엔드:** `DocumentController`의 모든 라우트 핸들러에서 수동 래핑을 제거하고 `return this.documentService...` 형태로 순수 데이터만 반환하도록 수정.
+  2. **프론트엔드 API 계층:** `useDocumentQueries.ts`에 재귀적 `unwrapResponse` 헬퍼 함수를 적용하여 단일/이중 래핑 여부에 관계없이 항상 순수한 알맹이 데이터를 보장하도록 방어 처리.
+  3. **UI 컴포넌트:** `InsuranceForm.tsx`와 `PolicyDocumentUploader.tsx`의 핸들러에 `if (!parsed || typeof parsed !== 'object') return;` 가드를 두어 데이터 유효성 검증을 다중화.

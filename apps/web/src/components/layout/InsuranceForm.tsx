@@ -39,7 +39,9 @@ export function InsuranceForm() {
     }
   });
 
-  const handleParsedData = (parsed: ParsedInsuranceData) => {
+  const handleParsedData = (parsed?: ParsedInsuranceData) => {
+    if (!parsed || typeof parsed !== 'object') return;
+
     let mappedCategory = '실비보험';
     if (parsed.category === 'CANCER') mappedCategory = '암보험';
     else if (parsed.category === 'AUTO') mappedCategory = '자동차보험';

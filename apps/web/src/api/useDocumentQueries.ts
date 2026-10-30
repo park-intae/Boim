@@ -7,6 +7,16 @@ import type {
   ParsedInsuranceData,
 } from '@boim/shared-types';
 
+function unwrapResponse<T>(res: unknown): T {
+  if (res && typeof res === 'object') {
+    const obj = res as Record<string, unknown>;
+    if ('data' in obj && obj.data !== undefined) {
+      return unwrapResponse<T>(obj.data);
+    }
+  }
+  return res as T;
+}
+
 export function useUploadDocument() {
   return useMutation<DocumentUploadResponse, ApiResponse, { file: File; productId?: number }>({
     mutationFn: async ({ file, productId }) => {
@@ -22,10 +32,7 @@ export function useUploadDocument() {
           params,
         },
       );
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || '문서 업로드에 실패했습니다.');
-      }
-      return res.data;
+      return unwrapResponse<DocumentUploadResponse>(res);
     },
   });
 }
@@ -36,10 +43,7 @@ export function useParseDocument() {
       const res = await apiClient.post<unknown, ApiResponse<DocumentParseResponse>>(
         `/documents/${documentId}/parse`,
       );
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || '문서 분석에 실패했습니다.');
-      }
-      return res.data;
+      return unwrapResponse<DocumentParseResponse>(res);
     },
   });
 }
@@ -50,10 +54,7 @@ export function useParseSampleDocument() {
       const res = await apiClient.post<unknown, ApiResponse<DocumentParseResponse>>(
         '/documents/sample/parse',
       );
-      if (!res.success || !res.data) {
-        throw new Error(res.error?.message || '샘플 분석에 실패했습니다.');
-      }
-      return res.data;
+      return unwrapResponse<DocumentParseResponse>(res);
     },
   });
 }
@@ -68,7 +69,12 @@ export function useGetSamplePreset() {
         mimeType: string;
         mockData: ParsedInsuranceData;
       }>>('/documents/sample/preset');
-      return res.data;
+      return unwrapResponse<{
+        sampleName: string;
+        fileName: string;
+        mimeType: string;
+        mockData: ParsedInsuranceData;
+      }>(res);
     },
   });
 }

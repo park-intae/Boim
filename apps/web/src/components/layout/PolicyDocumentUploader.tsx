@@ -44,10 +44,17 @@ export function PolicyDocumentUploader({ onParsed }: PolicyDocumentUploaderProps
       setStatusMessage('문서 텍스트에서 보험 계약 정보를 추출하는 중입니다...');
 
       const parseRes = await parseDocument({ documentId: uploadRes.documentId });
+      const parsedData =
+        parseRes?.parsedData ||
+        (parseRes as unknown as { data?: { parsedData?: ParsedInsuranceData } })?.data
+          ?.parsedData ||
+        (parseRes as unknown as ParsedInsuranceData);
 
       setParsingStep('done');
       setStatusMessage('분석 완료! 폼에 정보가 자동 입력되었습니다.');
-      onParsed(parseRes.parsedData);
+      if (parsedData && 'institution' in parsedData) {
+        onParsed(parsedData);
+      }
     } catch (err) {
       setParsingStep('error');
       setErrorMessage(
@@ -88,10 +95,17 @@ export function PolicyDocumentUploader({ onParsed }: PolicyDocumentUploaderProps
       setStatusMessage('모의 증권 샘플 계약 정보를 분석 중입니다...');
 
       const parseRes = await parseSampleDocument();
+      const parsedData =
+        parseRes?.parsedData ||
+        (parseRes as unknown as { data?: { parsedData?: ParsedInsuranceData } })?.data
+          ?.parsedData ||
+        (parseRes as unknown as ParsedInsuranceData);
 
       setParsingStep('done');
       setStatusMessage('샘플 증권 분석 완료! 폼에 정보가 채워졌습니다.');
-      onParsed(parseRes.parsedData);
+      if (parsedData && 'institution' in parsedData) {
+        onParsed(parsedData);
+      }
     } catch (err) {
       setParsingStep('error');
       setErrorMessage((err as Error).message || '샘플 분석 실패');

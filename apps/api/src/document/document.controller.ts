@@ -22,19 +22,12 @@ export class DocumentController {
 
   @Get('sample/preset')
   getSamplePreset() {
-    return {
-      success: true,
-      data: this.documentService.getSamplePreset(),
-    };
+    return this.documentService.getSamplePreset();
   }
 
   @Post('sample/parse')
   async parseSampleDocument() {
-    const result = await this.documentService.parseSampleDocument();
-    return {
-      success: true,
-      data: result,
-    };
+    return this.documentService.parseSampleDocument();
   }
 
   @Post('upload')
@@ -51,52 +44,32 @@ export class DocumentController {
     @Query('productId') productId?: string,
   ) {
     const userId = BigInt(req.user?.userId || '1');
-    const result = await this.documentService.uploadDocument(
+    return this.documentService.uploadDocument(
       userId,
       file,
       productId ? BigInt(productId) : undefined,
     );
-
-    return {
-      success: true,
-      data: result,
-    };
   }
 
   @Post(':id/parse')
   @UseGuards(AuthGuard('jwt'))
   async parseDocument(@Param('id') id: string, @Req() req: RequestWithJwtUser) {
     const userId = BigInt(req.user?.userId || '1');
-    const result = await this.documentService.parseDocument(userId, BigInt(id));
-
-    return {
-      success: true,
-      data: result,
-    };
+    return this.documentService.parseDocument(userId, BigInt(id));
   }
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
   async getUserDocuments(@Req() req: RequestWithJwtUser) {
     const userId = BigInt(req.user?.userId || '1');
-    const documents = await this.documentService.getUserDocuments(userId);
-
-    return {
-      success: true,
-      data: documents,
-    };
+    return this.documentService.getUserDocuments(userId);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   async getDocument(@Param('id') id: string, @Req() req: RequestWithJwtUser) {
     const userId = BigInt(req.user?.userId || '1');
-    const document = await this.documentService.getDocument(userId, BigInt(id));
-
-    return {
-      success: true,
-      data: document,
-    };
+    return this.documentService.getDocument(userId, BigInt(id));
   }
 
   @Delete(':id')
@@ -106,14 +79,6 @@ export class DocumentController {
     @Req() req: RequestWithJwtUser,
   ) {
     const userId = BigInt(req.user?.userId || '1');
-    const result = await this.documentService.deleteDocument(
-      userId,
-      BigInt(id),
-    );
-
-    return {
-      success: true,
-      data: result,
-    };
+    return this.documentService.deleteDocument(userId, BigInt(id));
   }
 }
