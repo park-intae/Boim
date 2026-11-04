@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
+import { NotificationSchedulerService } from './notification-scheduler.service';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 
 describe('NotificationController', () => {
@@ -28,6 +29,10 @@ describe('NotificationController', () => {
     createNotification: jest.fn(),
   };
 
+  const mockSchedulerService = {
+    runBatch: jest.fn(),
+  };
+
   const mockReq = {
     user: { userId: '1', email: 'test@example.com' },
   } as unknown as RequestWithJwtUser;
@@ -41,6 +46,10 @@ describe('NotificationController', () => {
         {
           provide: NotificationService,
           useValue: mockNotificationService,
+        },
+        {
+          provide: NotificationSchedulerService,
+          useValue: mockSchedulerService,
         },
       ],
     }).compile();
@@ -96,6 +105,62 @@ describe('NotificationController', () => {
 
       expect(mockNotificationService.remove).toHaveBeenCalledWith(1n, 1n);
       expect(result).toBe(true);
+    });
+  });
+
+  describe('createNotification', () => {
+    it('새 알림을 생성한다', async () => {
+      mockNotificationService.createNotification.mockResolvedValue(
+        mockNotification,
+      );
+
+      const result = await controller.createNotification(mockReq, {
+        title: '새 알림',
+        message: '내용',
+      });
+
+      expect(mockNotificationService.createNotification).toHaveBeenCalled();
+      expect(result).toEqual(mockNotification);
+    });
+  });
+
+  describe('triggerBatch', () => {
+    it('지정한 기준 일자로 스케줄러 배치를 수동 구동한다', async () => {
+      const mockBatchResult = {
+        success: true,
+        targetDate: '2026-11-04',
+        scannedProducts: 1,
+        createdNotifications: 1,
+        skippedCount: 0,
+        details: [],
+      };
+      mockSchedulerService.runBatch.mockResolvedValue(mockBatchResult);
+
+      const result = await controller.triggerBatch({
+        targetDate: '2026-11-04',
+      });
+
+      expect(mockSchedulerService.runBatch).toHaveBeenCalledWith(
+        new Date('2026-11-04'),
+      );
+      expect(result).toEqual(mockBatchResult);
+    });
+
+    it('날짜 미입력 시 현재 시각 기준으로 배치를 수동 구동한다', async () => {
+      const mockBatchResult = {
+        success: true,
+        targetDate: '2026-11-04',
+        scannedProducts: 0,
+        createdNotifications: 0,
+        skippedCount: 0,
+        details: [],
+      };
+      mockSchedulerService.runBatch.mockResolvedValue(mockBatchResult);
+
+      const result = await controller.triggerBatch();
+
+      expect(mockSchedulerService.runBatch).toHaveBeenCalled();
+      expect(result).toEqual(mockBatchResult);
     });
   });
 });

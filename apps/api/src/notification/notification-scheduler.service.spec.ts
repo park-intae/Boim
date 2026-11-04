@@ -194,11 +194,63 @@ describe('NotificationSchedulerService', () => {
     });
   });
 
+  describe('dispatchExternalChannel', () => {
+    const candidate = {
+      userId: BigInt(1),
+      productId: BigInt(10),
+      productName: '실손보험',
+      type: 'payment' as const,
+      title: '납입 안내',
+      message: '납입일입니다',
+      channel: 'email',
+    };
+
+    it('email 채널일 때 sendEmail을 호출해야 한다', async () => {
+      const sendEmailSpy = jest.spyOn(service, 'sendEmail');
+      await service.dispatchExternalChannel(
+        'email',
+        candidate,
+        'user@test.com',
+      );
+      expect(sendEmailSpy).toHaveBeenCalledWith(
+        'user@test.com',
+        '납입 안내',
+        '납입일입니다',
+      );
+    });
+
+    it('push 채널일 때 sendPush를 호출해야 한다', async () => {
+      const sendPushSpy = jest.spyOn(service, 'sendPush');
+      await service.dispatchExternalChannel('push', candidate);
+      expect(sendPushSpy).toHaveBeenCalledWith(
+        '1',
+        '납입 안내',
+        '납입일입니다',
+      );
+    });
+
+    it('kakao 채널일 때 sendKakao를 호출해야 한다', async () => {
+      const sendKakaoSpy = jest.spyOn(service, 'sendKakao');
+      await service.dispatchExternalChannel('kakao', candidate);
+      expect(sendKakaoSpy).toHaveBeenCalledWith(
+        '1',
+        '납입 안내',
+        '납입일입니다',
+      );
+    });
+
+    it('외부 채널 발송 중 오류가 발생해도 예외를 전파하지 않고 흡수해야 한다', async () => {
+      jest
+        .spyOn(service, 'sendEmail')
+        .mockRejectedValueOnce(new Error('SMTP connection error'));
+      await expect(
+        service.dispatchExternalChannel('email', candidate, 'user@test.com'),
+      ).resolves.not.toThrow();
+    });
+  });
+
   describe('runBatch', () => {
-    it('도래한 알림을 생성하고, 중복 알림은 스킵해야 한다', () => {
-      // 2026-11-04 기준:
-      // product1: 만기일 2026-12-04 (30일 전)
-      // product2: 납입일 11일 (7일 전)
+    it('도래한 알림을 생성하고 외부 채널 분기 발송을 수행해야 한다', async () => {
       mockPrisma.insuranceProduct.findMany.mockResolvedValue([
         {
           id: BigInt(1),
@@ -212,6 +264,8 @@ describe('NotificationSchedulerService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           user: {
+            email: 'user@test.com',
+            name: '홍길동',
             notificationSettings: {
               pushEnabled: true,
               emailEnabled: false,
@@ -223,21 +277,23 @@ describe('NotificationSchedulerService', () => {
         },
       ]);
 
-      // 첫 번째는 중복 없음(null), 두 번째는 중복 발생 테스트를 위해 분기
       mockPrisma.notification.findFirst.mockResolvedValueOnce(null);
       mockPrisma.notification.create.mockResolvedValue({
         id: BigInt(100),
       } as any);
 
-      return service
-        .runBatch(new Date('2026-11-04T12:00:00+09:00'))
-        .then((result) => {
-          expect(result.success).toBe(true);
-          expect(result.scannedProducts).toBe(1);
-          expect(result.createdNotifications).toBe(1);
-          expect(result.skippedCount).toBe(0);
-          expect(mockPrisma.notification.create).toHaveBeenCalledTimes(1);
-        });
+      const dispatchSpy = jest.spyOn(service, 'dispatchExternalChannel');
+
+      const result = await service.runBatch(
+        new Date('2026-11-04T12:00:00+09:00'),
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.scannedProducts).toBe(1);
+      expect(result.createdNotifications).toBe(1);
+      expect(result.skippedCount).toBe(0);
+      expect(mockPrisma.notification.create).toHaveBeenCalledTimes(1);
+      expect(dispatchSpy).toHaveBeenCalled();
     });
 
     it('동일한 알림이 이미 오늘 생성되어 있으면 스킵해야 한다', async () => {
@@ -254,6 +310,8 @@ describe('NotificationSchedulerService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           user: {
+            email: 'user@test.com',
+            name: '홍길동',
             notificationSettings: null,
           },
         },

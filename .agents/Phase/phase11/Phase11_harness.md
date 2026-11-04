@@ -38,13 +38,14 @@
   - `quietHoursStart` ~ `quietHoursEnd` 방해 금지 시간대 체크 (방해 금지 시간일 경우 `in_app` 채널로 격리 적재)
 - [x] 스케줄러 서비스 단위 테스트 작성 및 통과 (14 passed, 100%)
 
-### 3. Phase 11-03: 다중 채널 발송 디스패처 및 수동 트리거 API
-- [ ] `NotificationDispatcherService` 구현
-  - In-app 알림 저장 (`Notification` DB insert)
-  - Email 발송 어댑터 (`nodemailer` 기반 모의/실제 전송 로깅)
-  - WebPush / 카카오 알림톡 모의 인터페이스
-- [ ] 스케줄러 수동 실행 및 테스트를 위한 개발용 엔드포인트 제공 (`POST /notifications/trigger-batch`)
-- [ ] 스케줄러 및 디스패처 단위 테스트 작성
+### 3. Phase 11-03: 다중 채널 발송 처리 및 수동 트리거 API
+- [x] 다중 채널 분기 발송 인터페이스 연동 (`NotificationSchedulerService`)
+  - In-app 알림 저장 (`Notification` DB insert 유지)
+  - Email 발송 어댑터 (`sendEmail` 모의 전송 로깅)
+  - WebPush / 카카오 알림톡 모의 인터페이스 (`sendPush`, `sendKakao` 모의 로깅)
+  - 외부 발송 실패 시에도 인앱 DB 저장이 보호되는 예외 격리 처리
+- [x] 스케줄러 수동 실행 및 테스트를 위한 개발/관리용 엔드포인트 제공 (`POST /notifications/trigger-batch`)
+- [x] 스케줄러 및 컨트롤러 단위 테스트 작성 및 통과 (34 passed, 100%)
 
 ### 4. Phase 11-04: 프론트엔드 연동 확인 및 전체 품질 검증
 - [ ] 프론트엔드 `NotificationList` 컴포넌트와 백엔드 DB 응답 인터페이스 정합성 확인

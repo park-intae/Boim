@@ -21,7 +21,7 @@
 - [x] **Phase 10:** 보험 증권 파일 업로드 & 패턴 매칭 데이터 자동 추출 및 폼 자동 입력(Prefill)
 - [x] **Phase 11-01:** Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD 완료
 - [x] **Phase 11-02:** `@nestjs/schedule` 기반 매일 자정 배치 크론 및 만기/납입일 탐색 엔진 구현 완료
-- [ ] **Phase 11-03:** 다중 채널 발송 디스패처 및 수동 트리거 API (`POST /notifications/trigger-batch`)
+- [x] **Phase 11-03:** 다중 채널 발송 처리 및 수동 트리거 API (`POST /notifications/trigger-batch`) 구현 완료
 - [ ] **Phase 11-04:** 프론트엔드 실시간 알림 연동 및 전체 품질 검증
 
 ---
@@ -40,7 +40,7 @@
 - [x] Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD (Phase 11-01)
 - [x] `@nestjs/schedule` 기반 매일 자정 납입 예정일(D-7, D-1) 및 만기 도래(D-30, D-7, D-Day) 탐색 배치 크론 (Phase 11-02)
 - [x] 중복 발송 방지(Idempotency) 및 사용자 방해 금지 시간(`quietHours`) 필터링 (Phase 11-02)
-- [ ] 다중 채널 발송 디스패처 (In-app, 이메일, 웹푸시 Mock) 및 수동 트리거 API (Phase 11-03 차기 예정)
+- [x] 다중 채널 발송 처리 (In-app, 이메일, 웹푸시 Mock) 및 수동 트리거 API (Phase 11-03)
 - [ ] 프론트엔드 알림 목록/설정 연동 및 전체 QA 검증 (Phase 11-04 차기 예정)
 
 ### 3. 내 보험 가입 현황 AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트) (차기 예정)

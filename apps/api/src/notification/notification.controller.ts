@@ -9,17 +9,35 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiParam,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import { NotificationService } from './notification.service';
+import { NotificationSchedulerService } from './notification-scheduler.service';
 import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 import type { CreateNotificationDto } from '@boim/shared-types';
+
+export class TriggerBatchDto {
+  @ApiPropertyOptional({
+    description:
+      '배치 기준 일자 (YYYY-MM-DD 또는 ISO 문자열, 미입력 시 당일 KST)',
+    example: '2026-11-04',
+  })
+  targetDate?: string;
+}
 
 @ApiTags('Notification (알림)')
 @Controller('notifications')
 @UseGuards(OptionalJwtAuthGuard)
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly schedulerService: NotificationSchedulerService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: '알림 목록 조회 (최신순)' })
@@ -68,5 +86,14 @@ export class NotificationController {
       channel: dto.channel || 'in_app',
       isRead: false,
     });
+  }
+
+  @Post('trigger-batch')
+  @ApiOperation({
+    summary: '보험 만기/납입일 알림 배치 수동 실행 (테스트/관리용)',
+  })
+  async triggerBatch(@Body() dto?: TriggerBatchDto) {
+    const targetDate = dto?.targetDate ? new Date(dto.targetDate) : new Date();
+    return this.schedulerService.runBatch(targetDate);
   }
 }

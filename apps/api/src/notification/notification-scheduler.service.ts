@@ -147,6 +147,7 @@ export class NotificationSchedulerService {
         const userSettings = product.user.notificationSettings;
         const channel = this.determineChannel(userSettings, targetDate);
 
+        // 1) DB 인앱 알림 레코드 생성
         await this.prisma.notification.create({
           data: {
             userId: candidate.userId,
@@ -160,6 +161,15 @@ export class NotificationSchedulerService {
           },
         });
 
+        // 2) 외부 채널(Email / Push / Kakao) 모의 발송 연동 (예외 격리)
+        if (channel !== 'in_app') {
+          await this.dispatchExternalChannel(
+            channel,
+            candidate,
+            product.user.email,
+          );
+        }
+
         result.createdNotifications++;
         result.details.push({
           productId: candidate.productId.toString(),
@@ -172,6 +182,91 @@ export class NotificationSchedulerService {
     }
 
     return result;
+  }
+
+  /**
+   * 외부 채널(Email / Push / Kakao) 모의 발송 인터페이스 및 로깅
+   */
+  async dispatchExternalChannel(
+    channel: string,
+    candidate: BatchNotificationCandidate,
+    userEmail?: string | null,
+  ): Promise<void> {
+    try {
+      switch (channel) {
+        case 'email':
+          await this.sendEmail(
+            userEmail ?? `user_${candidate.userId.toString()}@boim.local`,
+            candidate.title,
+            candidate.message,
+          );
+          break;
+        case 'push':
+          await this.sendPush(
+            candidate.userId.toString(),
+            candidate.title,
+            candidate.message,
+          );
+          break;
+        case 'kakao':
+          await this.sendKakao(
+            candidate.userId.toString(),
+            candidate.title,
+            candidate.message,
+          );
+          break;
+        default:
+          this.logger.warn(`지원되지 않는 알림 채널입니다: ${channel}`);
+          break;
+      }
+    } catch (err: unknown) {
+      const error = err as Error;
+      this.logger.error(
+        `외부 채널(${channel}) 발송 중 오류가 발생했으나 인앱 알림은 정상 보존되었습니다: ${error.message}`,
+        error.stack,
+      );
+    }
+  }
+
+  /**
+   * 이메일 발송 어댑터 (모의 전송 및 로깅)
+   */
+  async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
+    await Promise.resolve();
+    this.logger.log(
+      `[Email 전송 완료] 수신: ${to} | 제목: ${subject} | 내용: ${body.slice(0, 30)}...`,
+    );
+    return true;
+  }
+
+  /**
+   * 웹/모바일 푸시 발송 어댑터 (모의 전송 및 로깅)
+   */
+  async sendPush(
+    userId: string,
+    title: string,
+    body: string,
+  ): Promise<boolean> {
+    await Promise.resolve();
+    this.logger.log(
+      `[WebPush 전송 완료] 대상 유저: ${userId} | 제목: ${title} | 내용: ${body.slice(0, 30)}...`,
+    );
+    return true;
+  }
+
+  /**
+   * 카카오 알림톡 발송 어댑터 (모의 전송 및 로깅)
+   */
+  async sendKakao(
+    userId: string,
+    title: string,
+    body: string,
+  ): Promise<boolean> {
+    await Promise.resolve();
+    this.logger.log(
+      `[카카오 알림톡 전송 완료] 대상 유저: ${userId} | 내용: ${title} | 본문: ${body.slice(0, 30)}...`,
+    );
+    return true;
   }
 
   /**

@@ -5,6 +5,20 @@
 
 ---
 
+## [Phase 11-03] - 2026-11-04
+
+### 🚀 Added (신규 기능)
+- **다중 채널 발송 처리 및 수동 배치 트리거 API 구현 ([Phase 11-03](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-03_harness.md))**
+  - **다중 채널 분기 발송 어댑터 연동 (`NotificationSchedulerService`):**
+    - 알림 생성 후 채널에 따른 외부 분기 발송 인터페이스(`sendEmail`, `sendPush`, `sendKakao`) 연동 및 전송 로깅
+    - 외부 발송 실패 시에도 인앱 DB 저장이 안전하게 보존되는 예외 격리(Fault Tolerance) 처리
+  - **스케줄러 수동 실행 엔드포인트 (`POST /notifications/trigger-batch`):**
+    - `TriggerBatchDto`(`targetDate?: string`)를 통해 원하는 기준 날짜로 즉시 배치를 실행할 수 있는 관리/테스트용 API 추가
+    - Swagger 문서화 및 Optional JWT Guard 적용
+  - `NotificationController` 및 `NotificationSchedulerService` 단위 테스트 보강 (알림 모듈 총 34건 100% 통과)
+
+---
+
 ## [Phase 11-02] - 2026-11-04
 
 ### 🚀 Added (신규 기능)
