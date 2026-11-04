@@ -49,7 +49,7 @@ export type CreateInsuranceProductDto = Omit<InsuranceProductDto, 'id' | 'create
 
 export type UpdateInsuranceProductDto = Partial<CreateInsuranceProductDto>;
 
-export type NotificationType = 'payment' | 'renewal' | 'info';
+export type NotificationType = 'payment' | 'renewal' | 'maturity' | 'info';
 export type NotificationChannel = 'in_app' | 'email' | 'push' | 'kakao';
 
 export interface NotificationDto {

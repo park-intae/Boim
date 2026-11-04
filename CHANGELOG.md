@@ -5,6 +5,22 @@
 
 ---
 
+## [Phase 11-02] - 2026-11-04
+
+### 🚀 Added (신규 기능)
+- **스케줄러 배치 및 만기/납입일 탐색 엔진 구현 ([Phase 11-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-02_harness.md))**
+  - NestJS 11 호환 `@nestjs/schedule` 패키지 설치 및 `AppModule` 내 `ScheduleModule.forRoot()` 등록
+  - `NotificationSchedulerService` 구현:
+    - `@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })` 매일 자정 KST 배치 실행 크론 등록
+    - **월 보험료 납입일 탐색:** `startDate` 일자(day) 기준 당월/익월 납입일 D-7, D-1 도래 상품 정밀 계산 (월말 일수 보정 포함)
+    - **보험 만기일 탐색:** `maturityDate` 기준 D-30, D-7, D-Day 도래 상품 자동 감지
+    - **중복 발송 방지 (Idempotency):** 동일 사용자/상품/알림제목 기준 당일(00:00:00~23:59:59) 기발송 레코드 존재 여부 체크 및 중복 스킵
+    - **사용자 알림 설정 연동:** `UserNotificationSettings`의 야간 방해 금지 시간(`quietHoursStart` ~ `quietHoursEnd`) 감지 시 외부 채널 발송을 차단하고 `in_app` 채널로 격리 적재
+    - 테스트 및 관리자용 수동 배치 구동 메서드(`runBatch(targetDate)`) 및 결과 통계(`scannedProducts`, `createdNotifications`, `skippedCount`) 제공
+  - `NotificationSchedulerService` 단위 테스트 14건 작성 및 100% 통과
+
+---
+
 ## [Phase 11-01] - 2026-10-30
 
 ### 🚀 Added (신규 기능)

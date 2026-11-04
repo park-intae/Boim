@@ -25,17 +25,18 @@
 - [x] 인앱 알림 관련 서비스/컨트롤러 단위 테스트 작성
 
 ### 2. Phase 11-02: 스케줄러 배치 및 만기/납입일 탐색 엔진 (`@nestjs/schedule`)
-- [ ] `@nestjs/schedule` 패키지 설치 및 `AppModule`에 `ScheduleModule.forRoot()` 등록
-- [ ] `NotificationSchedulerService` 구현
-  - `@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)` 매일 자정 배치 실행 크론 등록
-  - KST 기준 당일 날짜 계산
-  - **보험료 납입일 계산:** 매월 시작일의 일자(Day) 기준 D-7, D-1 대상 상품 탐색
+- [x] `@nestjs/schedule` 패키지 설치 및 `AppModule`에 `ScheduleModule.forRoot()` 등록
+- [x] `NotificationSchedulerService` 구현
+  - `@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })` 매일 자정 배치 실행 크론 등록
+  - KST 기준 당일 날짜 계산 및 수동 구동(`runBatch`) 지원
+  - **보험료 납입일 계산:** 매월 시작일의 일자(Day) 기준 D-7, D-1 대상 상품 탐색 (월말 보정 포함)
   - **보험 만기일 계산:** `maturityDate` 기준 D-30, D-7, D-Day 대상 상품 탐색
-  - **중복 발송 방지 로직:** 동일 상품, 동일 알림 유형, 동일 발송일자에 이미 알림이 생성되었는지 중복 검증
-- [ ] 사용자 알림 설정 및 방해 금지 시간 필터링
+  - **중복 발송 방지 로직:** 동일 상품, 동일 알림 유형, 당일 이미 알림이 생성되었는지 중복 검증
+- [x] 사용자 알림 설정 및 방해 금지 시간 필터링
   - `UserNotificationSettings` 조회
   - 채널별 On/Off(`pushEnabled`, `emailEnabled`, `kakaoEnabled`) 체크
-  - `quietHoursStart` ~ `quietHoursEnd` 방해 금지 시간대 체크 (방해 금지 시간일 경우 발송 유예 또는 인앱 알림만 적재)
+  - `quietHoursStart` ~ `quietHoursEnd` 방해 금지 시간대 체크 (방해 금지 시간일 경우 `in_app` 채널로 격리 적재)
+- [x] 스케줄러 서비스 단위 테스트 작성 및 통과 (14 passed, 100%)
 
 ### 3. Phase 11-03: 다중 채널 발송 디스패처 및 수동 트리거 API
 - [ ] `NotificationDispatcherService` 구현

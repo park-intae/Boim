@@ -54,7 +54,9 @@ describe('NotificationService', () => {
 
   describe('findAll', () => {
     it('특정 사용자의 알림 목록을 최신순으로 조회하여 NotificationDto 배열로 반환한다', async () => {
-      mockPrismaService.notification.findMany.mockResolvedValue([mockNotification]);
+      mockPrismaService.notification.findMany.mockResolvedValue([
+        mockNotification,
+      ]);
 
       const result = await service.findAll(1n);
 
@@ -81,7 +83,9 @@ describe('NotificationService', () => {
 
   describe('markAsRead', () => {
     it('존재하는 알림을 읽음 처리하고 갱신된 DTO를 반환한다', async () => {
-      mockPrismaService.notification.findFirst.mockResolvedValue(mockNotification);
+      mockPrismaService.notification.findFirst.mockResolvedValue(
+        mockNotification,
+      );
       mockPrismaService.notification.update.mockResolvedValue({
         ...mockNotification,
         isRead: true,
@@ -124,7 +128,9 @@ describe('NotificationService', () => {
 
   describe('remove', () => {
     it('존재하는 알림을 삭제한다', async () => {
-      mockPrismaService.notification.findFirst.mockResolvedValue(mockNotification);
+      mockPrismaService.notification.findFirst.mockResolvedValue(
+        mockNotification,
+      );
       mockPrismaService.notification.delete.mockResolvedValue(mockNotification);
 
       await service.remove(1n, 101n);
