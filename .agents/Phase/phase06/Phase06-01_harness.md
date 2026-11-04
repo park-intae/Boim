@@ -1,3 +1,5 @@
+﻿> 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
+
 # Phase 06-01: 전역 레이아웃(AppLayout, Sidebar, RightPanel) 반응형 상세 포지셔닝
 
 ## 🎯 목표

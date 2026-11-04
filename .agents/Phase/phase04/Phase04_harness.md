@@ -1,3 +1,5 @@
+﻿> 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
+
 # Phase 04: MVP CRUD 및 API 연동 (Right Panel 기반)
 
 > **목표:** 프론트엔드와 백엔드 간의 통신(Axios, TanStack Query)을 연동하고, 별도의 모달이나 페이지 이동 없이 **우측 상세 패널(Right Panel)**을 메인 인터랙션(입력/수정/삭제) 영역으로 활용하여 보험 상품 데이터의 MVP CRUD 기능을 완성합니다. 중앙 캘린더는 읽기 전용(Read-Only) 뷰어 역할을 담당합니다.

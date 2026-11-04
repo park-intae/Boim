@@ -1,3 +1,5 @@
+﻿> 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
+
 # Phase 03: Frontend Layout & UI Detailing (SPA Restructure)
 
 > **목표:** `docs/design/wireframe.png`의 시각적 형태를 완벽하게 반영하는 단일 페이지 애플리케이션(SPA) 레이아웃 뼈대부터 세부 컴포넌트까지 사용자 지시에 따라 정밀하게 구축합니다.
