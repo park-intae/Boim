@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { ChevronLeft, Monitor, Smartphone } from 'lucide-react';
 import { useGetLoginHistory } from '../../../api/useUserQueries';
 import { format } from 'date-fns';

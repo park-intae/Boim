@@ -1,5 +1,4 @@
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import type { UserDto, UpdateUserDto, ApiResponse } from '@boim/shared-types';
 
 import { apiClient as api } from './client';
@@ -80,7 +79,7 @@ export const useUpdateNotificationSettings = () => {
       queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], (old: any) => ({ ...old, ...newSettings }));
       return { previous };
     },
-    onError: (err, newSettings, context) => {
+    onError: (_err, _newSettings, context) => {
       if (context?.previous) {
         queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], context.previous);
       }

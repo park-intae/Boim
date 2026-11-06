@@ -1,4 +1,5 @@
 import { useGetInsurances } from '../../api/useInsuranceQueries';
+import { useAppStore } from '../../store/useAppStore';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Activity, ShieldCheck, HeartPulse, Car, Umbrella } from 'lucide-react';
 
@@ -72,12 +73,12 @@ export function PremiumAnalysis() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {chartData.map((entry, index) => (
+                    {chartData.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => [`${value.toLocaleString()}원`, '납입액']}
+                    formatter={(value: any) => [`${Number(value || 0).toLocaleString()}원`, '납입액']}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -85,7 +86,7 @@ export function PremiumAnalysis() {
             
             <div className="flex flex-col gap-3 pb-8">
               <h4 className="text-[14px] font-bold text-gray-900 mb-1">상세 내역</h4>
-              {chartData.map((item, idx) => {
+              {chartData.map((item) => {
                 const percentage = totalPayment > 0 ? Math.round((item.value / totalPayment) * 100) : 0;
                 return (
                   <div key={item.name} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100/50">
@@ -118,7 +119,6 @@ export function PremiumAnalysis() {
             <button 
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-[13px] font-bold rounded-lg transition-colors"
               onClick={() => {
-                const { useAppStore } = require('../../store/useAppStore');
                 useAppStore.getState().setPanelMode('form');
               }}
             >

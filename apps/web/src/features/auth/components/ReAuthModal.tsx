@@ -32,7 +32,10 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({
     setError('');
 
     try {
-      const response = await apiClient.post<{ success: boolean; message?: string }>('/auth/reauth', { password });
+      const response = (await apiClient.post('/auth/reauth', { password })) as unknown as {
+        success: boolean;
+        message?: string;
+      };
       
       if (response.success) {
         onSuccess();

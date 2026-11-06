@@ -26,7 +26,7 @@ export class UserService {
     });
   }
 
-  async updatePassword(id: bigint, newPassword: string) {
+  async updatePassword(id: bigint, _newPassword: string) {
     const user = await this.getUserById(id);
     if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
     return true;
@@ -67,7 +67,7 @@ export class UserService {
     return user;
   }
 
-  async importData(userId: bigint, data: any) {
+  async importData(_userId: bigint, _data: any) {
     // 임시 모의 로직
     return true;
   }

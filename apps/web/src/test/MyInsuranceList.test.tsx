@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MyInsuranceList } from '../components/layout/MyInsuranceList';
-import { useGetInsurances, useDeleteInsurance } from '../api/useInsuranceQueries';
+import { useGetInsurances } from '../api/useInsuranceQueries';
 import { useAppStore } from '../store/useAppStore';
 
 vi.mock('../api/useInsuranceQueries', () => ({

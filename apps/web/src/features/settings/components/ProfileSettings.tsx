@@ -1,4 +1,4 @@
-import React, { useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useGetProfile, useUpdateProfile } from '../../../api/useUserQueries';
 
@@ -15,7 +15,7 @@ export const ProfileSettings = ({ onBack }: { onBack: () => void }) => {
         await updateProfile({ name });
         alert('프로필이 성공적으로 업데이트되었습니다.');
         onBack();
-      } catch (err) {
+      } catch {
         alert('프로필 업데이트에 실패했습니다.');
       }
     });

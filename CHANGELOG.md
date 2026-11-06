@@ -5,10 +5,31 @@
 
 ---
 
+## [Phase 11-04] - 2026-11-06
+
+### 🚀 Added (신규 기능)
+- **프론트엔드 알림 연동 및 Phase 11 스케줄러 배치/알림 시스템 완성 ([Phase 11 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11_sub_harness.md))**
+  - **프론트엔드 실시간 알림 쿼리 훅 보강 (`useNotificationQueries.ts`):**
+    - `useMarkAllNotificationsRead`: 본인 소유 모든 알림 일괄 읽음 처리 (`PATCH /notifications/read-all`)
+    - `useTriggerBatch`: 개발/테스트용 스케줄러 즉시 실행 훅 (`POST /notifications/trigger-batch`)
+    - 백엔드 스키마 일치 (`productId`, `channel`, `isRead` 등)
+  - **알림 리스트 UI/UX 고도화 (`NotificationList.tsx`):**
+    - 알림 종류별(`maturity`, `renewal`, `payment`) 맞춤형 아이콘 렌더링
+    - '모두 읽음' 원클릭 처리 및 '즉시 스캔' 수동 배치 트리거 버튼 제공
+    - 읽지 않은 알림 뱃지 카운트 및 상대 시간 표시 UX 개선
+  - **품질 무결성 검증 (Tests & Builds):**
+    - 프론트엔드 단위/컴포넌트 테스트 56건 100% Pass (Vitest)
+    - 백엔드 단위 테스트 131건 100% Pass (Jest)
+    - TypeScript strict 모드 빌드(`pnpm build`) 및 린트(`pnpm lint`, oxlint/eslint) 전사 통과
+  - **하네스 정리 및 2-File Rule 준수:**
+    - Phase 11 하위 하네스들을 단일 `Phase11_sub_harness.md`로 통합 정리
+
+---
+
 ## [Phase 11-03] - 2026-11-04
 
 ### 🚀 Added (신규 기능)
-- **다중 채널 발송 처리 및 수동 배치 트리거 API 구현 ([Phase 11-03](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-03_harness.md))**
+- **다중 채널 발송 처리 및 수동 배치 트리거 API 구현 ([Phase 11 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11_sub_harness.md))**
   - **다중 채널 분기 발송 어댑터 연동 (`NotificationSchedulerService`):**
     - 알림 생성 후 채널에 따른 외부 분기 발송 인터페이스(`sendEmail`, `sendPush`, `sendKakao`) 연동 및 전송 로깅
     - 외부 발송 실패 시에도 인앱 DB 저장이 안전하게 보존되는 예외 격리(Fault Tolerance) 처리
@@ -22,7 +43,7 @@
 ## [Phase 11-02] - 2026-11-04
 
 ### 🚀 Added (신규 기능)
-- **스케줄러 배치 및 만기/납입일 탐색 엔진 구현 ([Phase 11-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-02_harness.md))**
+- **스케줄러 배치 및 만기/납입일 탐색 엔진 구현 ([Phase 11 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11_sub_harness.md))**
   - NestJS 11 호환 `@nestjs/schedule` 패키지 설치 및 `AppModule` 내 `ScheduleModule.forRoot()` 등록
   - `NotificationSchedulerService` 구현:
     - `@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, { timeZone: 'Asia/Seoul' })` 매일 자정 KST 배치 실행 크론 등록
@@ -38,7 +59,7 @@
 ## [Phase 11-01] - 2026-10-30
 
 ### 🚀 Added (신규 기능)
-- **Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD ([Phase 11-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11-01_harness.md))**
+- **Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD ([Phase 11 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase11/Phase11_sub_harness.md))**
   - `Notification` 모델 필드 확장 (`userId`, `title`, `message`, `channel`, `isRead`, `createdAt`) 및 `User`, `InsuranceProduct` 관계 정립
   - `NotificationService` 인메모리 더미 배열에서 PostgreSQL + Prisma 영속 저장소 연동으로 전면 전환
   - 본인 소유 알림 최신순 조회(`findAll`), 개별 읽음 처리(`markAsRead`), 전체 일괄 읽음 처리(`markAllAsRead`), 삭제(`remove`), 알림 생성(`createNotification`) API 구현
@@ -51,7 +72,7 @@
 ## [Phase 10] - 2026-10-30
 
 ### 🚀 Added (신규 기능)
-- **보험 증권 파일 업로드 & 패턴 매칭 데이터 자동 추출 ([Phase 10-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase10/Phase10-01_harness.md), [Phase 10-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase10/Phase10-02_harness.md))**
+- **보험 증권 파일 업로드 & 패턴 매칭 데이터 자동 추출 ([Phase 10 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase10/Phase10_sub_harness.md))**
   - 백엔드 `Multer` 기반 증권 파일(PDF, PNG, JPG, TXT) 안전 업로드 API (`POST /documents/upload`)
   - `Tesseract.js` OCR 연동 및 고성능 정규식/휴리스틱 패턴 매칭 파서 엔진 구현
   - 토큰 소모 없는 즉각적 보험 계약 데이터(보험사, 상품명, 카테고리, 월납입액, 만기일 등) 추출
@@ -73,15 +94,15 @@
 ## [Phase 09] - 2026-10-29
 
 ### 🚀 Added (신규 기능)
-- **회원가입 플로우 및 간이 PASS 본인인증 ([Phase 09-05](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09-05_harness.md))**
+- **회원가입 플로우 및 간이 PASS 본인인증 ([Phase 09 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09_sub_harness.md))**
   - 신규 이메일/비밀번호 기반 회원가입 화면(`SignUp.tsx`) 구현
   - 간이 PASS 본인인증 화면(`PassVerification.tsx`) 및 통신사(SKT, KT, LGU+, 알뜰폰) 선택/인증번호 발송 로직 추가
   - 백엔드 `AuthService.register` 및 PASS 인증 완료 시 DB `isPassVerified` 및 `passCi` 동기화
-- **설정 내 간이(Mock) 소셜 계정 연동 ([Phase 09-06](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09-06_harness.md))**
+- **설정 내 간이(Mock) 소셜 계정 연동 ([Phase 09 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09_sub_harness.md))**
   - 설정 패널에 '소셜 계정 연동' 메뉴 및 상세 뷰(`SocialAccountsSettings.tsx`) 구현
   - 백엔드 카카오/네이버 연동 상태 조회(`GET /auth/social/status`) 및 원클릭 간이 연동/해제 API 구현
   - 향후 상용 OAuth2 연동으로 즉시 교체할 수 있는 공식 SDK/컴포넌트 삽입 가이드 주석 추가
-- **로그아웃 및 세션 정리 ([Phase 09-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09-02_harness.md))**
+- **로그아웃 및 세션 정리 ([Phase 09 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09_sub_harness.md))**
   - 백엔드 `POST /auth/logout` 엔드포인트 및 DB `refreshToken` 제거
   - 프론트엔드 `useLogout` 훅을 통한 상태/스토리지 전면 초기화
 
@@ -89,10 +110,10 @@
 - **비밀번호 암호화 및 시드 인프라**
   - 백엔드 `bcrypt` 도입 및 `seed.ts` 스크립트를 통한 안전한 테스트 계정(`test@boim.com`) 시딩
   - 로그인 및 재인증(Re-Auth) 시 DB 조회 및 `bcrypt.compare` 해시 검증 적용
-- **하이브리드 인증 스토리지 및 라우트 보호 ([Phase 09-03](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09-03_harness.md))**
+- **하이브리드 인증 스토리지 및 라우트 보호 ([Phase 09 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09_sub_harness.md))**
   - '기기 기억하기(Remember Me)' 옵션에 따라 `localStorage`(ON) 또는 `sessionStorage`(OFF)로 토큰 저장소를 동적으로 전환하는 하이브리드 스토리지 어댑터 적용
   - 비인가 사용자의 메인 페이지 접근 차단 및 `/login` 리다이렉트(`ProtectedRoute.tsx`)
-- **사용자 프로필 동기화 ([Phase 09-04](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09-04_harness.md))**
+- **사용자 프로필 동기화 ([Phase 09 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase09/Phase09_sub_harness.md))**
   - 로그인 및 인증 시 DB에 저장된 실제 사용자 이름(`name`)과 `isPassVerified` 상태를 프론트엔드 스토어에 동기화
 
 ### 🎨 Fixed & Improved

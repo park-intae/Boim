@@ -55,7 +55,7 @@ export const SignUp: React.FC = () => {
         user?: { id: string; email: string; name?: string; isPassVerified: boolean };
       }>;
 
-      const resObj = response as Record<string, unknown>;
+      const resObj = response as unknown as Record<string, unknown>;
       const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
       const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
 

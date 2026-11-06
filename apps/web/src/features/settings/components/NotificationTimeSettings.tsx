@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useGetNotificationSettings, useUpdateNotificationSettings } from '../../../api/useUserQueries';
 

@@ -48,7 +48,7 @@
 - [x] 스케줄러 및 컨트롤러 단위 테스트 작성 및 통과 (34 passed, 100%)
 
 ### 4. Phase 11-04: 프론트엔드 연동 확인 및 전체 품질 검증
-- [ ] 프론트엔드 `NotificationList` 컴포넌트와 백엔드 DB 응답 인터페이스 정합성 확인
-- [ ] 프론트엔드 알림 읽음/삭제 및 설정 패널 동작 확인
-- [ ] 전체 빌드(`pnpm build`), 린트(`pnpm lint`), 테스트(`pnpm test`) 무결성 검증
-- [ ] `CHANGELOG.md`, `README.md`, `Phase_harness.md` 작업 이력 동기화
+- [x] 프론트엔드 `NotificationList` 컴포넌트와 백엔드 DB 응답 인터페이스 정합성 확인
+- [x] 프론트엔드 알림 읽음/삭제 및 설정 패널 동작 확인
+- [x] 전체 빌드(`pnpm build`), 린트(`pnpm lint`), 테스트(`pnpm test`) 무결성 검증
+- [x] `CHANGELOG.md`, `README.md`, `Phase_harness.md` 작업 이력 동기화

@@ -7,7 +7,7 @@
 ## 🛠️ 기술 스택 (Tech Stack)
 
 - **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, TanStack Query, Zustand, React Hook Form, Zod, Lucide Icons, Recharts, oxlint
-- **Backend:** NestJS 11, Prisma ORM, PostgreSQL, Passport, JWT, bcrypt, Multer, Tesseract.js
+- **Backend:** NestJS 11, Prisma ORM, PostgreSQL, Passport, JWT, bcrypt, Multer, Tesseract.js, `@nestjs/schedule`
 - **Architecture:** pnpm 워크스페이스 모노레포 (`apps/web`, `apps/api`, `packages/shared-types`)
 
 ---
@@ -30,13 +30,18 @@
    - 보험 증권(PDF, 이미지, TXT) 업로드 시 OCR 및 고성능 패턴 매칭 엔진을 통해 계약 정보 자동 추출
    - 가상 모의 증권 샘플(`[가상 모의 증권 샘플로 원클릭 분석해보기]`)을 통한 원클릭 테스트 지원
    - 추출된 데이터(보험사, 상품명, 카테고리, 월납입액, 만기일 등)가 입력 폼에 즉시 자동으로 채워짐(Prefill)
-5. **인증 & 보안 인프라:**
+5. **알림 스케줄러 배치 및 다중 채널 발송:**
+   - 매일 자정(00:00 KST) 크론 배치를 통한 월 납입일(D-7, D-1) 및 만기일(D-30, D-7, D-Day) 자동 감지
+   - 당일 중복 발송 방지(Idempotency) 및 야간 방해 금지 시간(`quietHours`) 필터링
+   - In-app(DB 영속 저장), Email, Push, Kakao 다중 채널 발송 및 수동 트리거 지원
+   - 프론트엔드 알림 리스트, 뱃지 카운트, 일괄 읽음 처리 실시간 연동
+6. **인증 & 보안 인프라:**
    - bcrypt 기반 비밀번호 해시 암호화 및 DB 연동
    - 기기 기억하기(Remember Me) 설정에 따른 `sessionStorage` / `localStorage` 하이브리드 세션 관리
    - 회원가입 플로우 및 간이 PASS 본인인증
    - 민감 작업 보호를 위한 재인증(Re-Auth) 모달
    - 설정 패널 내 간이(Mock) 카카오/네이버 소셜 계정 연동
-   - 업로드된 증권 문서에 대한 Row-level 소유권 통제
+   - 업로드된 증권 문서 및 알림에 대한 Row-level 소유권 통제
 
 ---
 
@@ -49,7 +54,8 @@
 | **Phase 06~08** | 반응형 모바일 전환, 전사 단위/통합 테스트 (100% Pass), 재인증 모달 | **완료** |
 | **Phase 09** | 신규 회원가입, 간이 PASS 본인인증, 하이브리드 세션 관리, 소셜 연동 UI | **완료** |
 | **Phase 10** | **보험 증권 파일 업로드 & 패턴 매칭 자동 분석 및 폼 자동 입력(Prefill)** | **완료** |
-| **Phase 11 (예정)** | 보험 만기 & 보험료 납입일 스케줄러 배치 및 알림 발송 / AI 종합 진단 리포트 | 예정 |
+| **Phase 11** | **보험 만기 & 보험료 납입일 스케줄러 배치 및 다중 채널 알림 발송** | **완료** |
+| **Phase 12 (예정)** | 내 보험 가입 현황 AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트) | 예정 |
 
 ---
 

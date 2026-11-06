@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGetNotificationSettings, useUpdateNotificationSettings } from '../../../api/useUserQueries';
 
 export const NotificationSettingsSection = ({ setActiveView }: { setActiveView: (view: 'menu' | 'profile' | 'password' | 'notificationTime') => void }) => {
