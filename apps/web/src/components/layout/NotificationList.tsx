@@ -75,12 +75,13 @@ export function NotificationList() {
           <button
             onClick={() => triggerBatch(undefined)}
             disabled={isBatchRunning}
-            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors text-xs flex items-center gap-1"
+            className="px-2.5 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 rounded-lg transition-colors text-xs flex items-center gap-1.5 font-medium"
             title="스케줄러 알림 즉시 동기화"
           >
             <RefreshCw
-              className={`w-4 h-4 ${isBatchRunning ? 'animate-spin text-indigo-600' : ''}`}
+              className={`w-3.5 h-3.5 ${isBatchRunning ? 'animate-spin text-indigo-600' : ''}`}
             />
+            <span>{isBatchRunning ? '스캔 중...' : '즉시 스캔'}</span>
           </button>
           {unreadCount > 0 && (
             <button

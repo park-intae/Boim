@@ -110,6 +110,25 @@ describe('NotificationList Component', () => {
     expect(mockMarkAll).toHaveBeenCalled();
   });
 
+  it('즉시 스캔 버튼을 클릭하면 triggerBatch가 호출되어야 한다.', () => {
+    const mockTriggerBatch = vi.fn();
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
+      data: mockNotifications,
+      isLoading: false,
+    } as never);
+    vi.mocked(useNotificationQueries.useTriggerBatch).mockReturnValue({
+      mutate: mockTriggerBatch,
+      isPending: false,
+    } as never);
+
+    render(<NotificationList />);
+
+    const triggerButton = screen.getByText('즉시 스캔');
+    fireEvent.click(triggerButton);
+
+    expect(mockTriggerBatch).toHaveBeenCalledWith(undefined);
+  });
+
   it('데이터가 비어있을 때 Empty State 안내 문구가 올바르게 렌더링되어야 한다.', () => {
     vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
       data: [],
