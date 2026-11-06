@@ -14,12 +14,20 @@ export interface NotificationDto {
   createdAt: string;
 }
 
+export interface TriggerBatchResult {
+  success: boolean;
+  targetDate: string;
+  scannedProducts: number;
+  createdNotifications: number;
+  skippedCount: number;
+}
+
 export function useGetNotifications() {
-  return useQuery<NotificationDto[]>({
+  return useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
       const { data } = await apiClient.get<NotificationDto[]>('/notifications');
-      return data;
+      return data || [];
     },
   });
 }
@@ -75,10 +83,14 @@ export function useTriggerBatch() {
 
   return useMutation({
     mutationFn: async (targetDate?: string | void) => {
-      const { data } = await apiClient.post('/notifications/trigger-batch', {
-        targetDate: targetDate || undefined,
-      });
-      return data;
+      const response = await apiClient.post<any>(
+        '/notifications/trigger-batch',
+        {
+          targetDate: targetDate || undefined,
+        },
+      );
+      const result = (response as any)?.data || response;
+      return result as TriggerBatchResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });

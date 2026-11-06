@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Bell,
   AlertCircle,
@@ -22,6 +23,42 @@ export function NotificationList() {
     useMarkAllNotificationsRead();
   const { mutate: deleteNotification } = useDeleteNotification();
   const { mutate: triggerBatch, isPending: isBatchRunning } = useTriggerBatch();
+
+  const [feedback, setFeedback] = useState<{
+    message: string;
+    type: 'info' | 'success' | 'error';
+  } | null>(null);
+
+  const handleTriggerBatch = () => {
+    triggerBatch(undefined, {
+      onSuccess: (res: any) => {
+        const created = res?.createdNotifications ?? 0;
+        const scanned = res?.scannedProducts ?? 0;
+        if (created > 0) {
+          setFeedback({
+            type: 'success',
+            message: `새 알림 ${created}건이 생성되었습니다. (총 ${scanned}건 검사)`,
+          });
+        } else {
+          setFeedback({
+            type: 'info',
+            message: `스캔 완료: 보험 ${scanned}건 검사됨 (현재 도래한 알림 대상 없음)`,
+          });
+        }
+        setTimeout(() => setFeedback(null), 4000);
+      },
+      onError: (err: any) => {
+        setFeedback({
+          type: 'error',
+          message:
+            err?.error?.message ||
+            err?.message ||
+            '스캔 요청 중 오류가 발생했습니다.',
+        });
+        setTimeout(() => setFeedback(null), 4000);
+      },
+    });
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -73,15 +110,15 @@ export function NotificationList() {
         </div>
         <div className="flex items-center gap-1.5">
           <button
-            onClick={() => triggerBatch(undefined)}
+            onClick={handleTriggerBatch}
             disabled={isBatchRunning}
-            className="px-2.5 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-200 rounded-lg transition-colors text-xs flex items-center gap-1.5 font-medium"
+            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors text-xs flex items-center justify-center"
             title="스케줄러 알림 즉시 동기화"
+            aria-label="알림 새로고침"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isBatchRunning ? 'animate-spin text-indigo-600' : ''}`}
+              className={`w-4 h-4 ${isBatchRunning ? 'animate-spin text-indigo-600' : ''}`}
             />
-            <span>{isBatchRunning ? '스캔 중...' : '즉시 스캔'}</span>
           </button>
           {unreadCount > 0 && (
             <button
@@ -95,6 +132,26 @@ export function NotificationList() {
           )}
         </div>
       </div>
+
+      {feedback && (
+        <div
+          className={`mx-4 mt-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all duration-200 ${
+            feedback.type === 'success'
+              ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+              : feedback.type === 'error'
+              ? 'bg-red-50 text-red-700 border border-red-100'
+              : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+          }`}
+        >
+          <span>{feedback.message}</span>
+          <button
+            onClick={() => setFeedback(null)}
+            className="p-0.5 hover:opacity-70 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
         {isLoading ? (

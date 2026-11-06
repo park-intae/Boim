@@ -110,7 +110,7 @@ describe('NotificationList Component', () => {
     expect(mockMarkAll).toHaveBeenCalled();
   });
 
-  it('즉시 스캔 버튼을 클릭하면 triggerBatch가 호출되어야 한다.', () => {
+  it('알림 새로고침(동기화) 버튼을 클릭하면 triggerBatch가 호출되어야 한다.', () => {
     const mockTriggerBatch = vi.fn();
     vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
       data: mockNotifications,
@@ -123,10 +123,10 @@ describe('NotificationList Component', () => {
 
     render(<NotificationList />);
 
-    const triggerButton = screen.getByText('즉시 스캔');
-    fireEvent.click(triggerButton);
+    const refreshButton = screen.getByTitle('스케줄러 알림 즉시 동기화');
+    fireEvent.click(refreshButton);
 
-    expect(mockTriggerBatch).toHaveBeenCalledWith(undefined);
+    expect(mockTriggerBatch).toHaveBeenCalled();
   });
 
   it('데이터가 비어있을 때 Empty State 안내 문구가 올바르게 렌더링되어야 한다.', () => {
