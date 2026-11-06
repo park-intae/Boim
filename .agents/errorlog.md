@@ -62,8 +62,7 @@
   1. 백엔드 서비스에서는 순수 페이로드(`{ accessToken, refreshToken }`)만 반환하도록 표준화하고, 검증 실패 시 `UnauthorizedException`을 throw하여 전역 `HttpExceptionFilter`가 올바른 `ApiResponse` 에러 구조로 변환하도록 수정.
   2. 프론트엔드 `Login.tsx`는 다중 구조를 수용하는 방어적 토큰 파싱을 적용하고, 응답 실패 시 사용자에게 즉각 에러 피드백을 노출하도록 개선.
 
-> **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
-## 9. 컨트롤러 응답 객체 직접 래핑에 따른 이중 래핑 및 프론트엔드 파싱 오류 (`reading 'category'`)
+## 10. 컨트롤러 응답 객체 직접 래핑에 따른 이중 래핑 및 프론트엔드 파싱 오류 (`reading 'category'`)
 - **발생 상황:** Phase 10 증권 파일 업로드 & 패턴 매칭 데이터 파싱 API 연동 중.
 - **오류 내용:**
   1. 백엔드 `main.ts`에 `TransformInterceptor`가 전역 등록되어 있어 컨트롤러가 반환한 데이터를 자동으로 `{ success: true, data: result }`로 감싸줌에도 불구하고, `DocumentController`에서 수동으로 `{ success: true, data: result }` 객체를 감싸서 반환함 (2번 오류 재발).
@@ -73,3 +72,27 @@
   1. **백엔드:** `DocumentController`의 모든 라우트 핸들러에서 수동 래핑을 제거하고 `return this.documentService...` 형태로 순수 데이터만 반환하도록 수정.
   2. **프론트엔드 API 계층:** `useDocumentQueries.ts`에 재귀적 `unwrapResponse` 헬퍼 함수를 적용하여 단일/이중 래핑 여부에 관계없이 항상 순수한 알맹이 데이터를 보장하도록 방어 처리.
   3. **UI 컴포넌트:** `InsuranceForm.tsx`와 `PolicyDocumentUploader.tsx`의 핸들러에 `if (!parsed || typeof parsed !== 'object') return;` 가드를 두어 데이터 유효성 검증을 다중화.
+
+## 11. 알림 수동 스캔 시 시각적 피드백 부재로 인한 '무반응' 오인 이슈
+- **발생 상황:** Phase 11 알림 패널에서 스케줄러 즉시 동기화(🔄) 버튼 클릭 시.
+- **오류 내용:** 당일 기준 만기/납입 예정 대상이 0건일 때 백엔드 API는 정상적으로 200 OK와 `{ createdNotifications: 0 }`을 반환했으나, UI에 성공 토스트나 결과 안내 배너가 없어 사용자가 버튼을 눌러도 시스템이 동작하지 않는 것으로 오인함.
+- **해결 및 예방:** 스캔 완료 시 상단에 실시간 인앱 피드백 배너(`feedback`)를 즉시 띄워 "알림 검사 완료: X건 검사, Y건 신규 등록" 메시지를 명확히 안내함으로써 작업 상태를 투명하게 전달.
+
+## 12. Prisma BigInt 직렬화 및 프론트엔드 옵셔널 필드 접근 시 TypeError
+- **발생 상황:** Phase 12 AI 종합 진단 및 엑셀 다운로드 기능 구현 중.
+- **오류 내용:**
+  1. Prisma DB에서 `coverageAmount`는 `BigInt` 타입인데, 이를 DTO 또는 엑셀 라이브러리에 바로 전달할 경우 JSON 직렬화 불가(TypeError)가 발생할 위험이 있음.
+  2. 프론트엔드 `AiDiagnosisReport.tsx`에서 `diagnosis.totalCoverageAmount`가 옵셔널이거나 비어있을 때 안전 가드 없이 `.toLocaleString()`을 호출하여 컴포넌트 렌더링 중 크래시 발생.
+- **해결 및 예방:**
+  1. 백엔드 서비스 계층에서 BigInt 필드는 DTO 매핑 시 반드시 `Number(p.coverageAmount)`로 안전 변환 처리.
+  2. 프론트엔드에서는 `(diagnosis.totalCoverageAmount ?? 0).toLocaleString()`처럼 널 병합 연산자(Nullish coalescing)를 사용하여 옵셔널 필드에 대한 방어 코드를 필수로 작성.
+
+## 13. 브라우저 인쇄(`window.print()`) 시 뷰포트 높이 고정으로 인한 내용 짤림 버그
+- **발생 상황:** Phase 12-04 AI 종합 진단 리포트 인쇄/PDF 저장 기능 실행 시.
+- **오류 내용:** SPA의 3열 레이아웃 특성상 최상위(`AppLayout`), 우측 패널(`RightPanel`), 리포트(`AiDiagnosisReport`)에 `h-screen`, `h-[85vh]`, `overflow-hidden`, `overflow-y-auto`가 지정되어 있어, 브라우저 인쇄 엔진이 현재 화면에 보이는 뷰포트 높이만큼만 캡처하여 스크롤 아래쪽 내용(카테고리별 적정도, 리모델링 조언 카드 3종 등)이 인쇄물에서 완전히 잘려나감.
+- **해결 및 예방:**
+  1. 상위 컨테이너 전반에 `@media print` 스타일(`print:h-auto print:overflow-visible print:block`)을 일괄 적용하여 인쇄 시 뷰포트/스크롤 높이 제한을 완전히 해제.
+  2. 인쇄 시 불필요한 UI(사이드바, 헤더, 캘린더, 액션 버튼)는 `print:hidden`으로 숨기고 리포트를 A4 전체 폭(100%)으로 확장.
+  3. 각 카드 요소에 `.print-avoid-break`(`page-break-inside: avoid`) 스타일을 부여하여 A4 페이지 경계선에서 카드가 반으로 잘리지 않고 깔끔하게 다음 페이지로 넘어가도록 개선.
+
+> **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
