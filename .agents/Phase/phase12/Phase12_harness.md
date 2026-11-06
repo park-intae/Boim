@@ -20,12 +20,12 @@
 - [x] 단위 테스트 작성 및 100% Pass (`ai-diagnosis.service.spec.ts`, `analysis.controller.spec.ts`)
 
 ### 2. Phase 12-02: 백엔드 데이터 내보내기 (Excel XLSX & PDF 데이터) API 구현
-- [ ] `exceljs` 기반 엑셀 파일 생성 서비스 구현
+- [x] `exceljs` 기반 엑셀 파일 생성 서비스 구현
   - 시트 1: 내 보험 가입 목록 (보험사, 상품명, 카테고리, 월납입액, 보장금액, 만기일 등)
   - 시트 2: 카테고리별 통계 및 납입 요약
   - 시트 3: AI 종합 진단 결과 요약
-- [ ] 엔드포인트 구현: `GET /analysis/export/excel` (스트림 또는 버퍼 다운로드 헤더 설정)
-- [ ] 단위 테스트 작성 및 100% Pass
+- [x] 엔드포인트 구현: `GET /analysis/export/excel` (스트림 또는 버퍼 다운로드 헤더 설정)
+- [x] 단위 테스트 작성 및 100% Pass
 
 ### 3. Phase 12-03: 프론트엔드 AI 종합 진단 리포트 UI 및 시각화
 - [ ] TanStack Query 훅 구현 (`useDiagnosisQueries.ts`)

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnalysisController } from './analysis.controller';
 import { AiDiagnosisService } from './ai-diagnosis.service';
+import { ExportService } from './export.service';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 
 describe('AnalysisController', () => {
@@ -24,6 +25,12 @@ describe('AnalysisController', () => {
     diagnoseUserInsurances: jest.fn().mockResolvedValue(mockDiagnosisResult),
   };
 
+  const mockExportService = {
+    generateExcelReport: jest
+      .fn()
+      .mockResolvedValue(Buffer.from('fake-excel-data')),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AnalysisController],
@@ -31,6 +38,10 @@ describe('AnalysisController', () => {
         {
           provide: AiDiagnosisService,
           useValue: mockAiDiagnosisService,
+        },
+        {
+          provide: ExportService,
+          useValue: mockExportService,
         },
       ],
     }).compile();
@@ -81,6 +92,34 @@ describe('AnalysisController', () => {
       expect(
         mockAiDiagnosisService.diagnoseUserInsurances,
       ).toHaveBeenCalledWith(BigInt(5));
+    });
+  });
+
+  describe('exportExcel (GET /analysis/export/excel)', () => {
+    it('엑셀 다운로드 헤더를 설정하고 바이너리 버퍼를 응답 스트림으로 전송해야 한다.', async () => {
+      const mockReq = {
+        user: { userId: '3', email: 'test3@boim.com' },
+      } as any;
+
+      const mockRes = {
+        setHeader: jest.fn(),
+        end: jest.fn(),
+      } as any;
+
+      await controller.exportExcel(mockReq, mockRes);
+
+      expect(mockExportService.generateExcelReport).toHaveBeenCalledWith(
+        BigInt(3),
+      );
+      expect(mockRes.setHeader).toHaveBeenCalledWith(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      expect(mockRes.setHeader).toHaveBeenCalledWith(
+        'Content-Disposition',
+        expect.stringContaining('attachment; filename='),
+      );
+      expect(mockRes.end).toHaveBeenCalledWith(Buffer.from('fake-excel-data'));
     });
   });
 });

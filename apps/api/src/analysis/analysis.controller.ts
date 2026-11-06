@@ -1,10 +1,13 @@
-import { Controller, Post, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, Req, Res } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse as SwaggerResponse,
+  ApiProduces,
 } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { AiDiagnosisService } from './ai-diagnosis.service';
+import { ExportService } from './export.service';
 import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
@@ -13,7 +16,10 @@ import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 @Controller('analysis')
 @UseGuards(OptionalJwtAuthGuard)
 export class AnalysisController {
-  constructor(private readonly aiDiagnosisService: AiDiagnosisService) {}
+  constructor(
+    private readonly aiDiagnosisService: AiDiagnosisService,
+    private readonly exportService: ExportService,
+  ) {}
 
   @Post('ai-diagnosis')
   @ApiOperation({
@@ -43,5 +49,37 @@ export class AnalysisController {
   ): Promise<InsuranceDiagnosisDto> {
     const userId = BigInt(req.user?.userId || '1');
     return this.aiDiagnosisService.diagnoseUserInsurances(userId);
+  }
+
+  @Get('export/excel')
+  @ApiOperation({
+    summary: '내 보험 포트폴리오 및 AI 진단 리포트 Excel(XLSX) 다운로드',
+    description:
+      '가입 보험 상세 목록, 카테고리별 통계, AI 종합 진단 결과가 포함된 엑셀 파일을 다운로드합니다.',
+  })
+  @ApiProduces(
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  async exportExcel(
+    @Req() req: RequestWithJwtUser,
+    @Res() res: Response,
+  ): Promise<void> {
+    const userId = BigInt(req.user?.userId || '1');
+    const buffer = await this.exportService.generateExcelReport(userId);
+
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0].replace(/-/g, '');
+    const filename = `boim_insurance_report_${dateStr}.xlsx`;
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${encodeURIComponent(filename)}"`,
+    );
+    res.setHeader('Content-Length', buffer.length);
+    res.end(buffer);
   }
 }

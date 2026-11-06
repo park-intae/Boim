@@ -5,6 +5,21 @@
 
 ---
 
+## [Phase 12-02] - 2026-11-06
+
+### 🚀 Added (신규 기능)
+- **백엔드 데이터 내보내기 (Excel XLSX 리포트) 서비스 및 API 구현 ([Phase 12-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase12/Phase12-02_harness.md))**
+  - **`exceljs` 기반 다중 시트 엑셀 보고서 자동 생성 엔진 구축 (`ExportService`):**
+    - **시트 1 (가입 보험 상세):** 번호, 보험사, 상품명, 카테고리, 월 납입액, 보장금액, 가입일, 만기일 및 하단 합계 통계 (통화 서식 및 Indigo-600 브랜드 헤더 스타일링 적용)
+    - **시트 2 (카테고리별 통계):** 실손, 암/건강, 종신, 자동차 등 카테고리별 건수, 총 월 납입액, 총 보장금액, 납입 비중(%) 요약 테이블
+    - **시트 3 (AI 종합 진단):** 종합 진단 점수 및 등급, 한줄평, 카테고리별 보장 적정도(ADEQUATE, UNDER_COVERED 등), 강점/보완점/절감팁 구조화 요약
+  - **다운로드 스트림 엔드포인트 구현 (`AnalysisController`):**
+    - `GET /analysis/export/excel`: 바이너리 스트림 다운로드 헤더(`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `boim_insurance_report_YYYYMMDD.xlsx`) 적용
+  - **단위 테스트 작성 (`export.service.spec.ts`):**
+    - 엑셀 버퍼 생성 및 시트 복원 유효성 검증 테스트 추가 (백엔드 단위 테스트 총 145건 100% 통과)
+
+---
+
 ## [Phase 12-01] - 2026-11-06
 
 ### 🚀 Added (신규 기능)
