@@ -95,4 +95,24 @@
   2. 인쇄 시 불필요한 UI(사이드바, 헤더, 캘린더, 액션 버튼)는 `print:hidden`으로 숨기고 리포트를 A4 전체 폭(100%)으로 확장.
   3. 각 카드 요소에 `.print-avoid-break`(`page-break-inside: avoid`) 스타일을 부여하여 A4 페이지 경계선에서 카드가 반으로 잘리지 않고 깔끔하게 다음 페이지로 넘어가도록 개선.
 
+## 14. TypeScript strict 모드(`tsc -b`) 미사용 식별자(`TS6133`) 빌드 실패 오류
+- **발생 상황:** 컴포넌트 리팩토링 후 전체 모노레포 빌드(`pnpm build`) 수행 중.
+- **오류 내용:** `tsconfig`의 `noUnusedLocals: true` 엄격 옵션으로 인해 컴포넌트 파일 상단에 import해두고 JSX 내에서 사용하지 않은 아이콘(`HelpCircle`)이 존재할 경우 `error TS6133: 'HelpCircle' is declared but its value is never read.` 에러와 함께 전체 빌드가 중단됨.
+- **해결 및 예방:** 컴포넌트 수정 후 커밋 전 반드시 `pnpm build`를 선제적으로 실행하여 미사용 import 및 로컬 변수를 철저히 검수하고 즉시 제거할 것.
+
+## 15. Axios 클라이언트 인터셉터 사전 언래핑에 따른 React Query 응답 불일치 위험
+- **발생 상황:** 프론트엔드 신규 API 쿼리 훅(`useDiagnosisQueries.ts` 등) 개발 중.
+- **오류 내용:** 공통 `apiClient`(`apps/web/src/api/client.ts`)에 응답 인터셉터(`response => response.data`)가 기본 등록되어 있어, 백엔드 전역 `TransformInterceptor`의 `{ success: true, data: T }` 중 백엔드가 보낸 응답 본문 전체가 반환됨. 이때 프론트엔드 훅에서 `response.data`를 한 번 더 참조하면 백엔드 래핑 구조에 따라 `undefined`가 될 수 있음.
+- **해결 및 예방:** 신규 쿼리 훅 작성 시 `const unwrapData = (res: any) => (res as any)?.data ?? res;`와 같은 방어적 언래핑 유틸을 공통 적용하여 단일/이중 래핑에 상관없이 순수한 페이로드 데이터(`data: T`)를 안전하게 추출하도록 표준화.
+
+## 16. 패키지 설치 시 백그라운드 개발 서버(Dev Server) 예기치 않은 종료 현상
+- **발생 상황:** Phase 12-02 `exceljs` 패키지 설치(`pnpm add exceljs`) 수행 중.
+- **오류 내용:** 백엔드/프론트엔드 dev 서버가 구동 중인 상태에서 새로운 npm 패키지를 설치하면 pnpm의 심볼릭 링크 및 노드 모듈 락 갱신 과정에서 백그라운드 데몬 프로세스가 예기치 않게 종료되어 API 포트(4000)가 오프라인이 됨.
+- **해결 및 예방:** 신규 패키지 설치 직후에는 반드시 프로세스 및 포트 리스닝 상태(`curl` 또는 태스크 상태)를 확인하고, 서버가 종료된 경우 즉시 dev 서버를 재기동하여 연동 단절을 방지할 것.
+
+## 17. CI/자동화 환경에서 Vitest Watch 대화형 모드 블로킹(Hang) 현상
+- **발생 상황:** 백그라운드 태스크로 프론트엔드 단위 테스트 실행 시.
+- **오류 내용:** `pnpm --filter web test` 명령은 기본적으로 vitest의 인터랙티브 watch 모드로 진입하여 터미널이 무한 대기(Hang) 상태에 빠져 다음 자동화 파이프라인이 진행되지 않음.
+- **해결 및 예방:** 비대화형 일회성 테스트 검증 시에는 반드시 `pnpm --filter web exec vitest run` 플래그를 명시하여 테스트 종료 후 프로세스가 정상적으로 0/1 코드를 반환하고 종료되도록 실행할 것.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
