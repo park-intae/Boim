@@ -114,6 +114,32 @@ export interface DocumentParseResponse {
   parsedData: ParsedInsuranceData;
 }
 
+export type DiagnosisGrade = 'EXCELLENT' | 'GOOD' | 'NORMAL' | 'NEEDS_ATTENTION' | 'WARNING';
+
+export type CoverageStatus = 'ADEQUATE' | 'OVER_COVERED' | 'UNDER_COVERED' | 'NOT_COVERED';
+
+export interface CategoryEvaluation {
+  category: string;
+  status: CoverageStatus;
+  currentAmount: number;
+  recommendedAmount: number;
+  comment: string;
+}
+
+export interface InsuranceDiagnosisDto {
+  score: number;
+  grade: DiagnosisGrade;
+  summary: string;
+  totalMonthlyPayment: number;
+  totalCoverageAmount: number;
+  categoryEvaluations: CategoryEvaluation[];
+  strengths: string[];
+  improvements: string[];
+  costSavingTips: string[];
+  generatedAt: string;
+  isFallback: boolean;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;

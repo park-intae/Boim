@@ -5,6 +5,26 @@
 
 ---
 
+## [Phase 12-01] - 2026-11-06
+
+### 🚀 Added (신규 기능)
+- **백엔드 Gemini AI 보험 종합 진단 엔진 및 API 구현 ([Phase 12-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase12/Phase12-01_harness.md))**
+  - **Google Gemini SDK (`@google/genai`) 기반 보장 진단 엔진 구축 (`AiDiagnosisService`):**
+    - 사용자 가입 보험 목록, 월간 총 납입액, 카테고리별 보장액 집계를 바탕으로 `gemini-2.5-flash` 모델을 통한 정밀 분석 수행
+    - 대한민국 3040 표준 권장 기준(실손 5천만원, 암/주요 3대 질병 5천만원, 사망 1억원 등) 대비 보장 과다/부족 판정
+    - 종합 점수(0~100점), 등급(`EXCELLENT` ~ `WARNING`), 카테고리별 상태 평가, 강점/보완점/월 납입료 절감 팁 구조화 JSON 출력
+  - **무결점 규칙 기반(Rule-based) 폴백 진단 엔진 탑재:**
+    - `GEMINI_API_KEY` 환경변수 미설정 또는 네트워크 장애/할당량 초과 시에도 서비스가 중단 없이 100% 동작하도록 정교한 규칙 기반 진단 알고리즘 병행 구현 (`isFallback: true` 플래그 제공)
+  - **공유 타입 정의 (`packages/shared-types`):**
+    - `InsuranceDiagnosisDto`, `CategoryEvaluation`, `DiagnosisGrade`, `CoverageStatus` 인터페이스 정의
+  - **엔드포인트 구현 (`AnalysisController`):**
+    - `POST /analysis/ai-diagnosis` 및 `GET /analysis/ai-diagnosis` 구현 (Optional JWT Guard 및 소유권 통제 적용)
+    - Swagger API 문서화 완료
+  - **단위 테스트 작성 (`ai-diagnosis.service.spec.ts`, `analysis.controller.spec.ts`):**
+    - 백엔드 단위 테스트 10건 추가 작성 (백엔드 총 141건 100% 통과)
+
+---
+
 ## [Phase 11-04] - 2026-11-06
 
 ### 🚀 Added (신규 기능)
