@@ -72,7 +72,7 @@ export function RightPanel() {
       {/* Mobile Accordion Toggle Button (Visible only when closed on mobile) */}
       {!isMobileOpen && (
         <div 
-          className="lg:hidden w-full bg-white border-t border-gray-100 shadow-[0_-8px_20px_rgba(0,0,0,0.04)] p-4 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors rounded-t-3xl z-20 shrink-0 mt-auto" 
+          className="lg:hidden w-full bg-white border-t border-gray-100 shadow-[0_-8px_20px_rgba(0,0,0,0.04)] p-4 flex justify-between items-center cursor-pointer active:bg-gray-50 transition-colors rounded-t-3xl z-20 shrink-0 mt-auto print:hidden" 
           onClick={() => setIsMobileOpen(true)}
         >
           <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export function RightPanel() {
 
       {/* Dimmed Background Overlay for Mobile Bottom Sheet */}
       <div 
-        className={`lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300 print:hidden ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsMobileOpen(false)}
       />
 
@@ -102,16 +102,17 @@ export function RightPanel() {
         ${isMobileOpen ? 'translate-y-0' : 'translate-y-full'}
         
         lg:relative lg:inset-auto lg:transform-none lg:h-full lg:shadow-none lg:rounded-none lg:bg-transparent lg:w-[380px] lg:flex-shrink-0 lg:px-0 lg:pr-10 lg:pb-12 lg:z-30 lg:mt-0 lg:transition-none lg:translate-y-0
+        print:static print:w-full print:max-w-full print:h-auto print:p-0 print:m-0 print:shadow-none print:transform-none print:overflow-visible print:block
       `}>
         {/* Handle for mobile sheet (visual only) */}
-        <div className="lg:hidden w-full flex justify-center pt-3 pb-2 shrink-0">
+        <div className="lg:hidden w-full flex justify-center pt-3 pb-2 shrink-0 print:hidden">
           <div className="w-12 h-1.5 bg-gray-200 rounded-full" />
         </div>
 
-        <div className="w-full h-full lg:bg-white lg:border lg:border-gray-100 lg:shadow-[0_2px_12px_rgba(0,0,0,0.05)] lg:rounded-3xl flex flex-col overflow-hidden relative">
+        <div className="w-full h-full lg:bg-white lg:border lg:border-gray-100 lg:shadow-[0_2px_12px_rgba(0,0,0,0.05)] lg:rounded-3xl flex flex-col overflow-hidden relative print:h-auto print:overflow-visible print:border-none print:shadow-none print:rounded-none print:block">
         
         {/* 1. Header */}
-        <div className="px-6 lg:px-7 pt-4 lg:pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0">
+        <div className={`px-6 lg:px-7 pt-4 lg:pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0 ${panelMode === 'ai-diagnosis' ? 'print:hidden' : ''}`}>
           <div className="flex items-center gap-3">
             <h2 className="text-[20px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight">
               {panelMode === 'form' ? '보험 등록' : panelMode === 'settings' ? '설정' : panelMode === 'ai-diagnosis' ? 'AI 종합 진단' : format(selectedDate, 'M월 d일')}

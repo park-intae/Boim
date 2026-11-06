@@ -21,6 +21,13 @@
   - **하네스 정리 및 2-File Rule 준수:**
     - `.agents/Phase/phase12/` 디렉토리 내 `Phase12_harness.md` 및 `Phase12_sub_harness.md` 단일화 완료
 
+### 🐛 Fixed (버그 수정)
+- **리포트 인쇄 시 뷰포트 높이 고정으로 인한 내용 짤림 버그 수정:**
+  - 상위 레이아웃(`AppLayout`, `RightPanel`, `AiDiagnosisReport`)의 `h-screen`, `overflow-hidden`, `overflow-y-auto` 제약을 `@media print` 및 `print:h-auto print:overflow-visible`로 일괄 해제
+  - 인쇄 시 사이드바, 헤더, 캘린더 및 버튼 UI를 숨기고 리포트를 A4 전체 폭(100%)으로 확장
+  - 카드 요소에 `break-inside: avoid`를 적용하여 페이지 경계선에서 카드가 잘리지 않고 자연스럽게 다음 페이지로 넘어가도록 개선
+  - 인쇄 전용 공식 리포트 타이틀 및 발행일시 헤더 추가
+
 ---
 
 ## [Phase 12-03] - 2026-11-06
