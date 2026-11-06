@@ -28,15 +28,15 @@
 - [x] 단위 테스트 작성 및 100% Pass
 
 ### 3. Phase 12-03: 프론트엔드 AI 종합 진단 리포트 UI 및 시각화
-- [ ] TanStack Query 훅 구현 (`useDiagnosisQueries.ts`)
-- [ ] 'AI 종합 진단' 패널/탭 UI 구현
+- [x] TanStack Query 훅 구현 (`useDiagnosisQueries.ts`)
+- [x] 'AI 종합 진단' 패널/탭 UI 구현
   - 종합 건강 점수 원형 게이지 차트
   - 카테고리별 보장 적정도 바(Bar) 차트
   - AI 1:1 맞춤형 리모델링 조언 카드 (강점, 보완 필요, 절감 팁)
-- [ ] Vitest 컴포넌트 단위 테스트 작성
+- [x] Vitest 컴포넌트 단위 테스트 작성
 
 ### 4. Phase 12-04: 프론트엔드 리포트 다운로드(Excel / PDF) 연동 및 전체 품질 무결성 검증
-- [ ] 원클릭 Excel(.xlsx) 파일 다운로드 버튼 연동
-- [ ] 브라우저 인쇄 친화적(Print-friendly) PDF 리포트 뷰 및 출력 기능 구현
-- [ ] 모노레포 전체 빌드(`pnpm build`), 린트(`pnpm lint`), 테스트(`pnpm test`) 무결성 검증
-- [ ] 하네스 단일화 (`Phase12_sub_harness.md`) 및 `CHANGELOG.md`, `README.md` 최종 동기화
+- [x] 원클릭 Excel(.xlsx) 파일 다운로드 버튼 연동
+- [x] 브라우저 인쇄 친화적(Print-friendly) PDF 리포트 뷰 및 출력 기능 구현
+- [x] 모노레포 전체 빌드(`pnpm build`), 린트(`pnpm lint`), 테스트(`pnpm test`) 무결성 검증
+- [x] 하네스 단일화 (`Phase12_sub_harness.md`) 및 `CHANGELOG.md`, `README.md` 최종 동기화

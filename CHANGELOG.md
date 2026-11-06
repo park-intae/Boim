@@ -5,6 +5,45 @@
 
 ---
 
+## [Phase 12-04] - 2026-11-06
+
+### 🚀 Added (신규 기능)
+- **리포트 내보내기/인쇄 연동 및 Phase 12 AI 종합 진단 시스템 완성 ([Phase 12 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase12/Phase12_sub_harness.md))**
+  - **프론트엔드 원클릭 Excel(.xlsx) 리포트 다운로드 연동 (`AiDiagnosisReport.tsx`, `useDiagnosisQueries.ts`):**
+    - 백엔드 `ExportService` 바이너리 스트림과 연동하여 한글 파일명 및 MIME 타입이 보장된 Blob 다운로드 파이프라인 구축
+    - 상단 헤더 액션 버튼 및 하단 리포트 액션 바에서 원클릭으로 엑셀 리포트 즉시 다운로드 지원
+  - **브라우저 인쇄 친화적(Print-friendly) PDF 리포트 뷰 및 출력 기능:**
+    - `window.print()` 호출 및 `@media print` 스타일(`print:hidden`, 백그라운드 색상 보존)을 적용하여 깔끔한 PDF 저장/인쇄 기능 구현
+  - **품질 무결성 검증 (Tests & Builds):**
+    - 프론트엔드 단위/컴포넌트 테스트 65건 100% Pass (Vitest)
+    - 백엔드 단위 테스트 145건 100% Pass (Jest)
+    - TypeScript strict 모드 빌드(`pnpm build`) 및 린트(`pnpm lint`, oxlint/eslint) 전사 통과
+  - **하네스 정리 및 2-File Rule 준수:**
+    - `.agents/Phase/phase12/` 디렉토리 내 `Phase12_harness.md` 및 `Phase12_sub_harness.md` 단일화 완료
+
+---
+
+## [Phase 12-03] - 2026-11-06
+
+### 🚀 Added (신규 기능)
+- **프론트엔드 AI 종합 진단 리포트 UI 및 시각화 구현 ([Phase 12 Sub-Harness](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase12/Phase12_sub_harness.md))**
+  - **전역 상태 및 진단 쿼리 훅 연동 (`useAppStore.ts`, `useDiagnosisQueries.ts`):**
+    - `panelMode === 'ai-diagnosis'` 전역 패널 모드 지원 및 `RightPanel.tsx` 조건부 렌더링 추가
+    - TanStack Query 기반 `useGetDiagnosis`, `useGenerateDiagnosis`, `useExportExcel` 훅 구현
+  - **네비게이션 진입점 연동:**
+    - 좌측 사이드바(`Sidebar.tsx`)에 'AI 종합 진단' 메뉴 항목 추가 (`Sparkles` 아이콘)
+    - 보험료 분석 패널(`PremiumAnalysis.tsx`) 상단에 'AI 맞춤 종합 진단' 배너 바로가기 링크 탑재
+  - **AI 종합 진단 리포트 UI 컴포넌트 (`AiDiagnosisReport.tsx`):**
+    - 종합 건강 점수 카드 (0~100점 점수, `EXCELLENT` ~ `WARNING` 등급 배지, AI 총평, 총 월 납입액 및 총 보장금액 칩)
+    - 카테고리별 보장 적정도 프로그레스 바 및 뱃지 (`적정`, `부족`, `과다`, `미가입`)
+    - AI 1:1 맞춤형 리모델링 조언 카드 (든든한 보장 포인트, 보완 필요 항목, 월 보험료 절감 팁)
+    - 규칙 기반 폴백 엔진 감지 시 배지 안내
+    - 가입 보험이 없을 때의 Empty State 및 새 보험 등록 전환 지원
+  - **프론트엔드 단위 테스트 작성 (`AiDiagnosisReport.test.tsx`):**
+    - 리포트 UI 정상 렌더링, 재분석/엑셀다운로드/인쇄 인터랙션, Empty State 검증 테스트 추가 (6건 100% Pass)
+
+---
+
 ## [Phase 12-02] - 2026-11-06
 
 ### 🚀 Added (신규 기능)

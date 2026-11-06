@@ -7,7 +7,7 @@
 ## 🛠️ 기술 스택 (Tech Stack)
 
 - **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, TanStack Query, Zustand, React Hook Form, Zod, Lucide Icons, Recharts, oxlint
-- **Backend:** NestJS 11, Prisma ORM, PostgreSQL, Passport, JWT, bcrypt, Multer, Tesseract.js, `@nestjs/schedule`
+- **Backend:** NestJS 11, Prisma ORM, PostgreSQL, Passport, JWT, bcrypt, Multer, Tesseract.js, `@nestjs/schedule`, `@google/genai`, `exceljs`
 - **Architecture:** pnpm 워크스페이스 모노레포 (`apps/web`, `apps/api`, `packages/shared-types`)
 
 ---
@@ -42,6 +42,12 @@
    - 민감 작업 보호를 위한 재인증(Re-Auth) 모달
    - 설정 패널 내 간이(Mock) 카카오/네이버 소셜 계정 연동
    - 업로드된 증권 문서 및 알림에 대한 Row-level 소유권 통제
+7. **AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트):**
+   - Google Gemini AI 기반 3040 권장 보장 기준 대비 과다/부족 분석 및 맞춤형 리모델링 조언
+   - AI API 장애/미설정 시 100% 무결점 동작을 보장하는 정밀 규칙 기반(Rule-based) 폴백 엔진
+   - 종합 건강 점수, 등급, 카테고리별 보장 적정도 프로그레스 바, 강점/보완점/절감팁 시각화 리포트
+   - 다중 시트(가입 상세, 카테고리별 통계, AI 진단 요약) 자동 서식 지원 Excel(.xlsx) 리포트 다운로드
+   - 인쇄 친화적(@media print) 스타일이 적용된 원클릭 PDF 리포트 출력 및 저장
 
 ---
 
@@ -55,7 +61,7 @@
 | **Phase 09** | 신규 회원가입, 간이 PASS 본인인증, 하이브리드 세션 관리, 소셜 연동 UI | **완료** |
 | **Phase 10** | **보험 증권 파일 업로드 & 패턴 매칭 자동 분석 및 폼 자동 입력(Prefill)** | **완료** |
 | **Phase 11** | **보험 만기 & 보험료 납입일 스케줄러 배치 및 다중 채널 알림 발송** | **완료** |
-| **Phase 12 (예정)** | 내 보험 가입 현황 AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트) | 예정 |
+| **Phase 12** | **내 보험 가입 현황 AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트)** | **완료** |
 
 ---
 
