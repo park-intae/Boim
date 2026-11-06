@@ -1,7 +1,15 @@
 import { useGetInsurances } from '../../api/useInsuranceQueries';
 import { useAppStore } from '../../store/useAppStore';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Activity, ShieldCheck, HeartPulse, Car, Umbrella } from 'lucide-react';
+import {
+  Activity,
+  ShieldCheck,
+  HeartPulse,
+  Car,
+  Umbrella,
+  Sparkles,
+  ChevronRight,
+} from 'lucide-react';
 
 export function PremiumAnalysis() {
   const { data: insurances = [] } = useGetInsurances();
@@ -59,6 +67,32 @@ export function PremiumAnalysis() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6">
+        {/* AI 종합 진단 바로가기 배너 */}
+        <div
+          onClick={() => useAppStore.getState().setPanelMode('ai-diagnosis')}
+          className="p-4 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-100 hover:border-indigo-200 transition-all cursor-pointer flex items-center justify-between group shadow-sm hover:shadow"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[13px] font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  AI 맞춤 종합 진단
+                </span>
+                <span className="text-[9px] font-extrabold bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full">
+                  NEW
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-500 mt-0.5">
+                내 보장 과다/부족 진단 & 리모델링 조언 보기
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
+        </div>
+
         {chartData.length > 0 ? (
           <>
             <div className="h-[220px] w-full shrink-0">

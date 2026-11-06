@@ -19,6 +19,10 @@ vi.mock('../components/layout/PolicyDocumentUploader', () => ({
   PolicyDocumentUploader: () => <div data-testid="mock-uploader" />,
 }));
 
+vi.mock('../components/layout/AiDiagnosisReport', () => ({
+  AiDiagnosisReport: () => <div data-testid="mock-ai-diagnosis" />,
+}));
+
 const initialStoreState = useAppStore.getState();
 
 describe('RightPanel Component', () => {
@@ -90,5 +94,13 @@ describe('RightPanel Component', () => {
     // confirm 호출 및 deleteInsurance 호출 확인
     expect(window.confirm).toHaveBeenCalledWith('정말 이 보험 일정을 삭제하시겠습니까?');
     expect(mockDelete).toHaveBeenCalledWith('999');
+  });
+
+  it('panelMode가 ai-diagnosis일 때 AI 종합 진단 헤더 및 컴포넌트가 렌더링되어야 한다.', () => {
+    useAppStore.setState({ panelMode: 'ai-diagnosis' });
+    render(<RightPanel />);
+
+    expect(screen.getByText('AI 종합 진단')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-ai-diagnosis')).toBeInTheDocument();
   });
 });

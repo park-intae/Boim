@@ -61,4 +61,13 @@ describe('Sidebar Component', () => {
     
     expect(useAppStore.getState().panelMode).toBe('notifications');
   });
+
+  it('"AI 종합 진단" 메뉴를 클릭하면 panelMode가 "ai-diagnosis"로 변경되어야 한다.', () => {
+    render(<Sidebar />);
+    
+    const diagnosisMenu = screen.getByText('AI 종합 진단');
+    fireEvent.click(diagnosisMenu);
+    
+    expect(useAppStore.getState().panelMode).toBe('ai-diagnosis');
+  });
 });
