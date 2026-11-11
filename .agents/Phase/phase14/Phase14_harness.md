@@ -54,9 +54,9 @@
 - [x] 리포트 컨테이너 단순화 및 각 서브 컴포넌트 단위 테스트 작성/통과
 
 #### 6. Phase 14-06: 백엔드 도메인 비즈니스 규칙 엔진 분리
-- [ ] `AiDiagnosisService`에서 순수 규칙 기반 진단 엔진(`RuleBasedDiagnosisEngine.ts`) 분리
-- [ ] `NotificationSchedulerService`에서 만기/도래 판정 순수 도메인 규칙 엔진(`NotificationRuleEvaluator.ts`) 분리
-- [ ] 백엔드 단위 테스트 100% 통과 및 의존성 주입 구조 최적화
+- [x] `AiDiagnosisService`에서 순수 규칙 기반 진단 엔진(`rule-based-diagnosis.engine.ts`) 분리
+- [x] `NotificationSchedulerService`에서 만기/도래 판정 순수 도메인 규칙 엔진(`notification-rule.evaluator.ts`) 분리
+- [x] 백엔드 단위 테스트 100% 통과 및 의존성 주입 구조 최적화 (26개 스위트, 170개 테스트 통과)
 
 #### 7. Phase 14-07: `InsuranceForm.tsx` 비즈니스 로직 훅 분리
 - [ ] 폼 상태 관리, 유효성 검증, 데이터 변환 로직을 커스텀 훅(`useInsuranceForm.ts`)으로 분리
