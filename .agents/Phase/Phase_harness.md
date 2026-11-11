@@ -54,6 +54,11 @@
   - [ ] **Phase 17-02:** Docker Compose 풀스택 오케스트레이션 (PostgreSQL + API + Web/Nginx 리버스 프록시)
   - [ ] **Phase 17-03:** GitHub Actions CI 파이프라인 구축 (Lint, 349개 Test, Build 자동 검증)
   - [ ] **Phase 17-04:** 상용 배포 보안 환경 변수 템플릿(`.env.production.example`) 및 배포 가이드 문서화
+- [ ] **Phase 18: Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)**
+  - [ ] **Phase 18-01:** `apps/mobile` Expo(React Native) 프로젝트 세팅 및 `shared-types` 연동
+  - [ ] **Phase 18-02:** 4대 핵심 탭(캘린더, 내 보험, AI 리포트, 마이페이지) 네이티브 UI 포팅
+  - [ ] **Phase 18-03:** 모바일 SafeArea 최적화, 제스처, 오프라인 폴백 UI 고도화
+  - [ ] **Phase 18-04:** 모바일 단위 테스트 및 스마트폰 설치용 독립 실행형 APK 빌드
 
 ---
 
@@ -71,3 +76,7 @@
 ### 3. Phase 17: 컨테이너 오케스트레이션 & CI 자동화 (Production Packaging)
 - [ ] `docker compose up` 단 한 번으로 로컬/서버에서 풀스택 즉시 구동 환경 구축
 - [ ] PR/Push 시 GitHub Actions 클라우드 환경에서 린트/테스트/빌드 자동 검증
+
+### 4. Phase 18: Expo 모바일 앱 구축 및 APK 패키징 (Mobile App)
+- [ ] 모노레포 `apps/mobile` 패키지 구축 및 Expo Router 기반 4대 핵심 탭 UI 완성
+- [ ] 스마트폰 즉시 실행(Expo Go) 및 독립 설치용 `.apk` 파일 빌드 완료
