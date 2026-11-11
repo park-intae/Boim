@@ -2,11 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { InsuranceForm } from '../components/layout/InsuranceForm';
 import { useAppStore } from '../store/useAppStore';
-import { useCreateInsurance, useUpdateInsurance } from '../api/useInsuranceQueries';
+import { useCreateInsurance, useUpdateInsurance, useGetInsurances } from '../api/useInsuranceQueries';
 import type { ParsedInsuranceData } from '@boim/shared-types';
 
 // 모킹
 vi.mock('../api/useInsuranceQueries', () => ({
+  useGetInsurances: vi.fn(),
   useCreateInsurance: vi.fn(),
   useUpdateInsurance: vi.fn(),
 }));
@@ -45,10 +46,15 @@ describe('InsuranceForm Component', () => {
     vi.clearAllMocks();
     useAppStore.setState(useAppStore.getState(), true);
 
+    vi.mocked(useGetInsurances).mockReturnValue({
+      data: [],
+    } as unknown as ReturnType<typeof useGetInsurances>);
+
     vi.mocked(useCreateInsurance).mockReturnValue({
       mutate: mockCreate,
       isPending: false,
     } as unknown as ReturnType<typeof useCreateInsurance>);
+
     vi.mocked(useUpdateInsurance).mockReturnValue({
       mutate: mockUpdate,
       isPending: false,
@@ -114,6 +120,45 @@ describe('InsuranceForm Component', () => {
       expect(screen.getByDisplayValue('50000000')).toBeInTheDocument();
       expect(screen.getByDisplayValue('2024-03-01')).toBeInTheDocument();
       expect(screen.getByDisplayValue('2044-03-01')).toBeInTheDocument();
+    });
+  });
+
+  it('수정 모드(editingProductId 존재)일 때 기존 데이터가 채워지고 제출 시 updateInsurance가 호출되어야 한다.', async () => {
+    useAppStore.setState({ editingProductId: 777 });
+
+    vi.mocked(useGetInsurances).mockReturnValue({
+      data: [
+        {
+          id: 777,
+          userId: 1,
+          category: '암보험',
+          name: '기존 암보험 상품',
+          institution: '교보생명',
+          startDate: '2023-01-01',
+          maturityDate: '2043-01-01',
+          monthlyPayment: 60000,
+          coverageAmount: 30000000,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+    } as unknown as ReturnType<typeof useGetInsurances>);
+
+    render(<InsuranceForm />);
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('기존 암보험 상품')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('교보생명')).toBeInTheDocument();
+    });
+
+    // 버튼명 확인
+    const submitBtn = screen.getByRole('button', { name: /수정 내용 저장하기/i });
+    fireEvent.click(submitBtn);
+
+    await waitFor(() => {
+      expect(mockUpdate).toHaveBeenCalledTimes(1);
+      expect(mockUpdate.mock.calls[0][0].id).toBe('777');
+      expect(mockUpdate.mock.calls[0][0].data.name).toBe('기존 암보험 상품');
     });
   });
 });

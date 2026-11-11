@@ -103,4 +103,31 @@ describe('RightPanel Component', () => {
     expect(screen.getByText('AI 종합 진단')).toBeInTheDocument();
     expect(screen.getByTestId('mock-ai-diagnosis')).toBeInTheDocument();
   });
+
+  it('일정 카드 클릭 시 editingProductId가 설정되고 panelMode가 form으로 변경되어야 한다.', () => {
+    const mockDate = new Date();
+    useAppStore.getState().setSelectedDate(mockDate);
+
+    (useGetInsurances as Mock).mockReturnValue({
+      data: [
+        {
+          id: 555,
+          category: '실비보험',
+          name: '실손의료비 보장보험',
+          institution: '삼성화재',
+          startDate: mockDate.toISOString(),
+          monthlyPayment: 25000,
+          coverageAmount: 50000000,
+        },
+      ],
+    });
+
+    render(<RightPanel />);
+
+    const cardTitle = screen.getByText('실손의료비 보장보험');
+    fireEvent.click(cardTitle);
+
+    expect(useAppStore.getState().editingProductId).toBe('555');
+    expect(useAppStore.getState().panelMode).toBe('form');
+  });
 });

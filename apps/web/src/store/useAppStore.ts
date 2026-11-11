@@ -14,9 +14,9 @@ interface AppState {
   setSelectedDate: (date: Date) => void;
   panelMode: PanelMode;
   setPanelMode: (mode: PanelMode) => void;
-  // 수정 모드일 때 선택된 상품 ID를 저장 (생성일 때는 null)
-  editingProductId: number | bigint | null;
-  setEditingProductId: (id: number | bigint | null) => void;
+  // 수정 모드일 때 선택된 상품 ID를 저장 (생성일 때는 null 또는 undefined)
+  editingProductId: number | bigint | string | null | undefined;
+  setEditingProductId: (id: number | bigint | string | null | undefined) => void;
   // 모바일에서 우측 패널(바텀 시트) 열림 상태
   isMobilePanelOpen: boolean;
   setIsMobilePanelOpen: (isOpen: boolean) => void;

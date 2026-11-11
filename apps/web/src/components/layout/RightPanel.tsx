@@ -14,6 +14,8 @@ export function RightPanel() {
   const selectedDate = useAppStore(state => state.selectedDate);
   const panelMode = useAppStore(state => state.panelMode);
   const setPanelMode = useAppStore(state => state.setPanelMode);
+  const editingProductId = useAppStore(state => state.editingProductId);
+  const setEditingProductId = useAppStore(state => state.setEditingProductId);
   const isMobileOpen = useAppStore(state => state.isMobilePanelOpen);
   const setIsMobileOpen = useAppStore(state => state.setIsMobilePanelOpen);
   
@@ -115,7 +117,7 @@ export function RightPanel() {
         <div className={`px-6 lg:px-7 pt-4 lg:pt-8 pb-5 flex items-center justify-between border-b border-gray-100/60 bg-white z-10 shrink-0 ${panelMode === 'ai-diagnosis' ? 'print:hidden' : ''}`}>
           <div className="flex items-center gap-3">
             <h2 className="text-[20px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight">
-              {panelMode === 'form' ? '보험 등록' : panelMode === 'settings' ? '설정' : panelMode === 'ai-diagnosis' ? 'AI 종합 진단' : format(selectedDate, 'M월 d일')}
+              {panelMode === 'form' ? (editingProductId ? '보험 수정' : '보험 등록') : panelMode === 'settings' ? '설정' : panelMode === 'ai-diagnosis' ? 'AI 종합 진단' : format(selectedDate, 'M월 d일')}
             </h2>
             {isToday && panelMode === 'view' && (
               <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full uppercase tracking-widest">
@@ -154,7 +156,8 @@ export function RightPanel() {
                       key={evt.eventId} 
                       className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group flex flex-col gap-3 relative"
                       onClick={() => {
-                        // 향후 편집 모드 진입용
+                        setEditingProductId(evt.id);
+
                       }}
                     >
                       <div className="flex items-center justify-between">
@@ -202,7 +205,10 @@ export function RightPanel() {
                   <p className="text-[14px] font-bold text-gray-500">예정된 일정이 없습니다</p>
                   <p className="text-[12px] text-gray-400 mb-4">새로운 보험을 등록해보세요!</p>
                   <button 
-                    onClick={() => setPanelMode('form')}
+                    onClick={() => {
+                      setEditingProductId(null);
+                      setPanelMode('form');
+                    }}
                     className="px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-[13px] font-bold rounded-lg transition-colors"
                   >
                     새 보험 등록
@@ -214,7 +220,10 @@ export function RightPanel() {
             {/* 3. Bottom Sticky Action Button */}
             <div className="p-6 pt-2 bg-gradient-to-t from-white via-white to-transparent shrink-0">
               <button 
-                onClick={() => setPanelMode('form')}
+                onClick={() => {
+                  setEditingProductId(null);
+                  setPanelMode('form');
+                }}
                 className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-2xl font-bold text-[15px] transition-all shadow-[0_4px_14px_rgba(79,70,229,0.3)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.4)] hover:-translate-y-0.5"
               >
                 <Plus className="w-5 h-5" strokeWidth={2.5} />

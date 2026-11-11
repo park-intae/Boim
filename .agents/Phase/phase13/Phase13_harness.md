@@ -16,11 +16,11 @@
 ## 📋 세부 단계별 체크리스트
 
 ### 1. Phase 13-01: 대시보드 미납 알림 실시간 집계 & 캘린더 일정 클릭 시 보험 수정(Edit) 모드 실연동
-- [ ] **대시보드 "미납 알림" 카드 실시간 데이터 연동 (`HomePage.tsx`):**
+- [x] **대시보드 "미납 알림" 카드 실시간 데이터 연동 (`HomePage.tsx`):**
   - 하드코딩된 `value: '0'` 제거
   - 실제 가입된 보험 중 당월 납입일이 지난 건 또는 읽지 않은 납입 알림(`type: 'payment' && !isRead`) 실시간 집계 쿼리 연동
   - 클릭 시 해당 알림 패널 또는 관련 보험 목록으로 바로 이동하는 인터랙션 지원
-- [ ] **캘린더 일정 카드 클릭 시 '보험 수정(Edit) 모드' 연동 (`RightPanel.tsx`, `InsuranceForm.tsx`):**
+- [x] **캘린더 일정 카드 클릭 시 '보험 수정(Edit) 모드' 연동 (`RightPanel.tsx`, `InsuranceForm.tsx`):**
   - 일정 카드 클릭 이벤트(`onClick`)에 해당 보험 ID 선택 및 수정 모드(`mode: 'edit'`) 진입 로직 연동
   - `InsuranceForm.tsx`에 기존 보험 데이터 자동 바인딩(Prefill) 및 수정 저장(`useUpdateInsurance`) 완료 후 캘린더/상세 즉시 갱신
   - 단위 테스트 작성 및 통과

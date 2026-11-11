@@ -1,15 +1,19 @@
 import { Shield, CreditCard, RefreshCw, AlertCircle } from 'lucide-react';
 import { MainCalendar } from '../components/calendar/MainCalendar';
 import { useGetInsurances } from '../api/useInsuranceQueries';
+import { useGetNotifications } from '../api/useNotificationQueries';
+import { useAppStore } from '../store/useAppStore';
 import { isSameMonth, parseISO } from 'date-fns';
 
 export function HomePage() {
   const { data: insurances = [] } = useGetInsurances();
+  const { data: notifications = [] } = useGetNotifications();
+  const setPanelMode = useAppStore((state) => state.setPanelMode);
 
   const activeCount = insurances.length;
   const totalMonthlyPayment = insurances.reduce((acc, curr) => acc + curr.monthlyPayment, 0);
 
-  // 갱신/만기 예정 (단순 예시: 이번 달에 만기일이 있는 경우)
+  // 갱신/만기 예정 (이번 달에 만기일이 있는 경우)
   const today = new Date();
   let renewalCount = 0;
   
@@ -22,11 +26,52 @@ export function HomePage() {
     }
   });
 
+  // 읽지 않은 납입/미납 관련 알림 카운트
+  const unpaidCount = notifications.filter(
+    (n) => !n.isRead && (n.type === 'payment' || n.title.includes('미납') || n.title.includes('납부') || n.title.includes('납입'))
+  ).length;
+
   const statCards = [
-    { id: 1, title: '가입 보험', value: activeCount.toString(), unit: '건', icon: Shield, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { id: 2, title: '이번 달 납입', value: totalMonthlyPayment.toLocaleString(), unit: '원', icon: CreditCard, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { id: 3, title: '이번 달 갱신/만기', value: renewalCount.toString(), unit: '건', icon: RefreshCw, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { id: 4, title: '미납 알림', value: '0', unit: '건', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
+    {
+      id: 1,
+      title: '가입 보험',
+      value: activeCount.toString(),
+      unit: '건',
+      icon: Shield,
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+      onClick: () => setPanelMode('my-insurance'),
+    },
+    {
+      id: 2,
+      title: '이번 달 납입',
+      value: totalMonthlyPayment.toLocaleString(),
+      unit: '원',
+      icon: CreditCard,
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50',
+      onClick: () => setPanelMode('analysis'),
+    },
+    {
+      id: 3,
+      title: '이번 달 갱신/만기',
+      value: renewalCount.toString(),
+      unit: '건',
+      icon: RefreshCw,
+      color: 'text-amber-600',
+      bg: 'bg-amber-50',
+      onClick: () => setPanelMode('notifications'),
+    },
+    {
+      id: 4,
+      title: '미납 알림',
+      value: unpaidCount.toString(),
+      unit: '건',
+      icon: AlertCircle,
+      color: unpaidCount > 0 ? 'text-red-500' : 'text-gray-400',
+      bg: unpaidCount > 0 ? 'bg-red-50' : 'bg-gray-50',
+      onClick: () => setPanelMode('notifications'),
+    },
   ];
 
   return (
@@ -36,7 +81,11 @@ export function HomePage() {
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
-            <div key={card.id} className="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 active:shadow-sm cursor-pointer flex flex-col gap-3 lg:gap-4">
+            <div
+              key={card.id}
+              onClick={card.onClick}
+              className="bg-white rounded-2xl p-4 lg:p-5 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 active:scale-[0.98] active:translate-y-0 active:shadow-sm cursor-pointer flex flex-col gap-3 lg:gap-4"
+            >
               <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center shrink-0 ${card.bg}`}>
                 <Icon className={`w-4 h-4 ${card.color}`} strokeWidth={2.5} />
               </div>

@@ -1,7 +1,8 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useCreateInsurance, useUpdateInsurance } from '../../api/useInsuranceQueries';
+import { useCreateInsurance, useUpdateInsurance, useGetInsurances } from '../../api/useInsuranceQueries';
 import { useAppStore } from '../../store/useAppStore';
 import { format } from 'date-fns';
 import { PolicyDocumentUploader } from './PolicyDocumentUploader';
@@ -22,13 +23,15 @@ type FormValues = z.infer<typeof formSchema>;
 export function InsuranceForm() {
   const setPanelMode = useAppStore(state => state.setPanelMode);
   const editingProductId = useAppStore(state => state.editingProductId);
+  const setEditingProductId = useAppStore(state => state.setEditingProductId);
   const selectedDate = useAppStore(state => state.selectedDate);
 
+  const { data: insurances = [] } = useGetInsurances();
   const { mutate: createInsurance, isPending: isCreating } = useCreateInsurance();
   const { mutate: updateInsurance, isPending: isUpdating } = useUpdateInsurance();
   const isPending = isCreating || isUpdating;
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: '',
@@ -36,8 +39,38 @@ export function InsuranceForm() {
       institution: '',
       startDate: format(selectedDate, 'yyyy-MM-dd'),
       maturityDate: format(selectedDate, 'yyyy-MM-dd'),
+      monthlyPayment: 0,
+      coverageAmount: 0,
     }
   });
+
+  // 수정 모드일 때 기존 데이터 Prefill
+  useEffect(() => {
+    if (editingProductId) {
+      const target = insurances.find(p => p.id.toString() === editingProductId.toString());
+      if (target) {
+        reset({
+          category: target.category || '',
+          name: target.name || '',
+          institution: target.institution || '',
+          startDate: target.startDate ? format(new Date(target.startDate), 'yyyy-MM-dd') : format(selectedDate, 'yyyy-MM-dd'),
+          maturityDate: target.maturityDate ? format(new Date(target.maturityDate), 'yyyy-MM-dd') : format(selectedDate, 'yyyy-MM-dd'),
+          monthlyPayment: target.monthlyPayment || 0,
+          coverageAmount: Number(target.coverageAmount || 0),
+        });
+      }
+    } else {
+      reset({
+        category: '',
+        name: '',
+        institution: '',
+        startDate: format(selectedDate, 'yyyy-MM-dd'),
+        maturityDate: format(selectedDate, 'yyyy-MM-dd'),
+        monthlyPayment: 0,
+        coverageAmount: 0,
+      });
+    }
+  }, [editingProductId, insurances, reset, selectedDate]);
 
   const handleParsedData = (parsed?: ParsedInsuranceData) => {
     if (!parsed || typeof parsed !== 'object') return;
@@ -69,11 +102,19 @@ export function InsuranceForm() {
     if (editingProductId) {
       updateInsurance(
         { id: editingProductId.toString(), data: payload },
-        { onSuccess: () => setPanelMode('view') }
+        {
+          onSuccess: () => {
+            setEditingProductId(null);
+            setPanelMode('view');
+          }
+        }
       );
     } else {
       createInsurance(payload, {
-        onSuccess: () => setPanelMode('view')
+        onSuccess: () => {
+          setEditingProductId(null);
+          setPanelMode('view');
+        }
       });
     }
   };
@@ -81,7 +122,7 @@ export function InsuranceForm() {
   return (
     <>
       <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-5">
-        {/* 신규 등록 모드일 때 증권 자동 분석 업로더 표시 */}
+        {/* 신규 등록 모드일 때만 증권 자동 분석 업로더 표시 */}
         {!editingProductId && (
           <PolicyDocumentUploader onParsed={handleParsedData} />
         )}
@@ -133,9 +174,9 @@ export function InsuranceForm() {
               />
               {errors.startDate && <span className="text-[11px] text-red-500 font-bold ml-1">{errors.startDate.message}</span>}
             </div>
-            
+
             <div className="flex flex-col gap-1.5">
-              <label className="text-[13px] font-bold text-gray-700">만기일(갱신일)</label>
+              <label className="text-[13px] font-bold text-gray-700">만기일</label>
               <input 
                 type="date"
                 {...register('maturityDate')}

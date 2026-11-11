@@ -5,6 +5,23 @@
 
 ---
 
+## [Phase 13-01] - 2026-11-11
+
+### 🚀 Added (신규 기능)
+- **대시보드 미납 알림 실시간 집계 및 캘린더 일정 수정 모드 연동 ([Phase 13-01](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase13/Phase13-01_harness.md))**
+  - **대시보드 미납 알림 실시간 데이터 연동 (`HomePage.tsx`):**
+    - 하드코딩 `0건` 제거 및 `useGetNotifications` 쿼리를 기반으로 미확인 납입 알림 및 당월 납입일 경과 미납 건수 실시간 계산
+    - 미납 알림 요약 카드 클릭 시 알림 패널(`panelMode = 'notifications'`)로 즉시 이동하는 반응형 내비게이션 연결
+  - **캘린더 일정 클릭 시 보험 수정(Edit) 모드 실연동 (`RightPanel.tsx`, `InsuranceForm.tsx`):**
+    - 전역 스토어 `editingInsuranceId` 및 상태 제어 함수 추가
+    - 캘린더 우측 일정 카드 클릭 시 해당 보험 정보를 기반으로 수정 폼 오픈 및 기존 값 자동 바인딩(Prefill)
+    - 폼 제출 시 신규 등록 대신 `useUpdateInsurance`를 호출하여 실제 보험 정보 수정 및 캘린더/요약 즉각 갱신
+  - **테스트 및 검증 (`HomePage.test.tsx`, `RightPanel.test.tsx`, `InsuranceForm.test.tsx`):**
+    - 미납 알림 집계 및 인터랙션, 일정 카드 클릭 시 수정 모드 진입 및 폼 프리필/수정 제출 테스트 통과 (Vitest 71개 테스트 100% Pass)
+    - 린트(oxlint 0 errors) 및 빌드(`tsc -b && vite build`) 무결성 통과
+
+---
+
 ## [Phase 12-04] - 2026-11-06
 
 ### 🚀 Added (신규 기능)
