@@ -43,3 +43,13 @@
 - [x] 전사 린트(`pnpm lint`) 및 빌드(`pnpm build`) 무결성 검증
 - [x] CHANGELOG.md 업데이트
 - [x] git commit (`feat: Phase 13-02 알림 다중 채널 실제 발송 (브라우저 OS 푸시 & 이메일 실발송) 연동`)
+
+### 4. 🧩 이메일 기능 탈착형(Pluggable) 아키텍처 리팩토링
+- [x] **백엔드 이메일 발송 책임 독립 Provider 분리 (`EmailService`):**
+  - `NotificationSchedulerService` 내 직접적인 nodemailer 의존성 제거
+  - `EmailService`(`apps/api/src/notification/email.service.ts`)로 전송/트랜스포터 로직 독립 분리
+  - `NotificationSchedulerService`에 `@Optional()` 주입 및 기능 플래그(`ENABLE_EMAIL_NOTIFICATION`) 지원으로 언제든지 무중단 탈착 가능하도록 설계
+- [x] **프론트엔드 알림 채널별 설정 독립 컴포넌트화 (`EmailNotificationItem.tsx` 등):**
+  - `NotificationSettingsSection.tsx`에서 이메일 알림 설정을 독립 컴포넌트로 분리
+  - 필요 시 언제든 한 줄 주석/플래그 변경으로 UI에서 탈착 가능하도록 구성
+- [x] 단위 테스트 작성 및 전사 검증 통과 후 단위 커밋 (API 149개, Web 84개 100% Pass)

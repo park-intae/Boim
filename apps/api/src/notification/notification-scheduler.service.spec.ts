@@ -251,50 +251,44 @@ describe('NotificationSchedulerService', () => {
     });
   });
 
-  describe('sendEmail & getTransporter', () => {
-    afterEach(() => {
-      service.setTransporter(null);
-      delete process.env.SMTP_HOST;
-      delete process.env.SMTP_PORT;
-      delete process.env.SMTP_USER;
-      delete process.env.SMTP_PASS;
-      delete process.env.SMTP_FROM;
-    });
+  describe('sendEmail & EmailService delegation (탈착 가능 설계)', () => {
+    it('EmailService가 주입되었을 때 해당 서비스로 발송을 위임해야 한다', async () => {
+      const mockEmailService = {
+        sendEmail: jest.fn().mockResolvedValue(true),
+      };
 
-    it('주입된 트랜스포터로 이메일을 전송하고 true를 반환해야 한다', async () => {
-      const mockSendMail = jest.fn().mockResolvedValue({
-        messageId: '<test-message-id@boim.com>',
-      });
-      const mockTransporter = {
-        sendMail: mockSendMail,
-      } as unknown as import('nodemailer').Transporter;
+      const customService = new NotificationSchedulerService(
+        mockPrisma as any,
+        mockEmailService as any,
+      );
 
-      service.setTransporter(mockTransporter);
-
-      const result = await service.sendEmail(
+      const result = await customService.sendEmail(
         'recipient@test.com',
         '테스트 제목',
         '테스트 본문 내용',
       );
 
       expect(result).toBe(true);
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
-      const callArg = mockSendMail.mock.calls[0][0];
-      expect(callArg.to).toBe('recipient@test.com');
-      expect(callArg.subject).toContain('테스트 제목');
-      expect(callArg.text).toBe('테스트 본문 내용');
-      expect(callArg.html).toContain('테스트 본문 내용');
+      expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
+        'recipient@test.com',
+        '테스트 제목',
+        '테스트 본문 내용',
+      );
     });
 
-    it('SMTP_HOST 환경변수가 있을 때 해당 호스트로 트랜스포터를 생성해야 한다', async () => {
-      process.env.SMTP_HOST = 'smtp.testserver.com';
-      process.env.SMTP_PORT = '465';
-      process.env.SMTP_USER = 'smtpuser';
-      process.env.SMTP_PASS = 'smtppass';
+    it('EmailService가 주입되지 않았을 때(기능 탈착 시) 에러 없이 false를 반환해야 한다', async () => {
+      const detachedService = new NotificationSchedulerService(
+        mockPrisma as any,
+        undefined, // EmailService 미주입
+      );
 
-      const transporter = await service.getTransporter();
-      expect(transporter).toBeDefined();
-      expect(service['transporter']).toBe(transporter);
+      const result = await detachedService.sendEmail(
+        'recipient@test.com',
+        '테스트 제목',
+        '테스트 본문 내용',
+      );
+
+      expect(result).toBe(false);
     });
   });
 

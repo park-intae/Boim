@@ -17,10 +17,12 @@
     - HTML5 Web Notification API 헬퍼 유틸리티(`isNotificationSupported`, `requestNotificationPermission`, `showDesktopNotification`) 구현
     - 환경설정에서 '푸시 알림' 토글 시 브라우저 권한 요청 인터랙션 연결 및 권한 거부 시 안내 처리
     - 수동 스캔 또는 신규 알림 감지 시 실제 OS 데스크톱 토스트 알림 발송
-  - **단위 테스트 및 품질 무결성:**
-    - 백엔드 Nodemailer 연동 테스트 20건 통과 (`notification-scheduler.service.spec.ts`)
-    - 프론트엔드 웹 알림 및 설정 컴포넌트 단위 테스트 통과 (`webNotification.test.ts`, `NotificationSettingsSection.spec.tsx`)
-    - 모노레포 전체 테스트(API 147개, Web 81개 100% Pass) 및 빌드/린트 무결성 검증
+
+### 🔄 Refactored (탈착형 아키텍처 고도화)
+- **이메일 발송 책임 독립 모듈/컴포넌트 분리 (Pluggable Architecture):**
+  - **백엔드 (`EmailService`):** 스케줄러에서 메일 전송 및 `nodemailer` 의존성을 완전히 분리하여 독립 서비스(`EmailService`)로 캡슐화, `@Optional()` 주입 및 `ENABLE_EMAIL_NOTIFICATION` 기능 플래그를 통해 모듈 또는 설정 수준에서 무중단 탈착 가능하도록 설계
+  - **프론트엔드 (`EmailNotificationItem.tsx`, `PushNotificationItem.tsx`):** 설정 화면의 각 알림 채널 항목을 독립 컴포넌트로 분리하여 필요 시 언제든 한 줄 수정으로 특정 채널을 탈착/주석 처리할 수 있는 유연한 슬롯 구조 완성
+  - **전사 단위 테스트 갱신:** API 149건, Web 84건 100% 통과 (Vitest/Jest)
 
 ---
 

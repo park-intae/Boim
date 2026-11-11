@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import * as nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
 import type { NotificationType } from '@boim/shared-types';
+import { EmailService } from './email.service';
 
 export interface BatchNotificationCandidate {
   userId: bigint;
@@ -33,74 +33,11 @@ export interface BatchExecutionResult {
 @Injectable()
 export class NotificationSchedulerService {
   private readonly logger = new Logger(NotificationSchedulerService.name);
-  private transporter: nodemailer.Transporter | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
-
-  /**
-   * 테스트 또는 커스텀 트랜스포터 주입 (유닛 테스트용)
-   */
-  setTransporter(transporter: nodemailer.Transporter | null): void {
-    this.transporter = transporter;
-  }
-
-  /**
-   * Nodemailer 트랜스포터 획득 또는 초기화
-   * 상용 SMTP 환경변수가 설정되어 있으면 해당 SMTP 연결 사용,
-   * 없으면 Ethereal Mail 가상 테스트 계정 생성
-   */
-  async getTransporter(): Promise<nodemailer.Transporter> {
-    if (this.transporter) {
-      return this.transporter;
-    }
-
-    if (process.env.SMTP_HOST) {
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: process.env.SMTP_USER
-          ? {
-              user: process.env.SMTP_USER,
-              pass: process.env.SMTP_PASS,
-            }
-          : undefined,
-      });
-      return this.transporter;
-    }
-
-    // 테스트 환경에서는 네트워크 호출 방지를 위해 jsonTransport 사용
-    if (process.env.NODE_ENV === 'test') {
-      this.transporter = nodemailer.createTransport({
-        jsonTransport: true,
-      });
-      return this.transporter;
-    }
-
-    // 개발/테스트 환경용 Ethereal Mail 가상 계정 생성
-    try {
-      const testAccount = await nodemailer.createTestAccount();
-      this.transporter = nodemailer.createTransport({
-        host: testAccount.smtp.host,
-        port: testAccount.smtp.port,
-        secure: testAccount.smtp.secure,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      this.logger.log(
-        `Ethereal 가상 SMTP 테스트 트랜스포터가 생성되었습니다 (${testAccount.user})`,
-      );
-    } catch {
-      // 오프라인이거나 테스트 계정 생성이 실패한 경우 jsonTransport 폴백
-      this.transporter = nodemailer.createTransport({
-        jsonTransport: true,
-      });
-    }
-
-    return this.transporter;
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly emailService?: EmailService,
+  ) {}
 
   /**
    * 매일 자정 (KST 00:00:00) 자동 실행 크론 배치
@@ -296,42 +233,16 @@ export class NotificationSchedulerService {
   }
 
   /**
-   * 이메일 발송 어댑터 (Nodemailer 실발송 및 미리보기 URL 안내)
+   * 이메일 발송 어댑터 (탈착형 EmailService 위임)
    */
   async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
-    const transporter = await this.getTransporter();
-    const from = process.env.SMTP_FROM || '"Boim 보험 알림" <noreply@boim.com>';
-
-    const info = await transporter.sendMail({
-      from,
-      to,
-      subject: `[Boim] ${subject}`,
-      text: body,
-      html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px; background-color: #ffffff;">
-          <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <h1 style="color: #4f46e5; font-size: 20px; font-weight: 700; margin: 0;">Boim 보험 관리 알림</h1>
-          </div>
-          <div style="background-color: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
-            <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0 0 8px 0;">${subject}</h2>
-            <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin: 0; white-space: pre-line;">${body}</p>
-          </div>
-          <p style="font-size: 12px; color: #9ca3af; margin: 0; border-top: 1px solid #f3f4f6; padding-top: 16px;">
-            본 메일은 Boim 서비스에서 고객님의 가입 보험 상태에 따라 자동 발송된 안내 메일입니다.
-          </p>
-        </div>
-      `,
-    });
-
-    const previewUrl = nodemailer.getTestMessageUrl(info);
-    if (previewUrl) {
-      this.logger.log(`[Ethereal Mail 미리보기 URL]: ${previewUrl}`);
+    if (!this.emailService) {
+      this.logger.log(
+        `[NotificationSchedulerService] EmailService가 주입되지 않아 이메일 발송을 스킵합니다. (수신: ${to})`,
+      );
+      return false;
     }
-
-    this.logger.log(
-      `[Email 전송 완료] 수신: ${to} | 제목: ${subject} | MessageId: ${info.messageId ?? 'ok'}`,
-    );
-    return true;
+    return this.emailService.sendEmail(to, subject, body);
   }
 
   /**
