@@ -26,11 +26,11 @@
   - 단위 테스트 작성 및 통과
 
 ### 2. Phase 13-02: 알림 다중 채널 실제 발송 (브라우저 OS 푸시 & 이메일 실발송)
-- [ ] **브라우저 Web Notification API 실연동 (`apps/web`):**
+- [x] **브라우저 Web Notification API 실연동 (`apps/web`):**
   - 사용자 브라우저 알림 권한(`Notification.requestPermission()`) 요청 및 설정 연동
   - 스케줄러 동기화 또는 수동 스캔 실행 시 실제 Windows/Mac 우측 하단 데스크톱 알림 토스트 팝업 발송
-- [ ] **백엔드 Nodemailer 기반 이메일 실발송 파이프라인 (`apps/api`):**
-  - Nodemailer 연동 (`NotificationService` 내 `sendEmailNotification`)
+- [x] **백엔드 Nodemailer 기반 이메일 실발송 파이프라인 (`apps/api`):**
+  - Nodemailer 연동 (`NotificationSchedulerService` 내 `sendEmail`)
   - 개발/테스트 환경용 Ethereal Mail 가상 메일함 URL 생성 및 콘솔 안내 (미리보기 지원)
   - 상용 SMTP 환경변수 대응 (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`)
   - 단위 테스트 작성 및 통과

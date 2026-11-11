@@ -15,6 +15,7 @@ import {
   useDeleteNotification,
   useTriggerBatch,
 } from '../../api/useNotificationQueries';
+import { showDesktopNotification } from '../../shared/utils/webNotification';
 
 export function NotificationList() {
   const { data: notifications = [], isLoading } = useGetNotifications();
@@ -31,13 +32,16 @@ export function NotificationList() {
 
   const handleTriggerBatch = () => {
     triggerBatch(undefined, {
-      onSuccess: (res: any) => {
+      onSuccess: (res) => {
         const created = res?.createdNotifications ?? 0;
         const scanned = res?.scannedProducts ?? 0;
         if (created > 0) {
           setFeedback({
             type: 'success',
             message: `새 알림 ${created}건이 생성되었습니다. (총 ${scanned}건 검사)`,
+          });
+          showDesktopNotification('Boim 새 보험 알림 도착', {
+            body: `새 알림 ${created}건이 감지되었습니다. 캘린더와 알림함을 확인해 주세요.`,
           });
         } else {
           setFeedback({
@@ -47,12 +51,13 @@ export function NotificationList() {
         }
         setTimeout(() => setFeedback(null), 4000);
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
+        const errorObj = err as { error?: { message?: string }; message?: string };
         setFeedback({
           type: 'error',
           message:
-            err?.error?.message ||
-            err?.message ||
+            errorObj?.error?.message ||
+            errorObj?.message ||
             '스캔 요청 중 오류가 발생했습니다.',
         });
         setTimeout(() => setFeedback(null), 4000);

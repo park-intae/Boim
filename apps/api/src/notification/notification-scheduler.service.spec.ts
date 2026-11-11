@@ -206,7 +206,9 @@ describe('NotificationSchedulerService', () => {
     };
 
     it('email 채널일 때 sendEmail을 호출해야 한다', async () => {
-      const sendEmailSpy = jest.spyOn(service, 'sendEmail');
+      const sendEmailSpy = jest
+        .spyOn(service, 'sendEmail')
+        .mockResolvedValue(true);
       await service.dispatchExternalChannel(
         'email',
         candidate,
@@ -246,6 +248,53 @@ describe('NotificationSchedulerService', () => {
       await expect(
         service.dispatchExternalChannel('email', candidate, 'user@test.com'),
       ).resolves.not.toThrow();
+    });
+  });
+
+  describe('sendEmail & getTransporter', () => {
+    afterEach(() => {
+      service.setTransporter(null);
+      delete process.env.SMTP_HOST;
+      delete process.env.SMTP_PORT;
+      delete process.env.SMTP_USER;
+      delete process.env.SMTP_PASS;
+      delete process.env.SMTP_FROM;
+    });
+
+    it('주입된 트랜스포터로 이메일을 전송하고 true를 반환해야 한다', async () => {
+      const mockSendMail = jest.fn().mockResolvedValue({
+        messageId: '<test-message-id@boim.com>',
+      });
+      const mockTransporter = {
+        sendMail: mockSendMail,
+      } as unknown as import('nodemailer').Transporter;
+
+      service.setTransporter(mockTransporter);
+
+      const result = await service.sendEmail(
+        'recipient@test.com',
+        '테스트 제목',
+        '테스트 본문 내용',
+      );
+
+      expect(result).toBe(true);
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      const callArg = mockSendMail.mock.calls[0][0];
+      expect(callArg.to).toBe('recipient@test.com');
+      expect(callArg.subject).toContain('테스트 제목');
+      expect(callArg.text).toBe('테스트 본문 내용');
+      expect(callArg.html).toContain('테스트 본문 내용');
+    });
+
+    it('SMTP_HOST 환경변수가 있을 때 해당 호스트로 트랜스포터를 생성해야 한다', async () => {
+      process.env.SMTP_HOST = 'smtp.testserver.com';
+      process.env.SMTP_PORT = '465';
+      process.env.SMTP_USER = 'smtpuser';
+      process.env.SMTP_PASS = 'smtppass';
+
+      const transporter = await service.getTransporter();
+      expect(transporter).toBeDefined();
+      expect(service['transporter']).toBe(transporter);
     });
   });
 

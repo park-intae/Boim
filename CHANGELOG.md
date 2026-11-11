@@ -5,6 +5,25 @@
 
 ---
 
+## [Phase 13-02] - 2026-11-11
+
+### 🚀 Added (신규 기능)
+- **알림 다중 채널 실제 발송 (브라우저 OS 푸시 & 이메일 실발송) 연동 ([Phase 13-02](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/Phase/phase13/Phase13-02_harness.md))**
+  - **백엔드 Nodemailer 이메일 발송 파이프라인 (`NotificationSchedulerService`):**
+    - `nodemailer` 기반의 트랜스포터 초기화 및 HTML 템플릿 메일 실발송 로직 구축
+    - 상용 SMTP 환경변수(`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`) 연동 지원 및 미설정 시 Ethereal 가상 계정/미리보기 URL(`getTestMessageUrl`) 로깅 지원
+    - 테스트 환경 네트워크 격리 및 외부 발송 실패 시에도 인앱 알림을 안전하게 보존하는 내결함성 확보
+  - **프론트엔드 브라우저 Web Notification API 실연동 (`webNotification.ts`, `NotificationSettingsSection.tsx`, `NotificationList.tsx`):**
+    - HTML5 Web Notification API 헬퍼 유틸리티(`isNotificationSupported`, `requestNotificationPermission`, `showDesktopNotification`) 구현
+    - 환경설정에서 '푸시 알림' 토글 시 브라우저 권한 요청 인터랙션 연결 및 권한 거부 시 안내 처리
+    - 수동 스캔 또는 신규 알림 감지 시 실제 OS 데스크톱 토스트 알림 발송
+  - **단위 테스트 및 품질 무결성:**
+    - 백엔드 Nodemailer 연동 테스트 20건 통과 (`notification-scheduler.service.spec.ts`)
+    - 프론트엔드 웹 알림 및 설정 컴포넌트 단위 테스트 통과 (`webNotification.test.ts`, `NotificationSettingsSection.spec.tsx`)
+    - 모노레포 전체 테스트(API 147개, Web 81개 100% Pass) 및 빌드/린트 무결성 검증
+
+---
+
 ## [Phase 13-01] - 2026-11-11
 
 ### 🚀 Added (신규 기능)
