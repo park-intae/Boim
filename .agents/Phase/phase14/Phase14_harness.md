@@ -30,11 +30,12 @@
 - [x] **`AppLayout.test.tsx` / `NotificationList.test.tsx`:** 레이아웃 렌더링 및 알림 읽음/삭제 인터랙션 엣지 케이스 검증
 
 #### 3. Phase 14-03: `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트
-- [ ] **핵심 커스텀 훅 단위 테스트 (`renderHook` 기반):**
-  - `useInsurances` (목록 조회, 생성, 수정, 삭제 쿼리/뮤테이션)
-  - `useNotifications` (목록 조회, 읽음 처리, 일괄 삭제)
-  - `useCalendarEvents` (월별 이벤트 조회 및 캐시 무효화)
-- [ ] 프론트엔드 전사 커버리지 중간 측정 (커버리지 80%+ 달성 여부 검증)
+- [x] **핵심 커스텀 훅 단위 테스트 (`renderHook` 기반):**
+  - `useInsuranceQueries` (목록 조회, 단건 조회, 생성, 수정, 삭제 쿼리/뮤테이션)
+  - `useNotificationQueries` (목록 조회, 읽음 처리, 일괄 삭제, 배치 트리거)
+  - `useUserQueries` (프로필, 비밀번호, 알림 설정, 내보내기/가져오기, 탈퇴, 로그인 기기 이력)
+  - `useDiagnosisQueries` & `useDocumentQueries` (AI 진단, 엑셀 다운로드, 증권 업로드/파싱)
+- [x] **프론트엔드 전사 커버리지 80%+ 달성 검증 (82.56% 달성 완료)**
 
 ---
 

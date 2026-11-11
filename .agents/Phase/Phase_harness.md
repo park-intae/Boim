@@ -33,7 +33,7 @@
 - [ ] **Phase 14:** 프론트엔드 테스트 커버리지 강화 및 컴포넌트/로직 책임 분리 (Architecture Refactoring) (진행 중)
   - [x] **Phase 14-01:** 커버리지 측정 정밀화 및 테스트 데이터 Fixture 체계 구축
   - [x] **Phase 14-02:** 설정(Settings) 패널 및 부가 컴포넌트 테스트 스위트 작성
-  - [ ] **Phase 14-03:** `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트 (커버리지 80%+ 달성)
+  - [x] **Phase 14-03:** `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트 (커버리지 80%+ 달성 완료: 82.56%)
   - [ ] **Phase 14-04:** `RightPanel.tsx` 서브 컴포넌트 분리 (`DailyEventsView.tsx`)
   - [ ] **Phase 14-05:** `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리
   - [ ] **Phase 14-06:** 백엔드 도메인 비즈니스 규칙 엔진 분리
