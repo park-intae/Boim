@@ -45,7 +45,7 @@
   - 단위 테스트 작성 및 통과
 
 ### 4. Phase 13-04: 전체 품질 무결성 검증 및 Phase 13 마일스톤 마무리
-- [ ] 모노레포 전체 단위/통합 테스트 (Vitest & Jest 100% Pass)
-- [ ] 전사 빌드(`pnpm build`) 및 린트(`pnpm lint`) 무결성 검증
-- [ ] 하네스 2-File Rule 단일화 (`Phase13_sub_harness.md`)
-- [ ] `CHANGELOG.md` 및 `README.md` 최종 동기화
+- [x] 모노레포 전체 단위/통합 테스트 (Vitest & Jest 100% Pass)
+- [x] 전사 빌드(`pnpm build`) 및 린트(`pnpm lint`) 무결성 검증
+- [x] 하네스 2-File Rule 단일화 (`Phase13_sub_harness.md`)
+- [x] `CHANGELOG.md` 및 `README.md` 최종 동기화
