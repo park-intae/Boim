@@ -30,15 +30,15 @@
   - [x] **Phase 13-02:** 알림 다중 채널 실제 발송 (브라우저 OS 푸시 & 이메일 실발송)
   - [x] **Phase 13-03:** PASS 본인인증 실감형 인터랙션 고도화 (타이머 & 세션 코드)
   - [x] **Phase 13-04:** 전체 품질 무결성 검증 및 Phase 13 마일스톤 마무리
-- [ ] **Phase 14:** 프론트엔드 테스트 커버리지 강화 및 컴포넌트/로직 책임 분리 (Architecture Refactoring) (진행 중)
+- [x] **Phase 14:** 프론트엔드 테스트 커버리지 강화 및 컴포넌트/로직 책임 분리 (Architecture Refactoring) (완료)
   - [x] **Phase 14-01:** 커버리지 측정 정밀화 및 테스트 데이터 Fixture 체계 구축
   - [x] **Phase 14-02:** 설정(Settings) 패널 및 부가 컴포넌트 테스트 스위트 작성
   - [x] **Phase 14-03:** `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트 (커버리지 80%+ 달성 완료: 82.56%)
   - [x] **Phase 14-04:** `RightPanel.tsx` 서브 컴포넌트 분리 (`DailyEventsView.tsx`)
-  - [ ] **Phase 14-05:** `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리
-  - [ ] **Phase 14-06:** 백엔드 도메인 비즈니스 규칙 엔진 분리
-  - [ ] **Phase 14-07:** `InsuranceForm.tsx` 비즈니스 로직 훅 분리
-  - [ ] **Phase 14-08:** 전체 품질 무결성 검증 및 Phase 14 마일스톤 마무리
+  - [x] **Phase 14-05:** `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리 (`DiagnosisScoreCard`, `CoverageProgressList`, `DiagnosisAdviceCards`)
+  - [x] **Phase 14-06:** 백엔드 도메인 비즈니스 규칙 엔진 분리 (`RuleBasedDiagnosisEngine`, `NotificationRuleEvaluator`)
+  - [x] **Phase 14-07:** `InsuranceForm.tsx` 비즈니스 로직 훅 분리 (`useInsuranceForm.ts`)
+  - [x] **Phase 14-08:** 전체 품질 무결성 검증 및 Phase 14 마일스톤 마무리 (전사 349개 테스트 100% Pass)
 
 ---
 

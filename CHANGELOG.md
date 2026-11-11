@@ -5,6 +5,37 @@
 
 ---
 
+## [Phase 14] - 2026-11-11
+
+### 🚀 Completed (마일스톤 완료 및 클린 아키텍처 리팩토링)
+- **프론트엔드 테스트 커버리지 대폭 확보 (56.87% ➔ 83.15%) ([TEST_COVERAGE.md](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/.agents/TEST_COVERAGE.md))**
+  - **테스트 환경 및 Fixtures 구축 (`Phase 14-01`):** v8 커버리지 프로바이더 적용 및 `insurance.fixtures.ts`, `auth.fixtures.ts`, `diagnosis.fixtures.ts`, `notification.fixtures.ts` 표준 목 데이터 구축.
+  - **설정 패널 및 미커버 컴포넌트 테스트 스위트 보강 (`Phase 14-02`):** `SettingsPanel`, `PasswordSettings`, `ProfileSettings`, `LoginHistorySettings`, `PolicyViewer`, `PushNotificationItem` 등 129개 테스트 통과 (커버리지 68.95% 달성).
+  - **`src/api` React Query 훅 단위 테스트 스위트 구축 (`Phase 14-03`):** `client.spec.ts`, `useInsuranceQueries`, `useNotificationQueries`, `useUserQueries`, `useDiagnosisQueries`, `useDocumentQueries` 단위 테스트 완비로 `src/api` 라인 커버리지 13.15% ➔ 93.68% 급상승, 전사 커버리지 82.56% 돌파.
+
+### 🧩 Refactored (컴포넌트 및 도메인 규칙 엔진 분리 / Clean Architecture)
+- **`RightPanel.tsx` 일별 일정 뷰 분리 (`Phase 14-04`):**
+  - 일별 캘린더 일정 및 납입/만기 뱃지 렌더링 책임을 `DailyEventsView.tsx`로 분리하여 252줄에서 150줄(-40%)로 경량화.
+- **`AiDiagnosisReport.tsx` 프레젠테이션 서브 컴포넌트 분리 (`Phase 14-05`):**
+  - `DiagnosisScoreCard.tsx` (종합 점수 및 등급 뱃지)
+  - `CoverageProgressList.tsx` (카테고리별 보장액 대비 적정도 프로그레스)
+  - `DiagnosisAdviceCards.tsx` (강점, 개선점, 보험료 절감 팁)
+  - 리포트 화면을 컴포지션 컨테이너로 리팩토링 (347줄 ➔ 178줄, -49% 경량화).
+- **백엔드 순수 비즈니스 규칙 엔진 분리 (`Phase 14-06`):**
+  - `RuleBasedDiagnosisEngine` (`apps/api/src/analysis/rule-based-diagnosis.engine.ts`): DB/AI I/O와 분리된 100% 순수 규칙 기반 점수 및 등급 산출 엔진 구축.
+  - `NotificationRuleEvaluator` (`apps/api/src/notification/notification-rule.evaluator.ts`): 크론 및 메일 발송과 분리된 D-30/D-7/D-Day 만기/납입일 및 방해금지 시간 판정 순수 도메인 엔진 구축.
+- **`InsuranceForm.tsx` 비즈니스 로직 및 뮤테이션 커스텀 훅 분리 (`Phase 14-07`):**
+  - `useInsuranceForm.ts` (`apps/web/src/hooks/useInsuranceForm.ts`): 폼 유효성 검사, 자동 파싱 데이터 매핑, 생성/수정 뮤테이션 위임 분리 (231줄 ➔ 125줄, -46% 경량화).
+
+### 🧪 Tests & Quality
+- **전사 단위/통합 테스트 무결성:**
+  - 프론트엔드: Vitest 42개 파일, 179개 테스트 통과 (Lines 83.15%)
+  - 백엔드: Jest 26개 파일, 170개 테스트 통과 (Lines 90.22%)
+  - **전사 총 349개 테스트 100% Pass**
+- **빌드/린트:** Turbo monorepo build 및 oxlint (0 errors, 0 warnings) 100% 검증 통과.
+
+---
+
 ## [Phase 13-04] - 2026-11-11
 
 ### 🚀 Completed (마일스톤 완료 및 하네스 단일화)

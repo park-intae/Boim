@@ -150,7 +150,10 @@ export class NotificationSchedulerService {
 
         // 방해금지 시간 및 채널 필터링 (순수 도메인 규칙 엔진에 위임)
         const userSettings = product.user.notificationSettings;
-        const channel = this.evaluator.determineChannel(userSettings, targetDate);
+        const channel = this.evaluator.determineChannel(
+          userSettings,
+          targetDate,
+        );
 
         // 1) DB 인앱 알림 레코드 생성
         await this.prisma.notification.create({

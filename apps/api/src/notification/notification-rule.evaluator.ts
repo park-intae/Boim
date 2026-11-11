@@ -40,7 +40,11 @@ export class NotificationRuleEvaluator {
     currentYear: number,
     currentMonth: number,
   ): BatchNotificationCandidate | null {
-    if (!product.startDate || product.monthlyPayment === undefined || product.monthlyPayment === null) {
+    if (
+      !product.startDate ||
+      product.monthlyPayment === undefined ||
+      product.monthlyPayment === null
+    ) {
       return null;
     }
 
