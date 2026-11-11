@@ -47,11 +47,11 @@
 - [x] 기존 기능 및 인터랙션 회귀 테스트(Regression Test) 100% 통과 (커버리지 93.75%)
 
 #### 5. Phase 14-05: `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리
-- [ ] `AiDiagnosisReport.tsx`에서 하위 UI 컴포넌트 분리:
+- [x] `AiDiagnosisReport.tsx`에서 하위 UI 컴포넌트 분리:
   - `DiagnosisScoreCard.tsx` (점수 및 등급 뱃지)
   - `CoverageProgressList.tsx` (보장 영역별 진행률 바)
   - `DiagnosisAdviceCards.tsx` (부족 보장 및 AI 개선 조언 카드)
-- [ ] 리포트 컨테이너 단순화 및 각 서브 컴포넌트 단위 테스트 작성/통과
+- [x] 리포트 컨테이너 단순화 및 각 서브 컴포넌트 단위 테스트 작성/통과
 
 #### 6. Phase 14-06: 백엔드 도메인 비즈니스 규칙 엔진 분리
 - [ ] `AiDiagnosisService`에서 순수 규칙 기반 진단 엔진(`RuleBasedDiagnosisEngine.ts`) 분리
