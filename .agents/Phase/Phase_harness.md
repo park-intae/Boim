@@ -30,39 +30,26 @@
   - [x] **Phase 13-02:** 알림 다중 채널 실제 발송 (브라우저 OS 푸시 & 이메일 실발송)
   - [x] **Phase 13-03:** PASS 본인인증 실감형 인터랙션 고도화 (타이머 & 세션 코드)
   - [x] **Phase 13-04:** 전체 품질 무결성 검증 및 Phase 13 마일스톤 마무리
+- [ ] **Phase 14:** 프론트엔드 테스트 커버리지 강화 및 컴포넌트/로직 책임 분리 (Architecture Refactoring) (진행 중)
+  - [x] **Phase 14-01:** 커버리지 측정 정밀화 및 테스트 데이터 Fixture 체계 구축
+  - [ ] **Phase 14-02:** 설정(Settings) 패널 및 부가 컴포넌트 테스트 스위트 작성
+  - [ ] **Phase 14-03:** `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트 (커버리지 80%+ 달성)
+  - [ ] **Phase 14-04:** `RightPanel.tsx` 서브 컴포넌트 분리 (`DailyEventsView.tsx`)
+  - [ ] **Phase 14-05:** `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리
+  - [ ] **Phase 14-06:** 백엔드 도메인 비즈니스 규칙 엔진 분리
+  - [ ] **Phase 14-07:** `InsuranceForm.tsx` 비즈니스 로직 훅 분리
+  - [ ] **Phase 14-08:** 전체 품질 무결성 검증 및 Phase 14 마일스톤 마무리
 
 ---
 
 ## 📌 향후 작업 예정 체크리스트
 
-### 1. 보험 증권 파일 업로드 & 패턴 매칭 자동 분석 및 입력 (Phase 10 완료)
-- [x] 개인정보 보호를 위한 가상 모의 증권 샘플(TXT/PDF) 프리셋 에셋 준비
-- [x] UI 내 `[가상 모의 증권 샘플로 원클릭 분석해보기]` 원클릭 프리셋 버튼 제공
-- [x] 백엔드 `Multer` 기반 증권 파일 안전 업로드 API (`Document` 모델 연동)
-- [x] `Tesseract.js` OCR 기반 텍스트 추출 엔진 구현
-- [x] 정규식/패턴 매칭 기반 비정형 텍스트 구조화 (보험사, 상품명, 카테고리, 월납입액, 만기일 등 JSON 추출)
-- [x] 증권 업로드 프로그레스 UI 및 파싱 결과 기반 보험 등록 폼 자동 입력(Prefill) UX
+### 1. 프론트엔드 테스트 커버리지 강화 & 아키텍처 리팩토링 (Phase 14 진행 중)
+- [ ] 프론트엔드 테스트 커버리지 80%+ 확보 (설정 패널, 온보딩, React-Query 훅)
+- [ ] 프론트엔드 내 임시 모킹 데이터 정리 및 표준 테스트 Fixture 체계화
+- [ ] 거대 컴포넌트(`RightPanel`, `AiDiagnosisReport`, `InsuranceForm`) 분리 및 비즈니스 로직 훅 추출
+- [ ] 백엔드 도메인 비즈니스 규칙 엔진 분리 (`AiDiagnosis`, `NotificationScheduler`)
 
-### 2. 보험 만기 & 보험료 납입일 스케줄러 배치 및 알림 발송 (Phase 11 완료)
-- [x] Prisma Notification 스키마 고도화 및 DB 연동 인앱 알림 CRUD (Phase 11-01)
-- [x] `@nestjs/schedule` 기반 매일 자정 납입 예정일(D-7, D-1) 및 만기 도래(D-30, D-7, D-Day) 탐색 배치 크론 (Phase 11-02)
-- [x] 중복 발송 방지(Idempotency) 및 사용자 방해 금지 시간(`quietHours`) 필터링 (Phase 11-02)
-- [x] 다중 채널 발송 처리 (In-app, 이메일, 웹푸시 Mock) 및 수동 트리거 API (Phase 11-03)
-- [x] 프론트엔드 알림 목록/설정 연동 및 전체 QA 검증 (Phase 11-04)
-
-### 3. 내 보험 가입 현황 AI 종합 진단 & 데이터 내보내기 (PDF / Excel 리포트) (Phase 12 완료)
-- [x] Gemini AI를 활용한 보장 과다/부족 진단 및 맞춤형 보험 리모델링 조언 피드백 생성 (Phase 12-01)
-- [x] 엑셀(XLSX) 및 PDF 리포트 생성 백엔드 서비스 구현 (Phase 12-02)
-- [x] 대시보드 및 보험료 분석 데이터를 종합한 '내 보험 AI 종합 진단 리포트' UI (Phase 12-03)
-- [x] PDF 출력 또는 엑셀(XLSX) 다운로드 기능 연동 및 QA (Phase 12-04)
-
-### 4. 더미(Mock) 제거 & 실제 서비스 실연동 고도화 (Phase 13 완료)
-- [x] 홈 대시보드 미납 알림 하드코딩(0건) 제거 및 실제 미납/주의 알림 실시간 집계 쿼리 연동
-- [x] 캘린더 우측 패널 일정 카드 클릭 시 실제 데이터가 Prefill되는 '보험 수정(Edit) 폼' 연동
-- [x] 브라우저 Web Notification API 연동 (Windows/Mac 실제 OS 데스크톱 토스트 알림 팝업)
-- [x] Nodemailer 기반 이메일 실발송 파이프라인 (Ethereal 가상 메일함 / 상용 SMTP 대응 및 독립 Provider 분리)
-- [x] PASS 본인인증 3분 카운트다운 타이머, 유효시간 만료 처리 및 실시간 세션 랜덤 코드 고도화
-
-### 4. 실제 상용 소셜 OAuth2(카카오/네이버) 실연동
+### 2. 실제 상용 소셜 OAuth2(카카오/네이버) 실연동
 - [ ] 카카오 Developers / 네이버 Developers 실제 REST API Key 및 Redirect URI 연동
 - [ ] 상용 환경 OAuth2 인가 코드 수신, 토큰 교환 및 계정 통합 처리
