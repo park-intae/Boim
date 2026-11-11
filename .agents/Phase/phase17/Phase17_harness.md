@@ -1,31 +1,32 @@
 > 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
 > 작업 영역에 따라 백엔드(@[.agents/BACKEND_HARNESS.md]) 및 프론트엔드(@[.agents/FRONTEND_HARNESS.md]) 지침을 반드시 숙독하고 엄격히 준수할 것
 
-# Phase 17: 상용 소셜 OAuth2 (카카오 / 네이버) 실연동 및 계정 통합 (Production OAuth2 Integration)
+# Phase 17: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 (DevOps & Infrastructure)
 
 ## 📌 목표 및 개요
-현재 간이 모킹/시뮬레이션 상태인 카카오 및 네이버 소셜 로그인을 실제 상용 개발자 센터(Kakao Developers, Naver Developers)의 REST API 키, Secret 및 Redirect URI를 통한 정규 OAuth2 인가 코드 승인 플로우로 실연동합니다. 또한 기존 이메일 기반 로컬 회원 계정과 소셜 계정 간의 안전한 1:N 연동/해제(Account Linking/Unlinking) 및 토큰 갱신 파이프라인을 완성합니다.
+소셜 OAuth2 환경변수와 번들 최적화가 완료된 Boim 풀스택 서비스를 실제 상용 클라우드나 사설 서버에 즉시 무중단 배포할 수 있도록 Multi-stage Docker 컨테이너 환경을 구축하고, Docker Compose를 통한 원클릭 풀스택 로컬/운영 오케스트레이션을 완성합니다. 또한 GitHub Actions CI를 연동하여 코드 푸시 및 PR 시 린트, 전사 테스트, 빌드가 자동으로 검증되는 안전한 배포 파이프라인을 구축합니다.
 
 ---
 
 ## 📋 세부 체크리스트
 
-### 1. Phase 17-01: 백엔드 카카오 OAuth2 실연동 파이프라인
-- [ ] 카카오 인가 코드 수신 콜백 엔드포인트(`GET /auth/kakao/callback`) 및 토큰 교환(`POST https://kauth.kakao.com/oauth/token`) 연동
-- [ ] 카카오 사용자 정보 API(`GET https://kapi.kakao.com/v2/user/me`) 파싱 및 사용자 DB 매핑
-- [ ] 미가입 유저 자동 회원가입 및 기존 유저 소셜 연동 처리 로직 완비
+### 1. Phase 17-01: Multi-stage Dockerfile 구축
+- [ ] `apps/api/Dockerfile`: Alpine 기반 경량 Node.js 환경, pnpm 모노레포 캐시 활용, Prisma 클라이언트 빌드 및 프로덕션 번들링
+- [ ] `apps/web/Dockerfile`: Vite 프로덕션 빌드 후 Nginx 경량 컨테이너를 통한 고성능 SPA 서빙 및 캐시 헤더 최적화
+- [ ] 이미지 사이즈 최소화 및 보안 비루트(non-root) 유저 실행 설정
 
-### 2. Phase 17-02: 백엔드 네이버 OAuth2 실연동 파이프라인
-- [ ] 네이버 인가 코드 수신 콜백 엔드포인트(`GET /auth/naver/callback`) 및 토큰 교환(`POST https://nid.naver.com/oauth2.0/token`) 연동
-- [ ] 네이버 회원 프로필 조회 API(`GET https://openapi.naver.com/v1/nid/me`) 파싱 및 DB 매핑
-- [ ] CSRF 방지를 위한 state 파라미터 검증 보안 파이프라인 구축
+### 2. Phase 17-02: Docker Compose 풀스택 오케스트레이션
+- [ ] `docker-compose.yml`: PostgreSQL 16 + NestJS API + Web/Nginx + 네트워크/볼륨 마운트 구성
+- [ ] 컨테이너 시작 시 Prisma 자동 마이그레이션(`prisma migrate deploy`) 실행 파이프라인 연동
+- [ ] Nginx 리버스 프록시(`/api` ➔ NestJS API 포워딩, 정적 자산 Gzip 압축) 설정
 
-### 3. Phase 17-03: 프론트엔드 소셜 로그인 인가 및 계정 관리 UI 완성
-- [ ] 로그인 및 회원가입 화면에서 카카오/네이버 인가 URL 리다이렉트 처리
-- [ ] OAuth 콜백 처리용 전용 라우트(`OAuthCallbackPage.tsx`) 및 로딩/에러 UI
-- [ ] 마이페이지/설정(`ProfileSettings.tsx`)에서 소셜 계정 연동 현황 확인 및 연동/연동 해제(Unlink) UI 구현
+### 3. Phase 17-03: GitHub Actions CI 파이프라인 구축
+- [ ] `.github/workflows/ci.yml`: Push 및 Pull Request 자동 트리거 워크플로우
+- [ ] pnpm 의존성 캐싱 및 워크스페이스 린트(`oxlint`, `eslint`) 검증
+- [ ] 전사 테스트 스위트 자동 실행 및 실패 시 머지 차단 게이트웨이
+- [ ] Turbo 모노레포 프로덕션 빌드 무결성 자동 검증
 
-### 4. Phase 17-04: 소셜 인증 통합 테스트 및 서비스 런칭 최종 점검
-- [ ] 소셜 인증 단위/E2E 테스트 스위트 작성 및 모킹/실서버 격리 검증
-- [ ] 전사 테스트, 린트, 빌드 100% 무결성 검증
-- [ ] `CHANGELOG.md` 및 `README.md` 동기화 및 마일스톤 완료 커밋
+### 4. Phase 17-04: 배포 환경 가이드 및 마일스톤 마무리
+- [ ] 상용 환경 배포용 보안 환경 변수 템플릿(`.env.production.example`) 정립 (소셜 OAuth 키 포함)
+- [ ] 배포 가이드 문서(`DEPLOYMENT.md`) 작성 (Docker 실행법, DB 백업, SSL 인증서 연동 안내)
+- [ ] `CHANGELOG.md` 및 `README.md` 동기화 및 커밋
