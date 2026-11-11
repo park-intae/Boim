@@ -22,12 +22,12 @@
 - [x] 단위 검증 실행 및 커버리지 베이스라인 확인
 
 #### 2. Phase 14-02: 설정(Settings) 패널 및 부가 컴포넌트 테스트 스위트 작성
-- [ ] **`PasswordSettings.spec.tsx`:** 현재 비밀번호/새 비밀번호 유효성 검사 및 변경 API 호출 검증
-- [ ] **`ProfileSettings.spec.tsx`:** 프로필(이름/이메일) 수정 폼 인터랙션 및 제출 검증
-- [ ] **`ServiceSettings.spec.tsx`:** 회원 탈퇴 및 데이터 초기화 모달 인터랙션 검증
-- [ ] **`SettingsPanel.spec.tsx`:** 탭 전환(알림/보안/프로필/약관 등) 렌더링 무결성 검증
-- [ ] **`Onboarding.spec.tsx`:** 온보딩 단계별(환영 -> 등록 안내 -> 완료) 이동 및 인터랙션 검증
-- [ ] **`AppLayout.test.tsx` / `NotificationList.test.tsx`:** 레이아웃 렌더링 및 알림 읽음/삭제 인터랙션 엣지 케이스 검증
+- [x] **`PasswordSettings.spec.tsx`:** 현재 비밀번호/새 비밀번호 유효성 검사 및 변경 API 호출 검증
+- [x] **`ProfileSettings.spec.tsx`:** 프로필(이름/이메일) 수정 폼 인터랙션 및 제출 검증
+- [x] **`LoginHistorySettings.spec.tsx` / `NotificationTimeSettings.spec.tsx` / `PolicyViewer.spec.tsx`:** 로그인 기기 이력, 방해금지 시간 설정, 약관 뷰어 검증
+- [x] **`SettingsPanel.spec.tsx`:** 탭 전환(알림/보안/프로필/약관 등) 및 데이터 내보내기/탈퇴 검증
+- [x] **`Onboarding.spec.tsx`:** 온보딩 단계별(환영 -> 등록 안내 -> 완료) 이동 및 인터랙션 검증
+- [x] **`AppLayout.test.tsx` / `NotificationList.test.tsx`:** 레이아웃 렌더링 및 알림 읽음/삭제 인터랙션 엣지 케이스 검증
 
 #### 3. Phase 14-03: `src/api` React Query 훅 및 데이터 파이프라인 단위 테스트
 - [ ] **핵심 커스텀 훅 단위 테스트 (`renderHook` 기반):**

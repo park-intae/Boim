@@ -145,4 +145,71 @@ describe('NotificationList Component', () => {
 
     expect(screen.getByText('새로운 알림이 없습니다')).toBeInTheDocument();
   });
+
+  it('알림 제거(X) 버튼을 클릭하면 deleteNotification이 호출되어야 한다.', () => {
+    const mockDelete = vi.fn();
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
+      data: mockNotifications,
+      isLoading: false,
+    } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({
+      mutate: vi.fn(),
+    } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({
+      mutate: mockDelete,
+    } as never);
+
+    render(<NotificationList />);
+
+    const removeButtons = screen.getAllByRole('button', { name: '알림 제거' });
+    fireEvent.click(removeButtons[0]);
+
+    expect(mockDelete).toHaveBeenCalledWith('1');
+  });
+
+  it('다양한 시간대의 알림 날짜 형식을 정상적으로 렌더링해야 한다.', () => {
+    const variedNotifications = [
+      {
+        id: '10',
+        type: 'info',
+        title: '5분 전 알림',
+        message: '테스트 메시지',
+        createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+        isRead: false,
+      },
+      {
+        id: '11',
+        type: 'info',
+        title: '3시간 전 알림',
+        message: '테스트 메시지',
+        createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+        isRead: true,
+      },
+      {
+        id: '12',
+        type: 'info',
+        title: '2일 전 알림',
+        message: '테스트 메시지',
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        isRead: true,
+      },
+    ];
+
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
+      data: variedNotifications,
+      isLoading: false,
+    } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({
+      mutate: vi.fn(),
+    } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({
+      mutate: vi.fn(),
+    } as never);
+
+    render(<NotificationList />);
+
+    expect(screen.getByText('5분 전')).toBeInTheDocument();
+    expect(screen.getByText('3시간 전')).toBeInTheDocument();
+    expect(screen.getByText('2일 전')).toBeInTheDocument();
+  });
 });
