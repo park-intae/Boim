@@ -42,9 +42,9 @@
 ### [Part 2] 컴포넌트 분리 및 책임 단일화 리팩토링 (Clean Architecture)
 
 #### 4. Phase 14-04: `RightPanel.tsx` 서브 컴포넌트 분리
-- [ ] `RightPanel.tsx`에서 일별 일정 뷰 컴포넌트(`DailyEventsView.tsx`) 독립 분리
-- [ ] 우측 패널 메인 탭(기본/일정/진단/알림/설정) 라우팅 로직 간소화 및 가독성 개선
-- [ ] 기존 기능 및 인터랙션 회귀 테스트(Regression Test) 100% 통과
+- [x] `RightPanel.tsx`에서 일별 일정 뷰 컴포넌트(`DailyEventsView.tsx`) 독립 분리 (252줄 -> 150줄 경량화)
+- [x] 우측 패널 메인 탭(기본/일정/진단/알림/설정) 라우팅 로직 간소화 및 가독성 개선
+- [x] 기존 기능 및 인터랙션 회귀 테스트(Regression Test) 100% 통과 (커버리지 93.75%)
 
 #### 5. Phase 14-05: `AiDiagnosisReport.tsx` 리포트 서브 컴포넌트 분리
 - [ ] `AiDiagnosisReport.tsx`에서 하위 UI 컴포넌트 분리:
