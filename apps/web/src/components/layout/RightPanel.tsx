@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from 'react';
 import { X, ChevronUp } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useAppStore } from '../../store/useAppStore';
@@ -5,10 +6,26 @@ import { useGetInsurances } from '../../api/useInsuranceQueries';
 import { DailyEventsView } from './DailyEventsView';
 import { InsuranceForm } from './InsuranceForm';
 import { MyInsuranceList } from './MyInsuranceList';
-import { PremiumAnalysis } from './PremiumAnalysis';
-import { AiDiagnosisReport } from './AiDiagnosisReport';
 import { NotificationList } from './NotificationList';
-import { SettingsPanel } from '../../features/settings/components/SettingsPanel';
+
+// 🚀 대형 패널 컴포넌트 코드 스플리팅 (지연 로딩)
+const PremiumAnalysis = lazy(() =>
+  import('./PremiumAnalysis').then((m) => ({ default: m.PremiumAnalysis })),
+);
+const AiDiagnosisReport = lazy(() =>
+  import('./AiDiagnosisReport').then((m) => ({ default: m.AiDiagnosisReport })),
+);
+const SettingsPanel = lazy(() =>
+  import('../../features/settings/components/SettingsPanel').then((m) => ({
+    default: m.SettingsPanel,
+  })),
+);
+
+const PanelFallback: React.FC = () => (
+  <div className="flex-1 flex items-center justify-center p-8">
+    <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 export function RightPanel() {
   const selectedDate = useAppStore((state) => state.selectedDate);
@@ -123,21 +140,23 @@ export function RightPanel() {
           </div>
 
           {/* Body Content by Panel Mode */}
-          {panelMode === 'view' ? (
-            <DailyEventsView />
-          ) : panelMode === 'my-insurance' ? (
-            <MyInsuranceList />
-          ) : panelMode === 'analysis' ? (
-            <PremiumAnalysis />
-          ) : panelMode === 'ai-diagnosis' ? (
-            <AiDiagnosisReport />
-          ) : panelMode === 'notifications' ? (
-            <NotificationList />
-          ) : panelMode === 'settings' ? (
-            <SettingsPanel />
-          ) : (
-            <InsuranceForm />
-          )}
+          <Suspense fallback={<PanelFallback />}>
+            {panelMode === 'view' ? (
+              <DailyEventsView />
+            ) : panelMode === 'my-insurance' ? (
+              <MyInsuranceList />
+            ) : panelMode === 'analysis' ? (
+              <PremiumAnalysis />
+            ) : panelMode === 'ai-diagnosis' ? (
+              <AiDiagnosisReport />
+            ) : panelMode === 'notifications' ? (
+              <NotificationList />
+            ) : panelMode === 'settings' ? (
+              <SettingsPanel />
+            ) : (
+              <InsuranceForm />
+            )}
+          </Suspense>
         </div>
       </aside>
     </>

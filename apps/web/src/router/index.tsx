@@ -1,12 +1,31 @@
+import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
-import { Login } from '../features/auth/components/Login';
-import { SignUp } from '../features/auth/components/SignUp';
-import { Onboarding } from '../features/auth/components/Onboarding';
-import { PassVerification } from '../features/auth/components/PassVerification';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
-import { OAuthCallbackPage } from '../pages/OAuthCallbackPage';
+
+// 🚀 라우트 단위 코드 스플리팅 (Dynamic Import)
+const Login = lazy(() =>
+  import('../features/auth/components/Login').then((m) => ({ default: m.Login })),
+);
+const SignUp = lazy(() =>
+  import('../features/auth/components/SignUp').then((m) => ({ default: m.SignUp })),
+);
+const Onboarding = lazy(() =>
+  import('../features/auth/components/Onboarding').then((m) => ({ default: m.Onboarding })),
+);
+const PassVerification = lazy(() =>
+  import('../features/auth/components/PassVerification').then((m) => ({ default: m.PassVerification })),
+);
+const OAuthCallbackPage = lazy(() =>
+  import('../pages/OAuthCallbackPage').then((m) => ({ default: m.OAuthCallbackPage })),
+);
+
+const PageFallback: React.FC = () => (
+  <div className="flex items-center justify-center min-h-screen bg-slate-50">
+    <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
@@ -20,27 +39,47 @@ export const router = createBrowserRouter([
       {
         path: '',
         element: <HomePage />,
-      }
-    ]
+      },
+    ],
   },
   {
     path: '/login',
-    element: <Login />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <Login />
+      </Suspense>
+    ),
   },
   {
     path: '/signup',
-    element: <SignUp />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <SignUp />
+      </Suspense>
+    ),
   },
   {
     path: '/onboarding',
-    element: <Onboarding onComplete={() => window.location.href = '/login'} />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <Onboarding onComplete={() => (window.location.href = '/login')} />
+      </Suspense>
+    ),
   },
   {
     path: '/pass-verify',
-    element: <PassVerification onVerifySuccess={() => window.location.href = '/'} />,
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <PassVerification onVerifySuccess={() => (window.location.href = '/')} />
+      </Suspense>
+    ),
   },
   {
     path: '/auth/callback',
-    element: <OAuthCallbackPage />,
-  }
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <OAuthCallbackPage />
+      </Suspense>
+    ),
+  },
 ]);

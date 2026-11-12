@@ -20,6 +20,7 @@ vi.mock('../components/layout/PolicyDocumentUploader', () => ({
 }));
 
 vi.mock('../components/layout/AiDiagnosisReport', () => ({
+  default: () => <div data-testid="mock-ai-diagnosis" />,
   AiDiagnosisReport: () => <div data-testid="mock-ai-diagnosis" />,
 }));
 
@@ -96,12 +97,12 @@ describe('RightPanel Component', () => {
     expect(mockDelete).toHaveBeenCalledWith('999');
   });
 
-  it('panelMode가 ai-diagnosis일 때 AI 종합 진단 헤더 및 컴포넌트가 렌더링되어야 한다.', () => {
+  it('panelMode가 ai-diagnosis일 때 AI 종합 진단 헤더 및 컴포넌트가 렌더링되어야 한다.', async () => {
     useAppStore.setState({ panelMode: 'ai-diagnosis' });
     render(<RightPanel />);
 
     expect(screen.getByText('AI 종합 진단')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-ai-diagnosis')).toBeInTheDocument();
+    expect(await screen.findByTestId('mock-ai-diagnosis')).toBeInTheDocument();
   });
 
   it('일정 카드 클릭 시 editingProductId가 설정되고 panelMode가 form으로 변경되어야 한다.', () => {
