@@ -74,12 +74,16 @@ export class SocialAuthService {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new UnauthorizedException(`카카오 인가 토큰 교환 실패: ${errorText}`);
+      throw new UnauthorizedException(
+        `카카오 인가 토큰 교환 실패: ${errorText}`,
+      );
     }
 
     const data = (await response.json()) as { access_token?: string };
     if (!data.access_token) {
-      throw new UnauthorizedException('카카오 토큰 응답에 access_token이 누락되었습니다.');
+      throw new UnauthorizedException(
+        '카카오 토큰 응답에 access_token이 누락되었습니다.',
+      );
     }
     return data.access_token;
   }
@@ -234,7 +238,9 @@ export class SocialAuthService {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new UnauthorizedException(`네이버 인가 토큰 교환 실패: ${errorText}`);
+      throw new UnauthorizedException(
+        `네이버 인가 토큰 교환 실패: ${errorText}`,
+      );
     }
 
     interface NaverTokenResponse {
@@ -288,7 +294,9 @@ export class SocialAuthService {
 
     const data = (await response.json()) as NaverProfileResponse;
     if (!data.response) {
-      throw new UnauthorizedException('네이버 프로필 데이터가 올바르지 않습니다.');
+      throw new UnauthorizedException(
+        '네이버 프로필 데이터가 올바르지 않습니다.',
+      );
     }
 
     return {

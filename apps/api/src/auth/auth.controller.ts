@@ -176,10 +176,7 @@ export class AuthController {
   }
 
   @Post('naver/login')
-  async naverLogin(
-    @Body('code') code: string,
-    @Body('state') state: string,
-  ) {
+  async naverLogin(@Body('code') code: string, @Body('state') state: string) {
     const accessToken = await this.socialAuthService.exchangeNaverCode(
       code,
       state,

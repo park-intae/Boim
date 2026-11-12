@@ -133,11 +133,7 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should call authService.login and return result', async () => {
-      const result = await controller.login(
-        'test@test.com',
-        'pw123',
-        true,
-      );
+      const result = await controller.login('test@test.com', 'pw123', true);
       expect(authService.login).toHaveBeenCalledWith(
         'test@test.com',
         'pw123',
@@ -198,9 +194,17 @@ describe('AuthController', () => {
 
   describe('kakaoLogin', () => {
     it('should exchange code and process social user', async () => {
-      const result = await controller.kakaoLogin('auth_code_123', 'http://localhost:5173');
-      expect(socialAuthService.exchangeKakaoCode).toHaveBeenCalledWith('auth_code_123', 'http://localhost:5173');
-      expect(socialAuthService.getKakaoProfile).toHaveBeenCalledWith('mock_kakao_access_token');
+      const result = await controller.kakaoLogin(
+        'auth_code_123',
+        'http://localhost:5173',
+      );
+      expect(socialAuthService.exchangeKakaoCode).toHaveBeenCalledWith(
+        'auth_code_123',
+        'http://localhost:5173',
+      );
+      expect(socialAuthService.getKakaoProfile).toHaveBeenCalledWith(
+        'mock_kakao_access_token',
+      );
       expect(socialAuthService.processSocialUser).toHaveBeenCalled();
       expect(result.tokens.accessToken).toBe('mock_jwt_access');
     });
@@ -210,8 +214,14 @@ describe('AuthController', () => {
     it('should exchange code and link to current user', async () => {
       const req = { user: { userId: '10' } } as any;
       const result = await controller.kakaoLink(req, 'auth_code_123');
-      expect(socialAuthService.exchangeKakaoCode).toHaveBeenCalledWith('auth_code_123', undefined);
-      expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(expect.anything(), '10');
+      expect(socialAuthService.exchangeKakaoCode).toHaveBeenCalledWith(
+        'auth_code_123',
+        undefined,
+      );
+      expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(
+        expect.anything(),
+        '10',
+      );
       expect(result.tokens.accessToken).toBe('mock_jwt_access');
     });
   });
@@ -220,7 +230,10 @@ describe('AuthController', () => {
     it('should call socialAuthService.unlinkSocialAccount', async () => {
       const req = { user: { userId: '10' } } as any;
       const result = await controller.kakaoUnlink(req);
-      expect(socialAuthService.unlinkSocialAccount).toHaveBeenCalledWith('10', 'kakao');
+      expect(socialAuthService.unlinkSocialAccount).toHaveBeenCalledWith(
+        '10',
+        'kakao',
+      );
       expect(result.linked).toBe(false);
     });
   });
@@ -250,8 +263,13 @@ describe('AuthController', () => {
   describe('naverLogin', () => {
     it('should exchange code with state and process social user', async () => {
       const result = await controller.naverLogin('naver_code_123', 'state_abc');
-      expect(socialAuthService.exchangeNaverCode).toHaveBeenCalledWith('naver_code_123', 'state_abc');
-      expect(socialAuthService.getNaverProfile).toHaveBeenCalledWith('mock_naver_access_token');
+      expect(socialAuthService.exchangeNaverCode).toHaveBeenCalledWith(
+        'naver_code_123',
+        'state_abc',
+      );
+      expect(socialAuthService.getNaverProfile).toHaveBeenCalledWith(
+        'mock_naver_access_token',
+      );
       expect(socialAuthService.processSocialUser).toHaveBeenCalled();
       expect(result.tokens.accessToken).toBe('mock_jwt_access');
     });
@@ -260,9 +278,19 @@ describe('AuthController', () => {
   describe('naverLink', () => {
     it('should link naver account to current user', async () => {
       const req = { user: { userId: '10' } } as any;
-      const result = await controller.naverLink(req, 'naver_code_123', 'state_abc');
-      expect(socialAuthService.exchangeNaverCode).toHaveBeenCalledWith('naver_code_123', 'state_abc');
-      expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(expect.anything(), '10');
+      const result = await controller.naverLink(
+        req,
+        'naver_code_123',
+        'state_abc',
+      );
+      expect(socialAuthService.exchangeNaverCode).toHaveBeenCalledWith(
+        'naver_code_123',
+        'state_abc',
+      );
+      expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(
+        expect.anything(),
+        '10',
+      );
       expect(result.tokens.accessToken).toBe('mock_jwt_access');
     });
   });
@@ -271,7 +299,10 @@ describe('AuthController', () => {
     it('should call socialAuthService.unlinkSocialAccount for naver', async () => {
       const req = { user: { userId: '10' } } as any;
       await controller.naverUnlink(req);
-      expect(socialAuthService.unlinkSocialAccount).toHaveBeenCalledWith('10', 'naver');
+      expect(socialAuthService.unlinkSocialAccount).toHaveBeenCalledWith(
+        '10',
+        'naver',
+      );
     });
   });
 

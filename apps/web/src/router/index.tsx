@@ -6,6 +6,7 @@ import { SignUp } from '../features/auth/components/SignUp';
 import { Onboarding } from '../features/auth/components/Onboarding';
 import { PassVerification } from '../features/auth/components/PassVerification';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { OAuthCallbackPage } from '../pages/OAuthCallbackPage';
 
 export const router = createBrowserRouter([
   {
@@ -37,5 +38,9 @@ export const router = createBrowserRouter([
   {
     path: '/pass-verify',
     element: <PassVerification onVerifySuccess={() => window.location.href = '/'} />,
+  },
+  {
+    path: '/auth/callback',
+    element: <OAuthCallbackPage />,
   }
 ]);

@@ -253,9 +253,9 @@ describe('SocialAuthService', () => {
 
     it('should throw UnauthorizedException if user not found', async () => {
       prismaService.user.findUnique.mockResolvedValue(null);
-      await expect(
-        service.unlinkSocialAccount('999', 'kakao'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.unlinkSocialAccount('999', 'kakao')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

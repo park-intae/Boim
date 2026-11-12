@@ -86,12 +86,7 @@ describe('NaverStrategy', () => {
       userResult = user;
     };
 
-    await strategy.validate(
-      'accessToken',
-      'refreshToken',
-      { id: '123' },
-      done,
-    );
+    await strategy.validate('accessToken', 'refreshToken', { id: '123' }, done);
 
     expect(errorResult).toBe(error);
     expect(userResult).toBe(false);

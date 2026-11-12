@@ -2,6 +2,7 @@ export interface UserDto {
   id: bigint | number;
   email: string;
   name: string;
+  isPassVerified?: boolean;
   createdAt: Date;
 }
 
