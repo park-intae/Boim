@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { SocialAuthService } from './social-auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { KakaoStrategy } from './kakao.strategy';
@@ -24,11 +25,12 @@ import { PrismaModule } from '../prisma/prisma.module';
   controllers: [AuthController, PassController],
   providers: [
     AuthService,
+    SocialAuthService,
     JwtStrategy,
     KakaoStrategy,
     NaverStrategy,
     PassService,
   ],
-  exports: [AuthService],
+  exports: [AuthService, SocialAuthService],
 })
 export class AuthModule {}

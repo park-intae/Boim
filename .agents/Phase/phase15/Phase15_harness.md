@@ -11,9 +11,9 @@
 ## 📋 세부 체크리스트
 
 ### 1. Phase 15-01: 백엔드 카카오 OAuth2 실연동 파이프라인
-- [ ] 카카오 인가 코드 수신 콜백 엔드포인트(`GET /auth/kakao/callback`) 및 토큰 교환(`POST https://kauth.kakao.com/oauth/token`) 연동
-- [ ] 카카오 사용자 정보 API(`GET https://kapi.kakao.com/v2/user/me`) 파싱 및 사용자 DB 매핑
-- [ ] 미가입 유저 자동 회원가입 및 기존 유저 소셜 연동 처리 로직 완비
+- [x] 카카오 인가 코드 수신 콜백 엔드포인트(`GET /auth/kakao/callback`, `POST /auth/kakao/login`) 및 토큰 교환(`POST https://kauth.kakao.com/oauth/token`) 연동
+- [x] 카카오 사용자 정보 API(`GET https://kapi.kakao.com/v2/user/me`) 파싱 및 사용자 DB 매핑
+- [x] 미가입 유저 자동 회원가입 및 기존 유저 소셜 연동 처리 로직 완비
 
 ### 2. Phase 15-02: 백엔드 네이버 OAuth2 실연동 파이프라인
 - [ ] 네이버 인가 코드 수신 콜백 엔드포인트(`GET /auth/naver/callback`) 및 토큰 교환(`POST https://nid.naver.com/oauth2.0/token`) 연동

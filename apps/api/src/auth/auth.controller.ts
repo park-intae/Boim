@@ -10,14 +10,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { SocialAuthService, SocialAuthResult } from './social-auth.service';
 
-export interface OAuthUser {
-  providerId: string;
-  email?: string;
-}
-
-export interface RequestWithOAuthUser extends Request {
-  user: OAuthUser;
+export interface RequestWithSocialAuthResult extends Request {
+  user: SocialAuthResult;
 }
 
 export interface JwtUser {
@@ -31,7 +27,10 @@ export interface RequestWithJwtUser extends Request {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly socialAuthService: SocialAuthService,
+  ) {}
 
   @Post('reauth')
   @UseGuards(AuthGuard('jwt'))
@@ -100,39 +99,113 @@ export class AuthController {
     return this.authService.mockUnlinkSocial(req.user.userId, provider);
   }
 
+  // ==================== 카카오 소셜 인증 ====================
+
   @Get('kakao')
   @UseGuards(AuthGuard('kakao'))
   kakaoAuth() {
-    // AuthGuard가 카카오 로그인 페이지로 리다이렉트합니다.
+    // AuthGuard가 카카오 인가 페이지로 리다이렉트합니다.
   }
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  kakaoAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
-    const user = req.user;
-    const tokens = this.authService.generateTokens({
-      id: user.providerId,
-      email: user.email || '',
-    });
-
-    res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);
+  kakaoAuthCallback(
+    @Req() req: RequestWithSocialAuthResult,
+    @Res() res: Response,
+  ) {
+    const result = req.user;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(
+      `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
+    );
   }
+
+  @Post('kakao/login')
+  async kakaoLogin(
+    @Body('code') code: string,
+    @Body('redirectUri') redirectUri?: string,
+  ) {
+    const accessToken = await this.socialAuthService.exchangeKakaoCode(
+      code,
+      redirectUri,
+    );
+    const profile = await this.socialAuthService.getKakaoProfile(accessToken);
+    return this.socialAuthService.processSocialUser(profile);
+  }
+
+  @Post('kakao/link')
+  @UseGuards(AuthGuard('jwt'))
+  async kakaoLink(
+    @Req() req: RequestWithJwtUser,
+    @Body('code') code: string,
+    @Body('redirectUri') redirectUri?: string,
+  ) {
+    const accessToken = await this.socialAuthService.exchangeKakaoCode(
+      code,
+      redirectUri,
+    );
+    const profile = await this.socialAuthService.getKakaoProfile(accessToken);
+    return this.socialAuthService.processSocialUser(profile, req.user.userId);
+  }
+
+  @Post('kakao/unlink')
+  @UseGuards(AuthGuard('jwt'))
+  async kakaoUnlink(@Req() req: RequestWithJwtUser) {
+    return this.socialAuthService.unlinkSocialAccount(req.user.userId, 'kakao');
+  }
+
+  // ==================== 네이버 소셜 인증 ====================
 
   @Get('naver')
   @UseGuards(AuthGuard('naver'))
   naverAuth() {
-    // AuthGuard가 네이버 로그인 페이지로 리다이렉트합니다.
+    // AuthGuard가 네이버 인가 페이지로 리다이렉트합니다.
   }
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  naverAuthCallback(@Req() req: RequestWithOAuthUser, @Res() res: Response) {
-    const user = req.user;
-    const tokens = this.authService.generateTokens({
-      id: user.providerId,
-      email: user.email || '',
-    });
+  naverAuthCallback(
+    @Req() req: RequestWithSocialAuthResult,
+    @Res() res: Response,
+  ) {
+    const result = req.user;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(
+      `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
+    );
+  }
 
-    res.redirect(`http://localhost:5173/login?token=${tokens.accessToken}`);
+  @Post('naver/login')
+  async naverLogin(
+    @Body('code') code: string,
+    @Body('state') state: string,
+  ) {
+    const accessToken = await this.socialAuthService.exchangeNaverCode(
+      code,
+      state,
+    );
+    const profile = await this.socialAuthService.getNaverProfile(accessToken);
+    return this.socialAuthService.processSocialUser(profile);
+  }
+
+  @Post('naver/link')
+  @UseGuards(AuthGuard('jwt'))
+  async naverLink(
+    @Req() req: RequestWithJwtUser,
+    @Body('code') code: string,
+    @Body('state') state: string,
+  ) {
+    const accessToken = await this.socialAuthService.exchangeNaverCode(
+      code,
+      state,
+    );
+    const profile = await this.socialAuthService.getNaverProfile(accessToken);
+    return this.socialAuthService.processSocialUser(profile, req.user.userId);
+  }
+
+  @Post('naver/unlink')
+  @UseGuards(AuthGuard('jwt'))
+  async naverUnlink(@Req() req: RequestWithJwtUser) {
+    return this.socialAuthService.unlinkSocialAccount(req.user.userId, 'naver');
   }
 }
