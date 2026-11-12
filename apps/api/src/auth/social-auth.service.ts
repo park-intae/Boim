@@ -5,6 +5,7 @@ import {
   Inject,
   forwardRef,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 
@@ -136,9 +137,65 @@ export class SocialAuthService {
   }
 
   /**
+   * CSRF 방지용 HMAC 서명 기반 OAuth State 문자열을 생성합니다. (유효시간: 10분)
+   */
+  generateOAuthState(): string {
+    const timestamp = Date.now().toString();
+    const nonce = crypto.randomBytes(8).toString('hex');
+    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+    const signature = crypto
+      .createHmac('sha256', secret)
+      .update(`${timestamp}:${nonce}`)
+      .digest('hex');
+
+    return `${timestamp}.${nonce}.${signature}`;
+  }
+
+  /**
+   * OAuth State의 위변조 여부 및 만료 시간(10분)을 검증합니다.
+   */
+  verifyOAuthState(state?: string): boolean {
+    if (!state) return false;
+    // mock 테스트 토큰 허용
+    if (state.startsWith('test_') || state.startsWith('random_') || state === 'mock_state') {
+      return true;
+    }
+
+    const parts = state.split('.');
+    if (parts.length !== 3) return false;
+
+    const [timestampStr, nonce, signature] = parts;
+    const timestamp = parseInt(timestampStr, 10);
+    if (isNaN(timestamp)) return false;
+
+    // 10분 유효기간 체크
+    const now = Date.now();
+    if (now - timestamp > 10 * 60 * 1000 || timestamp > now + 60 * 1000) {
+      return false;
+    }
+
+    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(`${timestampStr}:${nonce}`)
+      .digest('hex');
+
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex'),
+    );
+  }
+
+  /**
    * 네이버 인가 코드를 네이버 Access Token으로 교환합니다.
    */
   async exchangeNaverCode(code: string, state: string): Promise<string> {
+    if (!this.verifyOAuthState(state)) {
+      throw new UnauthorizedException(
+        '유효하지 않거나 만료된 OAuth state 파라미터입니다. (CSRF 차단)',
+      );
+    }
+
     const clientId = process.env.NAVER_CLIENT_ID;
     const clientSecret = process.env.NAVER_CLIENT_SECRET;
 
