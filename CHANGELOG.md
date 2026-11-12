@@ -5,6 +5,37 @@
 
 ---
 
+## [Phase 15] - 2026-11-12
+
+### 🚀 Added (상용 소셜 OAuth2 실연동 및 계정 통합)
+- **백엔드 카카오 OAuth2 실연동 파이프라인 (`Phase 15-01`):**
+  - `SocialAuthService.exchangeKakaoCode()`: 카카오 인증 서버(`POST https://kauth.kakao.com/oauth/token`) 정규 토큰 교환 연동.
+  - `SocialAuthService.getKakaoProfile()`: 카카오 리소스 서버(`GET https://kapi.kakao.com/v2/user/me`) 사용자 프로필(ID, 이메일, 닉네임) 파싱 및 정규화.
+  - `KakaoStrategy` & `AuthController`: Passport 기반 리다이렉트(`GET /auth/kakao/callback`) 및 REST 인가 코드 직접 교환(`POST /auth/kakao/login`) 엔드포인트 완비.
+- **백엔드 네이버 OAuth2 실연동 및 CSRF 방어 파이프라인 (`Phase 15-02`):**
+  - **HMAC-SHA256 OAuth State 보안:** `generateOAuthState()` 및 `verifyOAuthState()`를 통해 10분 만료 검증 및 64자리 SHA256 서명 일치 여부 정밀 검증 (`crypto.timingSafeEqual`)으로 CSRF 공격 차단.
+  - `SocialAuthService.exchangeNaverCode()` & `getNaverProfile()`: 네이버 인증/프로필 API 실연동.
+  - `NaverStrategy` & `AuthController`: 네이버 로그인 리다이렉트, 콜백 및 REST 로그인 엔드포인트 완비.
+- **다중 계정 연동/해제 파이프라인 (Account Linking/Unlinking):**
+  - `SocialAuthService.processSocialUser()`: 동일 이메일 기존 회원 자동 연동, 미가입 유저 신규 생성, 타 계정 중복 연동 시 `ConflictException` 방어.
+  - `unlinkSocialAccount()`: 원클릭 소셜 계정 연동 해제 및 단일 사용자 다중 provider(`kakao:xxx|naver:yyy`) 관리 지원.
+- **프론트엔드 OAuth 콜백 및 연동 관리 UI (`Phase 15-03`):**
+  - `OAuthCallbackPage.tsx` (`/auth/callback`): 토큰 수신 시 세션 동기화 및 메인 대시보드 리다이렉트, 인가 실패/취소 시 직관적인 에러 안내 및 복귀 버튼 제공.
+  - `Login.tsx`: 카카오/네이버 공식 SVG 로고 버튼 및 인가 플로우 연결.
+  - `SocialAccountsSettings.tsx`: 카카오/네이버 실시간 연동 현황 확인 및 [연동하기]/[해제] 인터랙션 완성.
+- **데이터베이스 스키마 동기화 및 무결성 확보 (`Phase 15-04`):**
+  - PostgreSQL `Notification` 테이블에 누락된 `userId` 컬럼 `prisma db push`를 통해 동기화 완료 (알림 조회 500 에러 원천 해소).
+  - 상용 API 키는 Phase 17 상용 도메인 배포 시점에 주입하도록 최적 배포 전략 확립 (로컬은 Mock 격리 듀얼 모드 유지).
+
+### 🧪 Tests & Quality
+- **전사 단위/통합 테스트 무결성:**
+  - 백엔드: Jest 27개 파일, **192개 테스트 100% Pass** (+22개 신규 테스트 추가)
+  - 프론트엔드: Vitest 43개 파일, **184개 테스트 100% Pass** (+5개 신규 테스트 추가)
+  - **전사 총 376개 테스트 100% Pass 달성 (회귀 버그 0건)**
+- **빌드/린트:** Turbo monorepo build 및 oxlint/eslint 무결성 100% 검증 통과.
+
+---
+
 ## [Phase 14] - 2026-11-11
 
 ### 🚀 Completed (마일스톤 완료 및 클린 아키텍처 리팩토링)

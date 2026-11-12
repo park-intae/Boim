@@ -39,11 +39,11 @@
   - [x] **Phase 14-06:** 백엔드 도메인 비즈니스 규칙 엔진 분리 (`RuleBasedDiagnosisEngine`, `NotificationRuleEvaluator`)
   - [x] **Phase 14-07:** `InsuranceForm.tsx` 비즈니스 로직 훅 분리 (`useInsuranceForm.ts`)
   - [x] **Phase 14-08:** 전체 품질 무결성 검증 및 Phase 14 마일스톤 마무리 (전사 349개 테스트 100% Pass)
-- [ ] **Phase 15: 상용 소셜 OAuth2 (카카오 / 네이버) 실연동 및 계정 통합 (Production OAuth2 Integration)**
-  - [ ] **Phase 15-01:** 카카오 Developers REST API 인가 코드 수신 & 토큰 교환 백엔드 실연동
-  - [ ] **Phase 15-02:** 네이버 Developers REST API 인가 코드 수신 & 프로필 조회 백엔드 실연동
-  - [ ] **Phase 15-03:** 프론트엔드 소셜 로그인 인가 플로우 및 로컬 계정 연동/해제(Account Linking) UI 완성
-  - [ ] **Phase 15-04:** 소셜 인증 통합 테스트 및 서비스 런칭 최종 무결성 검증
+- [x] **Phase 15: 상용 소셜 OAuth2 (카카오 / 네이버) 실연동 및 계정 통합 (Production OAuth2 Integration) (완료)**
+  - [x] **Phase 15-01:** 카카오 Developers REST API 인가 코드 수신 & 토큰 교환 백엔드 실연동
+  - [x] **Phase 15-02:** 네이버 Developers REST API 인가 코드 수신 & 프로필 조회 백엔드 실연동
+  - [x] **Phase 15-03:** 프론트엔드 소셜 로그인 인가 플로우 및 로컬 계정 연동/해제(Account Linking) UI 완성
+  - [x] **Phase 15-04:** 소셜 인증 통합 테스트 및 서비스 런칭 최종 무결성 검증 (전사 376개 테스트 100% Pass)
 - [ ] **Phase 16: 프론트엔드 번들 최적화 및 웹 품질 고도화 (Performance & Web Quality)**
   - [ ] **Phase 16-01:** Vite 번들 다이어트 및 라우트/컴포넌트 단위 코드 스플리팅 (Dynamic Import)
   - [ ] **Phase 16-02:** PWA(Progressive Web App) 오프라인 캐싱 및 모바일 '홈 화면 추가' Manifest 구축
@@ -64,19 +64,15 @@
 
 ## 📌 향후 작업 예정 체크리스트
 
-### 1. Phase 15: 상용 소셜 OAuth2 로그인 연동 (Feature-Complete)
-- [ ] 카카오 / 네이버 실제 인가 코드 수신 및 토큰/사용자 프로필 실연동
-- [ ] 기존 이메일 계정과 소셜 계정의 안전한 1:N 연동/해제 파이프라인 완비
-
-### 2. Phase 16: 프론트엔드 성능 및 웹 품질 고도화 (Optimization)
+### 1. Phase 16: 프론트엔드 성능 및 웹 품질 고도화 (Optimization)
 - [ ] 소셜 연동을 포함한 전체 라우트/컴포넌트 기준 번들 청크 500kB 이하 경량화
 - [ ] PWA Manifest 및 Service Worker 구성으로 모바일 앱 수준의 UX 제공
 - [ ] 접근성(a11y) 속성 보강 및 검색엔진 메타태그 완비
 
-### 3. Phase 17: 컨테이너 오케스트레이션 & CI 자동화 (Production Packaging)
+### 2. Phase 17: 컨테이너 오케스트레이션 & CI 자동화 (Production Packaging)
 - [ ] `docker compose up` 단 한 번으로 로컬/서버에서 풀스택 즉시 구동 환경 구축
 - [ ] PR/Push 시 GitHub Actions 클라우드 환경에서 린트/테스트/빌드 자동 검증
 
-### 4. Phase 18: Expo 모바일 앱 구축 및 APK 패키징 (Mobile App)
+### 3. Phase 18: Expo 모바일 앱 구축 및 APK 패키징 (Mobile App)
 - [ ] 모노레포 `apps/mobile` 패키지 구축 및 Expo Router 기반 4대 핵심 탭 UI 완성
 - [ ] 스마트폰 즉시 실행(Expo Go) 및 독립 설치용 `.apk` 파일 빌드 완료
