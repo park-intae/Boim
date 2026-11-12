@@ -3,9 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Boim - 똑똑한 개인 보험 캘린더</title>
     <meta name="description" content="매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더 Boim" />
+
+    <!-- Inline Critical CSS for Zero-Lag FCP & LCP (Mobile + Desktop Responsive Shell) -->
+    <style>
+      body { margin: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+      #root { min-height: 100vh; }
+      .mobile-shell { display: flex; flex-direction: column; padding: 16px; gap: 16px; }
+      .desktop-shell { display: none; height: 100vh; background-color: #f9fafb; overflow: hidden; }
+      @media (min-width: 1024px) {
+        .mobile-shell { display: none !important; }
+        .desktop-shell { display: flex !important; }
+      }
+    </style>
 
     <!-- PWA & Mobile Web App Meta -->
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -16,14 +28,157 @@
     <meta name="apple-mobile-web-app-title" content="Boim" />
     <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
 
-    <!-- Open Graph / SEO -->
+    <!-- Open Graph / Twitter Card / SEO -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Boim" />
     <meta property="og:title" content="Boim - 똑똑한 개인 보험 캘린더" />
     <meta property="og:description" content="매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더" />
     <meta property="og:image" content="/icons/icon-512x512.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Boim - 똑똑한 개인 보험 캘린더" />
+    <meta name="twitter:description" content="매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더" />
+    <meta name="twitter:image" content="/icons/icon-512x512.svg" />
+
+    <!-- Structured Data (Schema.org / JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Boim",
+        "operatingSystem": "All",
+        "applicationCategory": "FinanceApplication",
+        "description": "매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더 & 종합 진단 대시보드",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "KRW"
+        }
+      }
+    </script>
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
-    <div id="root"></div>
+    <div id="root">
+      <!-- 📱 Mobile Instant Shell (412px Viewport Matching for Sub-Second FCP/LCP) -->
+      <div class="mobile-shell">
+        <!-- Mobile Top Bar -->
+        <div style="display: flex; align-items: center; justify-content: center; position: relative; height: 44px;">
+          <h1 style="font-size: 18px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.025em;">보험 일정</h1>
+          <div style="position: absolute; right: 0; display: flex; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6;"></div>
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #e0e7ff;"></div>
+          </div>
+        </div>
+
+        <!-- 4 Summary Metric Cards (2x2 Grid) -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <div style="background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            <div style="font-size: 12px; font-weight: 600; color: #6b7280;">가입 보험</div>
+            <div style="font-size: 20px; font-weight: 800; color: #111827; margin-top: 4px;">0 <span style="font-size: 13px; font-weight: 600;">건</span></div>
+          </div>
+          <div style="background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            <div style="font-size: 12px; font-weight: 600; color: #6b7280;">이번 달 납입</div>
+            <div style="font-size: 20px; font-weight: 800; color: #111827; margin-top: 4px;">0 <span style="font-size: 13px; font-weight: 600;">원</span></div>
+          </div>
+          <div style="background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            <div style="font-size: 12px; font-weight: 600; color: #6b7280;">이번 달 갱신/만기</div>
+            <div style="font-size: 20px; font-weight: 800; color: #111827; margin-top: 4px;">0 <span style="font-size: 13px; font-weight: 600;">건</span></div>
+          </div>
+          <div style="background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+            <div style="font-size: 12px; font-weight: 600; color: #6b7280;">미납 알림</div>
+            <div style="font-size: 20px; font-weight: 800; color: #111827; margin-top: 4px;">0 <span style="font-size: 13px; font-weight: 600;">건</span></div>
+          </div>
+        </div>
+
+        <!-- Mobile Calendar Container -->
+        <div style="background: #ffffff; border-radius: 20px; padding: 16px; border: 1px solid #f3f4f6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+          <!-- Mobile Calendar Header (LCP Key Target) -->
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h2 class="text-[20px] font-extrabold text-gray-900 tracking-tight" style="font-size: 20px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.025em;">
+              2026년 11월
+            </h2>
+            <div style="width: 56px; height: 32px; border-radius: 8px; background: #4f46e5; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">+ 추가</div>
+          </div>
+
+          <!-- Weekdays -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; font-weight: 700; padding: 8px 0; color: #6b7280;">
+            <span style="color: #ef4444;">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span style="color: #3b82f6;">토</span>
+          </div>
+
+          <!-- Days Grid (Current Week) -->
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 14px; font-weight: 600; padding: 8px 0; color: #374151;">
+            <span style="color: #ef4444;">8</span><span>9</span><span>10</span><span>11</span>
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin: auto; border-radius: 50%; background: #4f46e5; color: #ffffff;">12</span>
+            <span>13</span><span style="color: #3b82f6;">14</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💻 Desktop Instant Shell -->
+      <div class="desktop-shell">
+        <!-- Left Sidebar Skeleton -->
+        <aside style="width: 260px; height: 100%; background: #ffffff; border-right: 1px solid #f3f4f6; padding: 24px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 10px; background-color: #4f46e5; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;">B</div>
+            <span style="font-size: 22px; font-weight: 800; color: #111827; letter-spacing: -0.025em;">Boim</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+            <div style="height: 40px; border-radius: 12px; background: #e0e7ff; width: 100%;"></div>
+            <div style="height: 40px; border-radius: 12px; background: #f3f4f6; width: 100%;"></div>
+            <div style="height: 40px; border-radius: 12px; background: #f3f4f6; width: 100%;"></div>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0; height: 100%;">
+          <!-- Top Header Skeleton -->
+          <header style="height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid transparent;">
+            <div style="width: 120px; height: 24px; background: #f3f4f6; border-radius: 6px;"></div>
+            <div style="display: flex; gap: 12px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #f3f4f6;"></div>
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff;"></div>
+            </div>
+          </header>
+
+          <!-- Calendar Viewport Area -->
+          <main style="flex: 1; padding: 0 24px 24px; overflow: hidden; display: flex;">
+            <div style="flex: 1; background: #ffffff; border-radius: 24px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden;">
+              <!-- Calendar Header (Critical LCP Target: <h2>2026년 11월</h2>) -->
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid #f3f4f6;">
+                <h2 class="text-[20px] lg:text-[22px] font-extrabold text-gray-900 tracking-tight" style="font-size: 22px; font-weight: 800; color: #111827; margin: 0; letter-spacing: -0.025em;">
+                  2026년 11월
+                </h2>
+                <div style="display: flex; gap: 8px;">
+                  <div style="width: 60px; height: 32px; border-radius: 8px; background: #4f46e5;"></div>
+                  <div style="width: 100px; height: 32px; border-radius: 8px; background: #f3f4f6;"></div>
+                </div>
+              </div>
+
+              <!-- Day Names Bar -->
+              <div style="display: grid; grid-template-columns: repeat(7, 1fr); padding: 10px 0; border-bottom: 1px solid #f3f4f6; background: #fafafa; text-align: center; font-size: 13px; font-weight: 700;">
+                <span style="color: #dc2626;">일</span>
+                <span style="color: #4b5563;">월</span>
+                <span style="color: #4b5563;">화</span>
+                <span style="color: #4b5563;">수</span>
+                <span style="color: #4b5563;">목</span>
+                <span style="color: #4b5563;">금</span>
+                <span style="color: #2563eb;">토</span>
+              </div>
+
+              <!-- Calendar Grid Skeleton -->
+              <div style="flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(5, 1fr); background: #ffffff;">
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-right: 1px solid #f3f4f6; border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+                <div style="border-bottom: 1px solid #f3f4f6; padding: 8px;"></div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

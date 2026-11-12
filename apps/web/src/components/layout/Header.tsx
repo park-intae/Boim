@@ -39,13 +39,16 @@ export function Header() {
         {/* 1. 알림 버튼 및 팝오버 */}
         <div className="relative">
           <button 
+            type="button"
             onClick={() => {
               setIsNotificationOpen(!isNotificationOpen);
               setIsProfileMenuOpen(false);
               setHasNewNotification(false);
             }}
-            className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 active:scale-95 active:bg-gray-100 rounded-full transition-all duration-200 relative"
-            aria-label="알림"
+            className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-50 active:scale-95 active:bg-gray-100 rounded-full transition-all duration-200 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            aria-label="알림 목록 보기"
+            aria-haspopup="dialog"
+            aria-expanded={isNotificationOpen}
           >
             <Bell className="w-5 h-5" />
             {hasNewNotification && (
@@ -55,15 +58,21 @@ export function Header() {
 
           {/* Notification Popover */}
           {isNotificationOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 z-50 overflow-hidden transform transition-all">
+            <div 
+              role="dialog"
+              aria-label="새로운 알림 목록"
+              className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 z-50 overflow-hidden transform transition-all"
+            >
               <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                 <span className="font-extrabold text-[15px] text-gray-900">새로운 알림</span>
-                <span 
+                <button 
+                  type="button"
                   onClick={() => setIsNotificationOpen(false)}
-                  className="text-[12px] font-bold text-gray-400 cursor-pointer hover:text-gray-600 transition-colors"
+                  className="text-[12px] font-bold text-gray-400 hover:text-gray-600 transition-colors p-1 rounded focus-visible:ring-1 focus-visible:ring-indigo-500"
+                  aria-label="알림 닫기"
                 >
                   닫기
-                </span>
+                </button>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 <div className="p-5 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group">
@@ -90,12 +99,15 @@ export function Header() {
         {/* 2. 사용자 프로필 드롭다운 */}
         <div className="relative">
           <button
+            type="button"
             onClick={() => {
               setIsProfileMenuOpen(!isProfileMenuOpen);
               setIsNotificationOpen(false);
             }}
-            className="flex items-center gap-2 pl-3 border-l border-gray-200 cursor-pointer hover:opacity-80 transition-opacity outline-none"
+            className="flex items-center gap-2 pl-3 border-l border-gray-200 cursor-pointer hover:opacity-80 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg p-1"
             aria-label="사용자 메뉴"
+            aria-haspopup="menu"
+            aria-expanded={isProfileMenuOpen}
           >
             <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-[13px] select-none">
               {initial}
@@ -108,7 +120,11 @@ export function Header() {
 
           {/* Profile Dropdown Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 z-50 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100">
+            <div 
+              role="menu"
+              aria-label="사용자 프로필 메뉴"
+              className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 z-50 overflow-hidden py-1.5 animate-in fade-in zoom-in-95 duration-100"
+            >
               {/* Profile Header */}
               <div className="px-4 py-3 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-1">

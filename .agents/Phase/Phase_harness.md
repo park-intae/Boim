@@ -44,11 +44,14 @@
   - [x] **Phase 15-02:** 네이버 Developers REST API 인가 코드 수신 & 프로필 조회 백엔드 실연동
   - [x] **Phase 15-03:** 프론트엔드 소셜 로그인 인가 플로우 및 로컬 계정 연동/해제(Account Linking) UI 완성
   - [x] **Phase 15-04:** 소셜 인증 통합 테스트 및 서비스 런칭 최종 무결성 검증 (전사 376개 테스트 100% Pass)
-- [ ] **Phase 16: 프론트엔드 번들 최적화 및 웹 품질 고도화 (Performance & Web Quality)**
-  - [ ] **Phase 16-01:** Vite 번들 다이어트 및 라우트/컴포넌트 단위 코드 스플리팅 (Dynamic Import)
-  - [ ] **Phase 16-02:** PWA(Progressive Web App) 오프라인 캐싱 및 모바일 '홈 화면 추가' Manifest 구축
-  - [ ] **Phase 16-03:** 웹 접근성(a11y), SEO 메타데이터 및 Lighthouse 품질 지표 최적화
-  - [ ] **Phase 16-04:** 전체 성능 측정 및 Phase 16 마일스톤 마무리
+- [x] **Phase 16: 프론트엔드 번들 최적화 및 웹 품질 고도화 (Performance & Web Quality) (완료)**
+  - [x] **Phase 16-01:** Vite 번들 다이어트 및 라우트/컴포넌트 단위 코드 스플리팅 (메인 청크 -90% 감축)
+  - [x] **Phase 16-02:** PWA(Progressive Web App) 오프라인 캐싱 및 모바일 '홈 화면 추가' Manifest 구축
+  - [x] **Phase 16-03:** 웹 접근성(a11y), SEO 메타데이터 및 Lighthouse 96/100/100/100 최적화
+  - [x] **Phase 16-04:** 모노레포 무결성 검증, 2-File Rule 하네스 정리 및 Phase 16 마일스톤 마무리
+- [ ] **Phase 17: 공개 서비스 소개 랜딩 페이지(Landing Page) 기획/제작 & SEO 사전 렌더링(SSG)**
+- [ ] **Phase 18: Docker 컨테이너라이징 및 클라우드 배포 파이프라인 구축**
+- [ ] **Phase 19: 상용 도메인 간편로그인 SNS API 실연동 & 프로덕션 런칭**
 - [ ] **Phase 17: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 구축 (DevOps & Infrastructure)**
   - [ ] **Phase 17-01:** 백엔드(NestJS) 및 프론트엔드(Nginx SPA 서빙) Multi-stage Dockerfile 작성
   - [ ] **Phase 17-02:** Docker Compose 풀스택 오케스트레이션 (PostgreSQL + API + Web/Nginx 리버스 프록시)

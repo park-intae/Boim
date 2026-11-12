@@ -46,15 +46,17 @@ export function Sidebar() {
       </div>
 
       {/* 2. Navigation Menu */}
-      <nav className="flex-1 px-4 py-2 flex flex-col gap-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 py-2 flex flex-col gap-1.5 overflow-y-auto" aria-label="주요 메뉴">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = item.name === activeMenu;
           return (
-            <div
+            <button
+              type="button"
               key={item.name}
               onClick={item.action}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group ${
+              aria-current={isActive ? 'page' : undefined}
+              className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 isActive
                   ? 'bg-indigo-50/80 text-indigo-700'
                   : 'text-gray-500 hover:bg-gray-50/80 hover:text-gray-900'
@@ -69,7 +71,7 @@ export function Sidebar() {
               <span className={`text-[15px] ${isActive ? 'font-bold' : 'font-semibold'}`}>
                 {item.name}
               </span>
-            </div>
+            </button>
           );
         })}
       </nav>

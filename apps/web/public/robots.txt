@@ -1,0 +1,7 @@
+# Boim Robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/callback
+
+Sitemap: https://boim.app/sitemap.xml

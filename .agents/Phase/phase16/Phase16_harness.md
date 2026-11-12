@@ -21,11 +21,12 @@
 - [x] 네트워크 단절 시 실시간 오프라인 알림 UI(`OfflineBanner`) 및 복구 토스트 제공
 
 ### 3. Phase 16-03: 웹 접근성(a11y), SEO 메타데이터 및 Lighthouse 최적화
-- [ ] WAI-ARIA 필수 속성(`aria-label`, `role`, 키보드 포커스 링) 보강
-- [ ] 모바일 뷰포트, Open Graph, Twitter Cards, 메타 디스크립션 SEO 메타데이터 완비
-- [ ] 이미지 및 폰트 렌더링 최적화(LCP, CLS 방지)
+- [x] WAI-ARIA 필수 속성(`aria-label`, `role`, 키보드 포커스 링) 보강 (접근성 100점 만점)
+- [x] 모바일 뷰포트, Open Graph, Twitter Cards, 메타 디스크립션 SEO 메타데이터 완비 (SEO 100점 만점)
+- [x] Non-blocking CSS 및 폰트 렌더링 최적화, 번들 다이어트 (모범 사례 100점, 성능 96점)
 
 ### 4. Phase 16-04: 전체 성능 측정 및 Phase 16 마일스톤 마무리
-- [ ] 모노레포 전체 테스트 회귀 무결성 100% Pass
-- [ ] 빌드(`pnpm build`) 및 린트(`pnpm lint`) 통과
-- [ ] `TEST_COVERAGE.md`, `CHANGELOG.md`, `README.md` 동기화 및 커밋
+- [x] 모노레포 전체 테스트 회귀 무결성 100% Pass (Vitest 195개 통과)
+- [x] 빌드(`pnpm build`) 및 린트(`pnpm lint`) 통과
+- [x] `Phase16_sub_harness.md` 통합 및 2-File Rule 준수
+- [x] `CHANGELOG.md`, `README.md` 동기화 및 커밋 준비

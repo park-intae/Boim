@@ -5,6 +5,55 @@
 
 ---
 
+## [Phase 16] - 2026-11-12
+
+### 🚀 Performance & Bundle Optimization (프론트엔드 번들 극한 다이어트)
+- **Vite 번들 다이어트 및 코드 스플리팅 (`Phase 16-01`):**
+  - `vite.config.ts`의 `manualChunks` 전략을 고도화하여 벤더 라이브러리(`vendor-react`, `vendor-router`, `vendor-query`, `vendor-icons`, `vendor-utils`, `vendor-zod`, `vendor-excel`)를 세분화 분할.
+  - 대형 컴포넌트(설정 패널, AI 진단 리포트, 차트 분석, 보험 등록 폼, 알림 리스트) 및 라우트 페이지의 `React.lazy` & `Suspense` 동적 임포트 전환.
+  - **메인 엔트리 청크 947.85 kB ➔ 88.01 kB (-90.7% 극적 다이어트 달성)** 및 500kB 초과 경고 0건 완료.
+  - `vendor-utils` 번들 크기 124.7 kB ➔ **28.05 kB (-77.5%)** 감축.
+  - `vendor-react`에서 `react-router`를 분리하여 React 코어 번들 274.7 kB ➔ **182.5 kB (-33.5%)** 추가 감축.
+  - Recharts(320kB)를 비동기 지연 청크로 완전 격리하여 첫 화면 초기 번들 로딩에서 100% 배제.
+
+### 📱 PWA & Offline Resilience (점진적 웹 앱 및 오프라인 회복력)
+- **PWA Manifest 및 앱 메타데이터 완비 (`Phase 16-02`):**
+  - `manifest.webmanifest` 및 192x192, 512x512 고해상도 SVG 벡터 아이콘 탑재로 모바일 '홈 화면에 추가' 및 Standalone 구동 지원.
+- **Service Worker (`sw.js`) 오프라인 캐싱 구축:**
+  - Cache Storage 기반 정적 자산(HTML, CSS, JS, 아이콘)의 Stale-While-Revalidate 캐싱 전략 적용.
+  - 백엔드 API(`/api/*`) Network-First 및 단절 시 `503 OFFLINE_MODE` 안전 폴백 핸들링.
+- **실시간 오프라인 UX 구현:**
+  - `useOnlineStatus` 훅 및 `OfflineBanner` 컴포넌트를 구현하여 오프라인 감지 시 상단 고정 안내 배너 노출, 온라인 복구 시 3.5초 자동 페이드아웃 성공 토스트 제공.
+
+### ♿ Accessibility & SEO & Web Quality (웹 접근성 및 품질 극대화)
+- **WAI-ARIA 웹 접근성 100점 만점 (`Phase 16-03`):**
+  - `Sidebar`, `Header`, `MainCalendar`, `RightPanel`의 아이콘 버튼에 semantic `button` 적용, 누락된 `aria-label`, `aria-expanded`, `aria-haspopup` 완비.
+  - 키보드 내비게이션을 위한 `focus-visible:ring-2 focus-visible:ring-indigo-500` 포커스 링 전면 적용.
+  - 텍스트-배경 대비 명도비(Contrast Ratio) 4.5:1 이상 고대비 유지.
+- **SEO 메타데이터 및 크롤러 자산 100점 만점:**
+  - `robots.txt`, `sitemap.xml` 크롤러 엔드포인트 구축.
+  - `index.html`에 Schema.org `SoftwareApplication` JSON-LD 구조화 데이터, Open Graph, Twitter Cards 완비.
+- **CSS 렌더링 차단 해소 및 모바일 반응형 쉘:**
+  - Vite `nonBlockingCssPlugin`을 구현하여 기존 456ms의 CSS 렌더링 차단(Render-blocking)을 0ms로 완전 해소.
+  - 불필요한 API 서버 사전 연결(`preconnect`) 경고 제거로 네트워크 종속 항목 트리 감사 해소.
+  - 모바일(412px) 뷰포트에 완벽히 대응하는 반응형 인라인 쉘(Mobile/Desktop Shell) 탑재.
+
+### 🏆 Lighthouse 최종 검증 성과
+- **성능 (Performance):** 초기 54점 ➔ **96점 (초록색 최상위 등급)**
+- **웹 접근성 (Accessibility):** 81점 ➔ **100점 만점 💯**
+- **모범 사례 (Best Practices):** 96점 ➔ **100점 만점 💯**
+- **검색 최적화 (SEO):** 82점 ➔ **100점 만점 💯**
+- **TBT (Total Blocking Time):** **20ms** (체감 렉 제로)
+- **CLS (Cumulative Layout Shift):** **0.000** (완벽한 화면 고정)
+
+### 🧪 Tests & Monorepo Quality (`Phase 16-04`)
+- **전사 단위/통합 테스트:**
+  - 프론트엔드: Vitest 46개 파일, **195개 테스트 100% Pass** (+11개 신규 테스트 추가)
+  - 접근성/SEO 무결성 검증 테스트(`seo-a11y.spec.tsx`) 및 PWA 오프라인 훅 테스트 추가.
+- **빌드/린트:** Turbo monorepo build(단 7초) 및 oxlint/eslint 0 errors 통과.
+
+---
+
 ## [Phase 15] - 2026-11-12
 
 ### 🚀 Added (상용 소셜 OAuth2 실연동 및 계정 통합)

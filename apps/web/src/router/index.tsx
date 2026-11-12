@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense, type FC } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
@@ -21,7 +21,7 @@ const OAuthCallbackPage = lazy(() =>
   import('../pages/OAuthCallbackPage').then((m) => ({ default: m.OAuthCallbackPage })),
 );
 
-const PageFallback: React.FC = () => (
+const PageFallback: FC = () => (
   <div className="flex items-center justify-center min-h-screen bg-slate-50">
     <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
   </div>

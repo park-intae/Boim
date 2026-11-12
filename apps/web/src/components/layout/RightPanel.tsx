@@ -1,14 +1,20 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense, type FC } from 'react';
 import { X, ChevronUp } from 'lucide-react';
 import { format, isSameDay } from 'date-fns';
 import { useAppStore } from '../../store/useAppStore';
 import { useGetInsurances } from '../../api/useInsuranceQueries';
 import { DailyEventsView } from './DailyEventsView';
-import { InsuranceForm } from './InsuranceForm';
-import { MyInsuranceList } from './MyInsuranceList';
-import { NotificationList } from './NotificationList';
 
-// 🚀 대형 패널 컴포넌트 코드 스플리팅 (지연 로딩)
+// 🚀 첫 화면 이후 필요한 서브 패널 지연 로딩 (FCP/LCP 및 번들 최적화)
+const InsuranceForm = lazy(() =>
+  import('./InsuranceForm').then((m) => ({ default: m.InsuranceForm })),
+);
+const MyInsuranceList = lazy(() =>
+  import('./MyInsuranceList').then((m) => ({ default: m.MyInsuranceList })),
+);
+const NotificationList = lazy(() =>
+  import('./NotificationList').then((m) => ({ default: m.NotificationList })),
+);
 const PremiumAnalysis = lazy(() =>
   import('./PremiumAnalysis').then((m) => ({ default: m.PremiumAnalysis })),
 );
@@ -21,7 +27,7 @@ const SettingsPanel = lazy(() =>
   })),
 );
 
-const PanelFallback: React.FC = () => (
+const PanelFallback: FC = () => (
   <div className="flex-1 flex items-center justify-center p-8">
     <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
   </div>
@@ -131,8 +137,10 @@ export function RightPanel() {
               )}
               {/* Mobile Close Button */}
               <button
+                type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-all"
+                aria-label="패널 닫기"
+                className="lg:hidden w-8 h-8 flex items-center justify-center text-gray-400 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 <X className="w-5 h-5" />
               </button>

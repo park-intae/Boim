@@ -77,32 +77,40 @@ export function MainCalendar() {
           <Plus className="w-4 h-4" />
           추가
         </button>
-        <div className="flex items-center justify-between w-full sm:w-auto gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100">
+        <div className="flex items-center justify-between w-full sm:w-auto gap-1 bg-gray-50 rounded-xl p-1 border border-gray-100" role="toolbar" aria-label="달력 탐색 컨트롤">
           <button
+            type="button"
             onClick={prevYear}
             title="이전 연도"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
+            aria-label="이전 연도"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <ChevronsLeft className="w-5 h-5" />
           </button>
           <button
+            type="button"
             onClick={prevMonth}
             title="이전 달"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
+            aria-label="이전 달"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
+            type="button"
             onClick={nextMonth}
             title="다음 달"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
+            aria-label="다음 달"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
           <button
+            type="button"
             onClick={nextYear}
             title="다음 연도"
-            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200"
+            aria-label="다음 연도"
+            className="flex-1 sm:flex-none flex justify-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm active:scale-95 text-gray-500 hover:text-gray-900 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <ChevronsRight className="w-5 h-5" />
           </button>
@@ -117,7 +125,7 @@ export function MainCalendar() {
         <div
           key={i}
           className={`py-3 text-center text-[13px] font-bold ${
-            i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-gray-500'
+            i === 0 ? 'text-red-600' : i === 6 ? 'text-blue-600' : 'text-gray-600'
           }`}
         >
           {day}
@@ -192,7 +200,7 @@ export function MainCalendar() {
               <span
                 className={`
                   flex items-center justify-center w-8 h-8 rounded-full text-[14px] font-semibold
-                  ${!isCurrentMonth ? 'text-gray-300' : i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-gray-700'}
+                  ${!isCurrentMonth ? 'text-gray-400' : i === 0 ? 'text-red-600' : i === 6 ? 'text-blue-600' : 'text-gray-700'}
                   ${isToday ? 'bg-indigo-50 text-indigo-700' : ''}
                   ${isSelected ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-600 ring-offset-1' : ''}
                 `}
