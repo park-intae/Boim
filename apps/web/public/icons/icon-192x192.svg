@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="boim-grad-192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <filter id="shadow-192" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#boim-grad-192)" />
+  <!-- Calendar & Shield Emblems -->
+  <g filter="url(#shadow-192)" transform="translate(36, 36)">
+    <!-- Calendar Body -->
+    <rect x="10" y="24" width="100" height="84" rx="16" fill="#ffffff" />
+    <!-- Calendar Header Bar -->
+    <path d="M 10 40 L 110 40 L 110 32 A 8 8 0 0 0 102 24 L 18 24 A 8 8 0 0 0 10 32 Z" fill="#4f46e5" />
+    <!-- Ring Binders -->
+    <rect x="32" y="14" width="8" height="18" rx="4" fill="#ffffff" stroke="#4f46e5" stroke-width="2" />
+    <rect x="80" y="14" width="8" height="18" rx="4" fill="#ffffff" stroke="#4f46e5" stroke-width="2" />
+    <!-- Check Shield in center -->
+    <circle cx="60" cy="68" r="24" fill="#e0e7ff" />
+    <path d="M 60 52 Q 74 54 74 66 C 74 78 60 84 60 84 C 60 84 46 78 46 66 Q 46 54 60 52 Z" fill="#4f46e5" />
+    <path d="M 54 67 L 58 71 L 67 62" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>

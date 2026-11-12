@@ -11,14 +11,14 @@
 ## 📋 세부 체크리스트
 
 ### 1. Phase 16-01: Vite 번들 다이어트 및 코드 스플리팅 (Dynamic Import)
-- [ ] `React.lazy` 및 `Suspense`를 활용하여 주요 화면(설정 패널, AI 진단 리포트, 차트 분석, OAuth 콜백) 지연 로딩 적용
-- [ ] `vite.config.ts`의 `manualChunks` 설정을 통해 Vendor 라이브러리(React/Query/Recharts/Lucide) 분할 번들링
-- [ ] 단일 번들 청크 사이즈를 500kB 이하로 경량화 및 빌드 경고 0건 달성
+- [x] `React.lazy` 및 `Suspense`를 활용하여 주요 화면(설정 패널, AI 진단 리포트, 차트 분석, OAuth 콜백) 지연 로딩 적용
+- [x] `vite.config.ts`의 `manualChunks` 설정을 통해 Vendor 라이브러리(React/Query/Recharts/Lucide) 분할 번들링
+- [x] 단일 번들 청크 사이즈를 500kB 이하로 경량화 및 빌드 경고 0건 달성 (엔트리 105kB, 최대 326kB)
 
 ### 2. Phase 16-02: PWA(Progressive Web App) 오프라인 캐싱 & Manifest 구축
-- [ ] `vite-plugin-pwa` 도입 또는 Service Worker 구성을 통한 정적 자산 오프라인 캐싱
-- [ ] 모바일 브라우저 '홈 화면에 추가'를 위한 `manifest.webmanifest` 및 앱 아이콘/테마 컬러 완비
-- [ ] 네트워크 단절 시 오프라인 폴백 UI(Offline Fallback Notice) 제공
+- [x] Service Worker(`sw.js`) 구성을 통한 정적 자산 오프라인 캐싱 (Stale-While-Revalidate 및 API Network-First)
+- [x] 모바일 브라우저 '홈 화면에 추가'를 위한 `manifest.webmanifest` 및 고해상도 앱 아이콘/테마 컬러 완비
+- [x] 네트워크 단절 시 실시간 오프라인 알림 UI(`OfflineBanner`) 및 복구 토스트 제공
 
 ### 3. Phase 16-03: 웹 접근성(a11y), SEO 메타데이터 및 Lighthouse 최적화
 - [ ] WAI-ARIA 필수 속성(`aria-label`, `role`, 키보드 포커스 링) 보강

@@ -1,12 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Boim - 똑똑한 개인 보험 캘린더</title>
+    <meta name="description" content="매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더 Boim" />
+
+    <!-- PWA & Mobile Web App Meta -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Boim" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
+
+    <!-- Open Graph / SEO -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Boim - 똑똑한 개인 보험 캘린더" />
+    <meta property="og:description" content="매달 나가는 보험료부터 복잡한 보장 내역까지 한눈에 관리하는 똑똑한 개인 보험 캘린더" />
+    <meta property="og:image" content="/icons/icon-512x512.svg" />
   </head>
-  <body>
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

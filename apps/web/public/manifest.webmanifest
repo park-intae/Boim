@@ -1,0 +1,43 @@
+{
+  "name": "Boim - 똑똑한 개인 보험 캘린더",
+  "short_name": "Boim",
+  "description": "내 손안의 똑똑한 개인 보험 캘린더 & 종합 보장 진단 대시보드",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "보험 캘린더",
+      "short_name": "캘린더",
+      "description": "이번 달 보험료 납부일 및 일정 확인",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192x192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "설정",
+      "short_name": "설정",
+      "description": "계정 및 알림 설정",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192x192.svg", "sizes": "192x192" }]
+    }
+  ]
+}
