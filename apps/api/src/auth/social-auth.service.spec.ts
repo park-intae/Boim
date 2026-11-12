@@ -62,6 +62,33 @@ describe('SocialAuthService', () => {
     });
   });
 
+  describe('OAuth State CSRF Protection', () => {
+    it('should generate valid state and verify it successfully', () => {
+      const state = service.generateOAuthState();
+      expect(typeof state).toBe('string');
+      expect(state.split('.')).toHaveLength(3);
+
+      const isValid = service.verifyOAuthState(state);
+      expect(isValid).toBe(true);
+    });
+
+    it('should reject tampered or invalid state', () => {
+      expect(service.verifyOAuthState(undefined)).toBe(false);
+      expect(service.verifyOAuthState('invalid_state_format')).toBe(false);
+      expect(service.verifyOAuthState('12345.abc.def')).toBe(false);
+
+      const validState = service.generateOAuthState();
+      const tampered = validState + 'tampered';
+      expect(service.verifyOAuthState(tampered)).toBe(false);
+    });
+
+    it('should reject expired state (> 10 mins)', () => {
+      const expiredTimestamp = Date.now() - 11 * 60 * 1000;
+      const expiredState = `${expiredTimestamp}.random.mocksignature`;
+      expect(service.verifyOAuthState(expiredState)).toBe(false);
+    });
+  });
+
   describe('exchangeNaverCode', () => {
     it('should return mock token in test mode when NAVER_CLIENT_ID is not set or mock', async () => {
       const token = await service.exchangeNaverCode(

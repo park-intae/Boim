@@ -157,33 +157,50 @@ export class SocialAuthService {
   verifyOAuthState(state?: string): boolean {
     if (!state) return false;
     // mock 테스트 토큰 허용
-    if (state.startsWith('test_') || state.startsWith('random_') || state === 'mock_state') {
+    if (
+      state.startsWith('test_') ||
+      state.startsWith('random_') ||
+      state === 'mock_state'
+    ) {
       return true;
     }
 
-    const parts = state.split('.');
-    if (parts.length !== 3) return false;
+    try {
+      const parts = state.split('.');
+      if (parts.length !== 3) return false;
 
-    const [timestampStr, nonce, signature] = parts;
-    const timestamp = parseInt(timestampStr, 10);
-    if (isNaN(timestamp)) return false;
+      const [timestampStr, nonce, signature] = parts;
+      const timestamp = parseInt(timestampStr, 10);
+      if (isNaN(timestamp)) return false;
 
-    // 10분 유효기간 체크
-    const now = Date.now();
-    if (now - timestamp > 10 * 60 * 1000 || timestamp > now + 60 * 1000) {
+      // SHA256 HEX 서명 정밀 검증 (정확히 64자리 16진수)
+      if (!/^[0-9a-f]{64}$/i.test(signature)) {
+        return false;
+      }
+
+      // 10분 유효기간 체크
+      const now = Date.now();
+      if (now - timestamp > 10 * 60 * 1000 || timestamp > now + 60 * 1000) {
+        return false;
+      }
+
+      const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(`${timestampStr}:${nonce}`)
+        .digest('hex');
+
+      const sigBuffer = Buffer.from(signature, 'hex');
+      const expectedBuffer = Buffer.from(expectedSignature, 'hex');
+
+      if (sigBuffer.length !== expectedBuffer.length) {
+        return false;
+      }
+
+      return crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+    } catch {
       return false;
     }
-
-    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(`${timestampStr}:${nonce}`)
-      .digest('hex');
-
-    return crypto.timingSafeEqual(
-      Buffer.from(signature, 'hex'),
-      Buffer.from(expectedSignature, 'hex'),
-    );
   }
 
   /**
