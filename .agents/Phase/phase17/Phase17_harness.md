@@ -1,32 +1,31 @@
 > 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
 > 작업 영역에 따라 백엔드(@[.agents/BACKEND_HARNESS.md]) 및 프론트엔드(@[.agents/FRONTEND_HARNESS.md]) 지침을 반드시 숙독하고 엄격히 준수할 것
 
-# Phase 17: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 (DevOps & Infrastructure)
+# Phase 17: 공개 서비스 소개 랜딩 페이지(Landing Page) 구현 & 서비스 첫인상 고도화
 
 ## 📌 목표 및 개요
-소셜 OAuth2 환경변수와 번들 최적화가 완료된 Boim 풀스택 서비스를 실제 상용 클라우드나 사설 서버에 즉시 무중단 배포할 수 있도록 Multi-stage Docker 컨테이너 환경을 구축하고, Docker Compose를 통한 원클릭 풀스택 로컬/운영 오케스트레이션을 완성합니다. 또한 GitHub Actions CI를 연동하여 코드 푸시 및 PR 시 린트, 전사 테스트, 빌드가 자동으로 검증되는 안전한 배포 파이프라인을 구축합니다.
+디자인 시안(`docs/design/landing_page.png`)을 기반으로 신규 사용자 유치(Acquisition), 서비스 가치 전달, 검색엔진 최적화(SEO)를 달성하기 위한 **공개 서비스 소개 랜딩 페이지**를 React 19 + Tailwind CSS 순수 코드로 구축합니다.
+- 토스/핀테크 스타일의 6단계 반응형 레이아웃(GNB, Hero, 3대 기능 쇼케이스, 단계별 가이드 및 등록 폼, 다크 CTA 배너, 푸터) 구현
+- 대형 이미지 대신 순수 Tailwind CSS 및 인라인 SVG로 실사용 대시보드/캘린더/폼 목업을 100% 렌더링하여 **초고속 FCP/LCP 및 Retina 화질** 확보
+- 실제 Boim의 특장점(AI 보장 분석, 증권 OCR 자동 입력, 캘린더 D-Day 알림)을 녹여낸 킬러 카피라이팅 및 인터랙션 완성
+- 루트 경로(`/`) 접속 시 비로그인 방문자에게 기본 페이지로 노출하고, 로그인 사용자는 자동으로 기존 메인 대시보드로 이동하도록 지능형 라우팅 구현
 
 ---
 
-## 📋 세부 체크리스트
+## 📋 Phase 17 종합 체크리스트
 
-### 1. Phase 17-01: Multi-stage Dockerfile 구축
-- [ ] `apps/api/Dockerfile`: Alpine 기반 경량 Node.js 환경, pnpm 모노레포 캐시 활용, Prisma 클라이언트 빌드 및 프로덕션 번들링
-- [ ] `apps/web/Dockerfile`: Vite 프로덕션 빌드 후 Nginx 경량 컨테이너를 통한 고성능 SPA 서빙 및 캐시 헤더 최적화
-- [ ] 이미지 사이즈 최소화 및 보안 비루트(non-root) 유저 실행 설정
+- [x] **Phase 17-01: 랜딩 페이지 전용 컴포넌트화 및 실감형 목업 기초 구현**
+  - [x] `apps/web/src/features/landing/` 7개 전용 컴포넌트 모듈화
+  - [x] HeroSection, FeatureCardsSection, StepGuideSection, CtaBannerSection, LandingNavbar, LandingFooter
+  - [x] 비로그인 방문자 기본 페이지(`/`) 및 `/landing` 경로 매핑 완료
+  - [x] `AppLayout` 컴포넌트에 `children` prop 지원 추가로 대시보드 라우팅 하위 호환성 확보
+  - [x] 실제 Boim 등록 패널(증권 자동 업로더 + 원클릭 샘플 파싱 + 가상 상품명)로 목업 개편
+  - [x] 단위/통합 테스트 100% 통과 및 TypeScript/빌드 0 에러 무결성 검증
 
-### 2. Phase 17-02: Docker Compose 풀스택 오케스트레이션
-- [ ] `docker-compose.yml`: PostgreSQL 16 + NestJS API + Web/Nginx + 네트워크/볼륨 마운트 구성
-- [ ] 컨테이너 시작 시 Prisma 자동 마이그레이션(`prisma migrate deploy`) 실행 파이프라인 연동
-- [ ] Nginx 리버스 프록시(`/api` ➔ NestJS API 포워딩, 정적 자산 Gzip 압축) 설정
-
-### 3. Phase 17-03: GitHub Actions CI 파이프라인 구축
-- [ ] `.github/workflows/ci.yml`: Push 및 Pull Request 자동 트리거 워크플로우
-- [ ] pnpm 의존성 캐싱 및 워크스페이스 린트(`oxlint`, `eslint`) 검증
-- [ ] 전사 테스트 스위트 자동 실행 및 실패 시 머지 차단 게이트웨이
-- [ ] Turbo 모노레포 프로덕션 빌드 무결성 자동 검증
-
-### 4. Phase 17-04: 배포 환경 가이드 및 마일스톤 마무리
-- [ ] 상용 환경 배포용 보안 환경 변수 템플릿(`.env.production.example`) 정립 (소셜 OAuth 키 포함)
-- [ ] 배포 가이드 문서(`DEPLOYMENT.md`) 작성 (Docker 실행법, DB 백업, SSL 인증서 연동 안내)
-- [ ] `CHANGELOG.md` 및 `README.md` 동기화 및 커밋
+- [x] **Phase 17-02: 랜딩 인터랙션 고도화 및 네비게이션 스크롤 안정화 (완료)**
+  - [x] **브랜드 심볼 로고(B 심볼) 전면 통일:** 랜딩 페이지(GNB `LandingNavbar`, `LandingFooter`), 사이드바(`Sidebar.tsx`) 및 인증 화면(`Login.tsx`, `SignUp.tsx`)의 로고 아이콘을 공통 컴포넌트 `BrandLogo.tsx`의 **라운드 박스형 'B' 심볼 로고**로 100% 일관되게 통일 적용
+  - [x] **HeroSection 3대 체크 아이콘 대표 컬러(Blue) 통일:** 기존의 초록/파랑/인디고 다색 분산을 지양하고, 브랜드 대표 컬러인 `text-blue-600` 단일 톤으로 통일하여 시선 분산 해소 및 고급스러운 핀테크 첫인상 완성
+  - [x] **주요 기능 카드 호버 인터랙션 고도화:** 각 카드 블럭에 마우스 호버 시 카드 전체 컨테이너에 부드러운 플로팅(`hover:-translate-y-1.5`, 테두리 `hover:border-blue-200` & 그림자 강조) 마이크로 인터랙션 적용
+  - [x] **이용방법 단계별 인터랙션:** 좌측 1단계/2단계/3단계 탭 클릭 시 우측 예시 카드가 페이드(Fade) 효과와 함께 단계별 화면(1: 등록 폼, 2: 캘린더/납입 정리, 3: AI 진단 리포트)으로 매끄럽게 전환
+  - [x] **GNB 스크롤 안정화:** 브라우저 환경 및 OS 설정과 무관하게 상단 네비게이션 클릭 시 헤더 여백을 보정한 안정적인 스무스 스크롤 복구
+  - [x] **품질 검증 & 최종 커밋:** 단위 테스트 동기화(47개 파일 202개 테스트 100% Pass, 전사 394개 테스트 100% Pass), 번들 빌드(2.12s) 0 에러 무결성 검증

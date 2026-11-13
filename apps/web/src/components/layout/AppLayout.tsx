@@ -1,10 +1,15 @@
+import { type FC, type ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { RightPanel } from './RightPanel';
 import { OfflineBanner } from '../common/OfflineBanner';
 
-export function AppLayout() {
+export interface AppLayoutProps {
+  children?: ReactNode;
+}
+
+export const AppLayout: FC<AppLayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col h-screen bg-[#F9FAFB] overflow-hidden font-sans print:h-auto print:overflow-visible print:bg-white print:block">
       {/* 0. Offline Notice Banner */}
@@ -28,7 +33,7 @@ export function AppLayout() {
             
             {/* Center Column: Main Routing Area */}
             <main className="flex-1 overflow-auto px-4 lg:px-10 pb-12 print:hidden">
-              <Outlet />
+              {children ?? <Outlet />}
             </main>
             
             {/* Right Column: Off-canvas or side panel */}
@@ -39,4 +44,4 @@ export function AppLayout() {
       </div>
     </div>
   );
-}
+};

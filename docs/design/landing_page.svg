@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3200" viewBox="0 0 1440 3200">
+  <defs>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EEF4FF"/>
+      <stop offset="1" stop-color="#F8FAFF"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4D8BFA"/>
+      <stop offset="1" stop-color="#2867E8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#1D3557" flood-opacity=".10"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#253858" flood-opacity=".08"/>
+    </filter>
+    <style>
+      text{font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",sans-serif;fill:#17243B}
+      .muted{fill:#718096}.blue{fill:#3478F6}.white{fill:#fff}
+      .eyebrow{font-size:14px;font-weight:700;letter-spacing:2px;fill:#3979ED}
+      .h1{font-size:58px;font-weight:800;letter-spacing:-2.8px}
+      .h2{font-size:38px;font-weight:800;letter-spacing:-1.5px}
+      .body{font-size:18px;fill:#64748B}
+      .small{font-size:13px;fill:#8794A8}
+      .label{font-size:14px;font-weight:700;fill:#66758B}
+      .cardtitle{font-size:19px;font-weight:750}
+      .metric{font-size:28px;font-weight:800}
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1440" height="3200" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1440" height="900" fill="url(#hero)"/>
+
+  <!-- navigation -->
+  <g transform="translate(120 0)">
+    <text x="0" y="66" font-size="30" font-weight="850" letter-spacing="-1.5">boim<span fill="#3478F6">.</span></text>
+    <text x="460" y="61" font-size="15" font-weight="650" fill="#506078">서비스 소개</text>
+    <text x="590" y="61" font-size="15" font-weight="650" fill="#506078">주요 기능</text>
+    <text x="700" y="61" font-size="15" font-weight="650" fill="#506078">이용 방법</text>
+    <rect x="1052" y="25" width="108" height="44" rx="12" fill="#FFFFFF" stroke="#DCE5F2"/>
+    <text x="1106" y="53" text-anchor="middle" font-size="14" font-weight="700">로그인</text>
+    <rect x="1172" y="25" width="148" height="44" rx="12" fill="#3478F6"/>
+    <text x="1246" y="53" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">무료로 시작하기</text>
+  </g>
+
+  <!-- hero copy -->
+  <g transform="translate(120 0)">
+    <rect x="0" y="175" width="178" height="34" rx="17" fill="#E1ECFF"/>
+    <circle cx="18" cy="192" r="4" fill="#3478F6"/>
+    <text x="32" y="197" font-size="13" font-weight="750" fill="#3478F6">나를 위한 보험 관리</text>
+    <text x="0" y="300" class="h1">흩어진 내 보험,<tspan x="0" dy="76" fill="#3478F6">한눈에 보임.</tspan></text>
+    <text x="0" y="470" class="body">가입한 보험부터 납입 일정과 보장 현황까지.</text>
+    <text x="0" y="502" class="body">복잡했던 보험 관리를 보임에서 간편하게 시작하세요.</text>
+    <rect x="0" y="552" width="190" height="58" rx="14" fill="url(#blue)" filter="url(#soft)"/>
+    <text x="95" y="588" text-anchor="middle" font-size="16" font-weight="750" fill="#FFFFFF">내 보험 관리 시작</text>
+    <text x="218" y="587" font-size="14" font-weight="650" fill="#718096">복잡한 절차 없이 간편하게</text>
+    <g transform="translate(0 680)">
+      <circle cx="8" cy="8" r="4" fill="#20B486"/><text x="22" y="13" font-size="13" fill="#718096">보험 현황 통합 관리</text>
+      <circle cx="190" cy="8" r="4" fill="#20B486"/><text x="204" y="13" font-size="13" fill="#718096">납입·갱신 일정 알림</text>
+    </g>
+  </g>
+
+  <!-- hero dashboard mockup -->
+  <g transform="translate(720 145)" filter="url(#shadow)">
+    <rect x="0" y="0" width="620" height="610" rx="24" fill="#FFFFFF"/>
+    <rect x="0" y="0" width="620" height="58" rx="24" fill="#FFFFFF"/>
+    <path d="M0 58H620" stroke="#EEF1F6"/>
+    <text x="30" y="37" font-size="17" font-weight="850">boim<span fill="#3478F6">.</span></text>
+    <text x="465" y="36" font-size="12" fill="#8A97AA">안녕하세요, 인태님</text>
+    <circle cx="584" cy="29" r="15" fill="#EFF4FC"/>
+    <text x="584" y="34" text-anchor="middle" font-size="12">P</text>
+    <text x="30" y="100" font-size="20" font-weight="800">보험 일정</text>
+    <text x="30" y="124" font-size="11" fill="#94A0B2">이번 달 보험 흐름을 확인해 보세요.</text>
+    <!-- metric cards -->
+    <g transform="translate(30 150)">
+      <rect width="130" height="88" rx="13" fill="#F7F9FC"/>
+      <text x="16" y="27" class="small">가입 보험</text><text x="16" y="63" class="metric">7<tspan font-size="14" fill="#718096">개</tspan></text>
+      <rect x="145" width="130" height="88" rx="13" fill="#F7F9FC"/>
+      <text x="161" y="27" class="small">이번 달 납입</text><text x="161" y="63" class="metric">3<tspan font-size="14" fill="#718096">건</tspan></text>
+      <rect x="290" width="130" height="88" rx="13" fill="#F7F9FC"/>
+      <text x="306" y="27" class="small">갱신 예정</text><text x="306" y="63" class="metric">2<tspan font-size="14" fill="#718096">건</tspan></text>
+      <rect x="435" width="125" height="88" rx="13" fill="#F7F9FC"/>
+      <text x="451" y="27" class="small">만기 예정</text><text x="451" y="63" class="metric">1<tspan font-size="14" fill="#718096">건</tspan></text>
+    </g>
+    <!-- calendar -->
+    <g transform="translate(30 265)">
+      <rect width="340" height="305" rx="15" fill="#FFFFFF" stroke="#E9EEF5"/>
+      <text x="18" y="32" font-size="15" font-weight="750">2026년 8월</text>
+      <text x="18" y="68" class="small">일</text><text x="65" y="68" class="small">월</text><text x="112" y="68" class="small">화</text><text x="159" y="68" class="small">수</text><text x="206" y="68" class="small">목</text><text x="253" y="68" class="small">금</text><text x="300" y="68" class="small">토</text>
+      <path d="M12 82H328M12 126H328M12 170H328M12 214H328M12 258H328" stroke="#EFF2F7"/>
+      <g font-size="12" fill="#69778B">
+        <text x="18" y="108">1</text><text x="65" y="108">2</text><text x="112" y="108">3</text><text x="159" y="108">4</text><text x="206" y="108">5</text><text x="253" y="108">6</text><text x="300" y="108">7</text>
+        <text x="18" y="152">8</text><text x="65" y="152">9</text><text x="112" y="152">10</text><text x="159" y="152">11</text><text x="206" y="152">12</text><text x="253" y="152">13</text><text x="300" y="152">14</text>
+        <text x="18" y="196">15</text><text x="65" y="196">16</text><text x="112" y="196">17</text><text x="159" y="196">18</text><text x="206" y="196">19</text><text x="253" y="196">20</text><text x="300" y="196">21</text>
+        <text x="18" y="240">22</text><text x="65" y="240">23</text><text x="112" y="240">24</text><text x="159" y="240">25</text><text x="206" y="240">26</text><text x="253" y="240">27</text><text x="300" y="240">28</text>
+        <text x="18" y="284">29</text><text x="65" y="284">30</text><text x="112" y="284">31</text>
+      </g>
+      <circle cx="212" cy="147" r="4" fill="#3478F6"/><circle cx="258" cy="191" r="4" fill="#18B889"/><circle cx="304" cy="235" r="4" fill="#F28A55"/>
+    </g>
+    <!-- agenda -->
+    <g transform="translate(390 265)">
+      <rect width="200" height="305" rx="15" fill="#FFFFFF" stroke="#E9EEF5"/>
+      <text x="16" y="32" font-size="15" font-weight="750">오늘의 일정</text>
+      <text x="16" y="53" font-size="11" fill="#98A3B4">놓치지 않도록 알려드려요</text>
+      <rect x="14" y="72" width="172" height="91" rx="11" fill="#F8FAFD"/>
+      <circle cx="27" cy="91" r="4" fill="#3478F6"/>
+      <text x="40" y="95" font-size="11" font-weight="750">보험료 납입</text>
+      <text x="26" y="119" font-size="12" font-weight="700">삼성화재 건강보험</text>
+      <text x="26" y="141" font-size="11" fill="#7C899C">85,000원 · 월 보험료 납입일</text>
+      <rect x="14" y="174" width="172" height="91" rx="11" fill="#F8FAFD"/>
+      <circle cx="27" cy="193" r="4" fill="#18B889"/>
+      <text x="40" y="197" font-size="11" font-weight="750">갱신 예정</text>
+      <text x="26" y="221" font-size="12" font-weight="700">KB손해보험 운전자보험</text>
+      <text x="26" y="243" font-size="11" fill="#7C899C">8월 20일 갱신 예정</text>
+      <text x="16" y="290" font-size="11" font-weight="700" fill="#3478F6">일정 전체 보기 →</text>
+    </g>
+  </g>
+
+  <!-- trusted strip -->
+  <g transform="translate(120 840)">
+    <text x="0" y="0" font-size="13" fill="#8290A4">보험을 더 명확하게 관리하는 새로운 습관</text>
+    <path d="M0 28H1200" stroke="#E1E8F2"/>
+  </g>
+
+  <!-- features section -->
+  <g transform="translate(120 1010)">
+    <text class="eyebrow" x="0" y="0">WHAT YOU CAN DO</text>
+    <text class="h2" x="0" y="62">보험 관리에 필요한 모든 것,</text>
+    <text class="h2" x="0" y="110" fill="#3478F6">한곳에서 간편하게.</text>
+    <text class="body" x="0" y="158">보임은 보험 정보를 모으고, 중요한 일정을 챙기고, 보장 상태를 살펴볼 수 있도록 돕습니다.</text>
+
+    <!-- feature cards -->
+    <g transform="translate(0 220)">
+      <rect width="380" height="360" rx="22" fill="#F7F9FC"/>
+      <circle cx="54" cy="58" r="26" fill="#E5EEFF"/>
+      <path d="M45 58h18M54 49v18" stroke="#3478F6" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="32" y="125" class="cardtitle">내 보험 한눈에 관리</text>
+      <text x="32" y="158" class="body" font-size="15">여러 보험사에 흩어진 가입 정보를</text>
+      <text x="32" y="184" class="body" font-size="15">한 화면에서 확인하고 관리하세요.</text>
+      <rect x="32" y="224" width="316" height="104" rx="13" fill="#FFFFFF" stroke="#E8EDF5"/>
+      <text x="50" y="253" class="small">나의 보험 현황</text>
+      <text x="50" y="292" font-size="27" font-weight="800">7개 <tspan font-size="13" fill="#8794A8" font-weight="500">가입 보험</tspan></text>
+      <rect x="246" y="250" width="82" height="42" rx="9" fill="#EAF1FF"/>
+      <text x="287" y="276" text-anchor="middle" font-size="12" font-weight="700" fill="#3478F6">전체 보기</text>
+    </g>
+    <g transform="translate(410 220)">
+      <rect width="380" height="360" rx="22" fill="#F7F9FC"/>
+      <circle cx="54" cy="58" r="26" fill="#E5F7F1"/>
+      <path d="M54 43v16l11 7" stroke="#18A77D" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <text x="32" y="125" class="cardtitle">납입·갱신 일정 알림</text>
+      <text x="32" y="158" class="body" font-size="15">보험료 납입일과 갱신·만기일을</text>
+      <text x="32" y="184" class="body" font-size="15">달력과 알림으로 놓치지 마세요.</text>
+      <rect x="32" y="224" width="316" height="104" rx="13" fill="#FFFFFF" stroke="#E8EDF5"/>
+      <circle cx="55" cy="255" r="5" fill="#3478F6"/><text x="70" y="260" font-size="13" font-weight="700">보험료 납입 알림</text>
+      <text x="50" y="289" font-size="12" fill="#7C899C">삼성화재 건강보험 · 85,000원</text>
+      <text x="50" y="312" font-size="11" fill="#18A77D">납입 완료</text>
+    </g>
+    <g transform="translate(820 220)">
+      <rect width="380" height="360" rx="22" fill="#F7F9FC"/>
+      <circle cx="54" cy="58" r="26" fill="#FFF1E8"/>
+      <path d="M54 42l15 7v11c0 10-7 16-15 20-8-4-15-10-15-20V49z" stroke="#E98A50" stroke-width="2.2" fill="none"/>
+      <text x="32" y="125" class="cardtitle">보장 상태 분석</text>
+      <text x="32" y="158" class="body" font-size="15">항목별 보장 현황을 확인하고</text>
+      <text x="32" y="184" class="body" font-size="15">부족한 보장을 파악해 보세요.</text>
+      <rect x="32" y="224" width="316" height="104" rx="13" fill="#FFFFFF" stroke="#E8EDF5"/>
+      <text x="50" y="253" class="small">종합 보장 점수</text>
+      <text x="50" y="300" font-size="30" font-weight="800" fill="#3478F6">72<tspan font-size="13" fill="#8794A8"> / 100</tspan></text>
+      <rect x="175" y="280" width="145" height="8" rx="4" fill="#E9EEF5"/>
+      <rect x="175" y="280" width="104" height="8" rx="4" fill="#3478F6"/>
+      <text x="175" y="266" font-size="11" fill="#7C899C">보장 상태 확인</text>
+    </g>
+  </g>
+
+  <!-- product showcase -->
+  <rect x="0" y="1870" width="1440" height="760" fill="#F7F9FC"/>
+  <g transform="translate(120 1980)">
+    <text class="eyebrow" x="0" y="0">A CLEARER VIEW</text>
+    <text class="h2" x="0" y="62">복잡한 보험 정보도</text>
+    <text class="h2" x="0" y="110" fill="#3478F6">보기 쉽게 정리됩니다.</text>
+    <text class="body" x="0" y="158">보험 등록부터 보장 분석까지, 필요한 정보를 단계별로 확인하세요.</text>
+    <g transform="translate(0 220)">
+      <circle cx="10" cy="10" r="10" fill="#3478F6"/><text x="10" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">1</text>
+      <text x="34" y="16" font-size="17" font-weight="750">보험 정보를 등록하고</text>
+      <text x="34" y="46" font-size="14" fill="#718096">보험사, 상품명, 가입일 등 기본 정보를 입력합니다.</text>
+      <circle cx="10" cy="100" r="10" fill="#DCE7F8"/><text x="10" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#3478F6">2</text>
+      <text x="34" y="106" font-size="17" font-weight="750">납입과 보장 내용을 정리하고</text>
+      <text x="34" y="136" font-size="14" fill="#718096">납입 주기와 기간, 주요 보장 및 특약을 관리합니다.</text>
+      <circle cx="10" cy="190" r="10" fill="#DCE7F8"/><text x="10" y="194" text-anchor="middle" font-size="11" font-weight="700" fill="#3478F6">3</text>
+      <text x="34" y="196" font-size="17" font-weight="750">내 보험 상태를 확인하세요</text>
+      <text x="34" y="226" font-size="14" fill="#718096">일정 알림과 보장 분석으로 전체 현황을 살펴봅니다.</text>
+    </g>
+  </g>
+  <!-- registration panel -->
+  <g transform="translate(730 1970)" filter="url(#shadow)">
+    <rect width="590" height="520" rx="22" fill="#FFFFFF"/>
+    <text x="34" y="48" font-size="20" font-weight="800">보험 등록</text>
+    <text x="34" y="73" font-size="12" fill="#8794A8">내 보험 정보를 차근차근 입력해 보세요.</text>
+    <g transform="translate(34 105)">
+      <rect width="522" height="54" rx="12" fill="#F7F9FC"/>
+      <circle cx="27" cy="27" r="13" fill="#3478F6"/><text x="27" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">1</text>
+      <text x="51" y="32" font-size="13" font-weight="700">기본 정보</text>
+      <circle cx="190" cy="27" r="13" fill="#E8EDF5"/><text x="190" y="31" text-anchor="middle" font-size="11" fill="#7B8798">2</text>
+      <text x="214" y="32" font-size="13" fill="#8794A8">납입/기간 정보</text>
+      <circle cx="380" cy="27" r="13" fill="#E8EDF5"/><text x="380" y="31" text-anchor="middle" font-size="11" fill="#7B8798">3</text>
+      <text x="404" y="32" font-size="13" fill="#8794A8">보장 정보</text>
+    </g>
+    <g transform="translate(34 190)">
+      <text x="0" y="0" class="label">보험사</text><rect x="0" y="14" width="250" height="43" rx="9" fill="#FFFFFF" stroke="#E1E7F0"/><text x="14" y="41" class="small">보험사를 선택하세요</text>
+      <text x="274" y="0" class="label">상품명</text><rect x="274" y="14" width="248" height="43" rx="9" fill="#FFFFFF" stroke="#E1E7F0"/><text x="288" y="41" class="small">상품명을 입력하세요</text>
+      <text x="0" y="91" class="label">보험 종류</text><rect x="0" y="105" width="250" height="43" rx="9" fill="#FFFFFF" stroke="#E1E7F0"/><text x="14" y="132" class="small">보험 종류 선택</text>
+      <text x="274" y="91" class="label">가입일</text><rect x="274" y="105" width="248" height="43" rx="9" fill="#FFFFFF" stroke="#E1E7F0"/><text x="288" y="132" class="small">YYYY.MM.DD</text>
+    </g>
+    <rect x="34" y="420" width="522" height="54" rx="12" fill="#3478F6"/>
+    <text x="295" y="454" text-anchor="middle" font-size="15" font-weight="750" fill="#FFFFFF">다음 단계로</text>
+  </g>
+
+  <!-- closing CTA -->
+  <g transform="translate(120 2730)">
+    <rect width="1200" height="330" rx="28" fill="#142B50"/>
+    <circle cx="1050" cy="90" r="130" fill="#1D3D6D" opacity=".8"/>
+    <circle cx="1110" cy="250" r="90" fill="#244C83" opacity=".55"/>
+    <text x="70" y="86" font-size="14" font-weight="750" letter-spacing="2" fill="#9DBFFF">START WITH BOIM</text>
+    <text x="70" y="154" font-size="38" font-weight="800" fill="#FFFFFF">내 보험 관리, 이제 보임에서.</text>
+    <text x="70" y="198" font-size="17" fill="#C4D1E4">나의 보험 현황을 정리하고 중요한 일정을 챙겨보세요.</text>
+    <rect x="70" y="238" width="190" height="54" rx="13" fill="#FFFFFF"/>
+    <text x="165" y="272" text-anchor="middle" font-size="15" font-weight="800" fill="#2867E8">무료로 시작하기 →</text>
+  </g>
+
+  <!-- footer -->
+  <g transform="translate(120 3135)">
+    <text x="0" y="0" font-size="23" font-weight="850">boim<span fill="#3478F6">.</span></text>
+    <text x="1200" y="0" text-anchor="end" font-size="12" fill="#8A97AA">© 2026 BOIM. All rights reserved.</text>
+    <path d="M0 24H1200" stroke="#E8EDF3"/>
+  </g>
+</svg>

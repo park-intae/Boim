@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
+import { useAuthStore } from '../features/auth/store/authStore';
 
 // 🚀 라우트 단위 코드 스플리팅 (Dynamic Import)
 const Login = lazy(() =>
@@ -20,6 +21,9 @@ const PassVerification = lazy(() =>
 const OAuthCallbackPage = lazy(() =>
   import('../pages/OAuthCallbackPage').then((m) => ({ default: m.OAuthCallbackPage })),
 );
+const LandingPage = lazy(() =>
+  import('../features/landing/LandingPage').then((m) => ({ default: m.LandingPage })),
+);
 
 const PageFallback: FC = () => (
   <div className="flex items-center justify-center min-h-screen bg-slate-50">
@@ -27,20 +31,40 @@ const PageFallback: FC = () => (
   </div>
 );
 
+// 🌐 루트(/) 진입점: 로그인 상태면 대시보드, 비로그인이면 공개 랜딩 페이지를 기본 화면으로 렌더링
+const RootRoute: FC = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  if (isAuthenticated && accessToken) {
+    return (
+      <AppLayout>
+        <HomePage />
+      </AppLayout>
+    );
+  }
+
+  return (
+    <Suspense fallback={<PageFallback />}>
+      <LandingPage />
+    </Suspense>
+  );
+};
+
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <RootRoute />,
+  },
+  {
+    path: '/dashboard',
     element: (
       <ProtectedRoute>
-        <AppLayout />
+        <AppLayout>
+          <HomePage />
+        </AppLayout>
       </ProtectedRoute>
     ),
-    children: [
-      {
-        path: '',
-        element: <HomePage />,
-      },
-    ],
   },
   {
     path: '/login',
@@ -79,6 +103,14 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageFallback />}>
         <OAuthCallbackPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/landing',
+    element: (
+      <Suspense fallback={<PageFallback />}>
+        <LandingPage />
       </Suspense>
     ),
   },

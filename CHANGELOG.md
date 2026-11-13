@@ -5,6 +5,37 @@
 
 ---
 
+## [Phase 17] - 2026-11-13
+
+### 🌐 Public Landing Page & First Impression (공개 랜딩 페이지 및 UX 고도화)
+- **토스/핀테크 감성의 초고화질 순수 코드 랜딩 페이지 구축 (`Phase 17-01`):**
+  - 무거운 래스터 이미지 대신 **100% React 19 + Tailwind CSS + 인라인 SVG**로 구현하여 FCP/LCP를 극대화하고 모바일 고해상도(Retina) 화면에서도 깨짐 없는 벡터 선명도 확보.
+  - `apps/web/src/features/landing/` 7개 컴포넌트 모듈화:
+    - `LandingPage.tsx`: 랜딩 오케스트레이터 및 동적 Title 메타 관리.
+    - `LandingNavbar.tsx`: 스티키 헤더, 앵커 링크, 로그인/회원가입 CTA (로그인 상태 시 '대시보드로 이동'으로 스마트 전환).
+    - `HeroSection.tsx`: 핵심 가치 카피(*"흩어진 내 보험, 한눈에 보임."*), 2026년 11월 캘린더 및 보험 가입 지표 실감형 인터랙티브 목업.
+    - `FeatureCardsSection.tsx`: WHAT YOU CAN DO 3대 핵심 기능 (내 보험 한눈에 관리, 납입·갱신 일정 알림, Boim AI 85점 안심 등급 게이지 시각화).
+    - `StepGuideSection.tsx`: A CLEARER VIEW 3단계 가이드 및 증권 사진 자동 입력 OCR 뱃지가 결합된 보험 등록 폼 목업.
+    - `CtaBannerSection.tsx`: START WITH BOIM 다크 네이비 기하학 패턴 배경 & 화이트 CTA 배너.
+    - `LandingFooter.tsx`: 미니멀 저작권 및 서비스 푸터.
+- **랜딩 인터랙션 및 브랜드 아이덴티티 고도화 (`Phase 17-02`):**
+  - **브랜드 심볼 로고 ('B' 라운드 심볼) 전면 통일:** `BrandLogo.tsx` 공통 컴포넌트를 구축하고 랜딩 GNB(`LandingNavbar`), 푸터(`LandingFooter`), 사이드바(`Sidebar.tsx`), 로그인/회원가입(`Login.tsx`, `SignUp.tsx`) 전체 화면에 100% 일관되게 적용.
+  - **HeroSection 아이콘 컬러 일원화:** 기존 다색 분산(초록, 파랑, 보라)을 브랜드 대표 컬러인 `text-blue-600` 단일 톤으로 통일하여 시선 분산 방지 및 깔끔한 핀테크 첫인상 완성.
+  - **주요 기능 카드 호버 플로팅 마이크로 인터랙션:** 카드 컨테이너 전체에 `hover:-translate-y-1.5`, `hover:border-blue-200`, `hover:shadow-xl`을 적용하여 생동감 넘치는 반응형 UX 제공.
+  - **이용방법 3단계 탭 인터랙티브 전환 & 페이드 효과:** 1단계(증권 자동 등록 및 입력 폼), 2단계(월간 캘린더 납입 일정 및 D-2 알림 요약), 3단계(Gemini AI 85점 보장 진단 리포트) 탭 클릭 시 우측 실감형 목업이 부드러운 페이드인 애니메이션과 함께 즉각 전환.
+  - **GNB 스크롤 오프셋 안정화:** 브라우저 환경 및 OS 설정과 무관하게 상단 네비게이션 클릭 시 Sticky 헤더 높이(72px)를 보정한 스무스 스크롤 복구.
+- **기본 진입점 및 지능형 라우팅 (`RootRoute`):**
+  - 비로그인(게스트) 사용자가 루트 경로(`/`)로 접속 시 랜딩 페이지를 기본 첫 화면으로 제공.
+  - 로그인 세션이 유효한 사용자는 자동으로 기존 메인 대시보드(`HomePage` + `AppLayout`)로 연결.
+  - `/landing` 및 `/dashboard` 명시적 라우트 등록.
+  - `AppLayout`에 `children?: ReactNode` 지원을 추가하여 `<Outlet />`과 children 공존 구조 지원.
+- **전사 단위/통합 테스트 무결성:**
+  - `LandingPage.spec.tsx` (7개 인터랙션 및 탭 전환 단위 테스트) 및 `App.test.tsx` 최신화.
+  - 프론트엔드 47개 파일 202개 테스트 100% 통과, 백엔드 27개 파일 192개 테스트 100% 통과 (전사 394개 테스트 100% Pass).
+  - TypeScript 0 에러 및 Vite 프로덕션 번들(2.12s, 메인 엔트리 89kB) 빌드 완료.
+
+---
+
 ## [Phase 16] - 2026-11-12
 
 ### 🚀 Performance & Bundle Optimization (프론트엔드 번들 극한 다이어트)

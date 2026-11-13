@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ShieldCheck, Mail, Lock } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import type { ApiResponse } from '@boim/shared-types';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../../../api/client';
+import { BrandLogo } from '../../../components/common/BrandLogo';
 
 const loginSchema = z.object({
   email: z.string().email({ message: '올바른 이메일 형식을 입력해주세요.' }),
@@ -99,9 +100,7 @@ export const Login: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-slate-50">
       <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <div className="flex flex-col items-center mb-6">
-          <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-3">
-            <ShieldCheck size={20} />
-          </div>
+          <BrandLogo size="lg" showText={false} className="mb-3" />
           <h1 className="text-xl font-bold text-slate-800">Boim 로그인</h1>
           <p className="text-slate-500 text-xs mt-1">내 보험을 안전하게 관리하세요</p>
         </div>

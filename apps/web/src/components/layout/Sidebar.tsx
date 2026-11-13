@@ -1,6 +1,7 @@
 import { CalendarDays, ShieldCheck, Activity, Bell, Settings, Sparkles } from 'lucide-react';
 import { useGetInsurances } from '../../api/useInsuranceQueries';
 import { useAppStore } from '../../store/useAppStore';
+import { BrandLogo } from '../common/BrandLogo';
 
 export function Sidebar() {
   const panelMode = useAppStore((state) => state.panelMode);
@@ -37,12 +38,7 @@ export function Sidebar() {
     <aside className="hidden lg:flex w-[260px] h-full bg-white border-r border-gray-100 flex-col flex-shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
       {/* 1. Logo Area */}
       <div className="h-[84px] flex items-center px-8 shrink-0">
-        <div className="flex items-center gap-2.5 cursor-pointer">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-extrabold text-[16px] shadow-sm">
-            B
-          </div>
-          <h1 className="text-[22px] font-extrabold text-gray-900 tracking-tight">Boim</h1>
-        </div>
+        <BrandLogo size="md" className="cursor-pointer" />
       </div>
 
       {/* 2. Navigation Menu */}

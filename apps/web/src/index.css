@@ -2,8 +2,22 @@
 @config "../tailwind.config.js";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, "Malgun Gothic", "Pretendard Variable", Pretendard, sans-serif;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
