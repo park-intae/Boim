@@ -57,6 +57,16 @@ describe('LandingPage Component (Phase 17)', () => {
   it('GNB 네비게이션 메뉴(서비스 소개, 주요 기능, 이용 방법) 클릭 시 스크롤 이동이 정상 트리거되어야 한다', () => {
     const scrollToMock = vi.fn();
     window.scrollTo = scrollToMock;
+    let callCount = 0;
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      callCount++;
+      if (callCount === 1) {
+        cb(0);
+      } else if (callCount === 2) {
+        cb(1000);
+      }
+      return 1;
+    });
 
     render(
       <MemoryRouter>

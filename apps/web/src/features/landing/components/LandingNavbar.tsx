@@ -6,35 +6,75 @@ import { BrandLogo } from '../../../components/common/BrandLogo';
 export const LandingNavbar: React.FC = () => {
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const animationFrameRef = React.useRef<number | null>(null);
+
+  // 브라우저 CSS scroll-behavior와 충돌 없이 100% 부드러운 슬라이드를 보장하는 스크롤러
+  const smoothScrollTo = (targetY: number, duration = 650) => {
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+
+    const docEl = document.documentElement;
+    const body = document.body;
+
+    // CSS의 scroll-behavior: smooth와 JS 프레임 루프 충돌로 인한 캔슬/점프 방지
+    const prevDocBehavior = docEl.style.scrollBehavior;
+    const prevBodyBehavior = body.style.scrollBehavior;
+    docEl.style.scrollBehavior = 'auto';
+    body.style.scrollBehavior = 'auto';
+
+    const startY = window.pageYOffset || docEl.scrollTop || body.scrollTop || 0;
+    const diff = targetY - startY;
+
+    if (Math.abs(diff) < 2) {
+      docEl.style.scrollBehavior = prevDocBehavior;
+      body.style.scrollBehavior = prevBodyBehavior;
+      return;
+    }
+
+    let startTime: number | null = null;
+
+    // 부드러운 감속 가속도 3차 베지어 곡선 (easeInOutCubic)
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = duration <= 0 ? 1 : Math.min(elapsed / duration, 1);
+      const ease = easeInOutCubic(progress);
+      const currentPos = Math.round(startY + diff * ease);
+
+      window.scrollTo(0, currentPos);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(step);
+      } else {
+        window.scrollTo(0, targetY);
+        docEl.style.scrollBehavior = prevDocBehavior;
+        body.style.scrollBehavior = prevBodyBehavior;
+        animationFrameRef.current = null;
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(step);
+  };
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      const navbarOffset = 72;
-      const elementTop = el.getBoundingClientRect().top;
-      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-      const targetPosition = Math.max(0, elementTop + currentScrollY - navbarOffset);
+    if (!el) return;
 
-      try {
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth',
-        });
-      } catch {
-        window.scrollTo(0, targetPosition);
-      }
-    }
+    const navbarOffset = 72;
+    const rect = el.getBoundingClientRect();
+    const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    const targetPosition = Math.max(0, rect.top + currentScrollY - navbarOffset);
+
+    smoothScrollTo(targetPosition, 650);
   };
 
   const scrollToTop = () => {
-    try {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    } catch {
-      window.scrollTo(0, 0);
-    }
+    smoothScrollTo(0, 500);
   };
 
   return (
@@ -60,21 +100,30 @@ export const LandingNavbar: React.FC = () => {
         <nav className="hidden md:flex items-center gap-8 text-[14px] font-semibold text-gray-600">
           <button 
             type="button" 
-            onClick={() => scrollToSection('intro')}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('intro');
+            }}
             className="hover:text-blue-600 transition-colors cursor-pointer"
           >
             서비스 소개
           </button>
           <button 
             type="button" 
-            onClick={() => scrollToSection('features')}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('features');
+            }}
             className="hover:text-blue-600 transition-colors cursor-pointer"
           >
             주요 기능
           </button>
           <button 
             type="button" 
-            onClick={() => scrollToSection('step-guide')}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToSection('step-guide');
+            }}
             className="hover:text-blue-600 transition-colors cursor-pointer"
           >
             이용 방법
