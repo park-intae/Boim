@@ -1,33 +1,35 @@
 > 본 하네스 작업 시 @[.agents/GEMINI.md] 및 최상위 규칙을 반드시 최우선으로 참고할 것
 > 작업 영역에 따라 백엔드(@[.agents/BACKEND_HARNESS.md]) 및 프론트엔드(@[.agents/FRONTEND_HARNESS.md]) 지침을 반드시 숙독하고 엄격히 준수할 것
 
-# Phase 18: Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)
+# Phase 18: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 구축 (DevOps & Infrastructure)
 
 ## 📌 목표 및 개요
-Docker 컨테이너화 및 배포 파이프라인(Phase 17) 완료 후, 모노레포(`apps/mobile`)에 Expo SDK 기반 React Native 앱을 구축합니다. 기존 백엔드 API와 `packages/shared-types`를 100% 재사용하며, 캘린더/보험 목록/AI 리포트/계정 관리 4대 핵심 화면을 네이티브 UI로 포팅하고 스마트폰 설치용 APK 및 Expo 빌드를 완성합니다.
+Boim 모노레포 시스템(React 19 Frontend + NestJS 11 Backend + PostgreSQL Database)을 어떤 클라우드나 로컬 환경에서도 단 한 번의 명령어로 즉시 프로덕션 수준으로 구동할 수 있도록 **Multi-stage Docker 컨테이너화**를 완료하고, 코드 변경 시마다 자동으로 린트, 테스트(394개), 빌드 무결성을 검증하는 **GitHub Actions CI/CD 자동화 파이프라인**을 구축합니다.
 
 ---
 
-## 📋 세부 체크리스트
+## 📋 Phase 18 종합 체크리스트
 
-### 1. Phase 18-01: 모노레포 Expo(React Native) 프로젝트 세팅 및 기반 구축
-- [ ] `apps/mobile` 패키지 신설 (Expo SDK + Expo Router + NativeWind/StyleSheet)
-- [ ] 모노레포 의존성 구성 및 `packages/shared-types` 연동
-- [ ] 백엔드 API 클라이언트 설정 (개발 서버 IP 통신, JWT 인증 토큰 스토리지 `expo-secure-store`)
+- [ ] **Phase 18-01: Multi-stage Dockerfile 구축 (Backend & Frontend)**
+  - [ ] `apps/api/Dockerfile`: NestJS 11 프로덕션 멀티스테이지 Dockerfile 작성 (Alpine Node, pnpm 모노레포 캐싱, non-root 보안 유저)
+  - [ ] `apps/web/Dockerfile`: React 19 Vite 번들 빌드 & Nginx Alpine 서빙 Dockerfile 작성
+  - [ ] `apps/web/nginx.conf`: Nginx SPA 라우팅 fallback(`try_files`), Gzip 압축, 보안 헤더, 정적 캐시 설정
+  - [ ] `.dockerignore` 최적화: 불필요한 node_modules, dist, 로그 배제로 이미지 빌드 초경량화
 
-### 2. Phase 18-02: 4대 핵심 탭 네이티브 화면 포팅
-- [ ] **캘린더 & 납입일 탭**: `react-native-calendars` 기반 월간 캘린더 및 일자별 보험료 납입 일정
-- [ ] **내 보험 목록 탭**: 카드 리스트 뷰, 필터링, 보험 상세 조회 및 신규 등록/수정 모달
-- [ ] **AI 종합 진단 탭**: AI 분석 점수 카드, 보장 항목별 프로그레스, 네이티브 맞춤 조언 카드
-- [ ] **마이페이지 / 계정 설정 탭**: 사용자 프로필, 소셜 계정 연동 현황, 알림 토글 스위치
+- [ ] **Phase 18-02: 풀스택 Docker Compose 오케스트레이션 (`docker-compose.yml`)**
+  - [ ] PostgreSQL 16 DB + NestJS API + Web Nginx 3개 서비스 원클릭 오케스트레이션 구성
+  - [ ] DB 헬스체크(`pg_isready`) 및 의존성 순서(`depends_on: condition: service_healthy`) 보장
+  - [ ] 프론트엔드 Nginx 리버스 프록시(`/api` ➔ `api:4000`, `/` ➔ SPA) 연동으로 CORS 이슈 제로화
+  - [ ] 로컬/프로덕션 겸용 환경 변수 주입 체계 완성
 
-### 3. Phase 18-03: 모바일 네이티브 UX 및 기기 기능 고도화
-- [ ] SafeArea(노치 및 홈 인디케이터) 최적화 및 안드로이드 하드웨어 뒤로가기 제스처
-- [ ] 당겨서 새로고침(Pull-to-refresh) 및 오프라인/에러 상태 폴백 UI
-- [ ] (선택) 생체인증(`expo-local-authentication`) 간편 잠금해제 연동
+- [ ] **Phase 18-03: GitHub Actions CI 자동화 파이프라인 구축 (`.github/workflows/ci.yml`)**
+  - [ ] `main` / `master` 브랜치 Push 및 Pull Request 시 자동 트리거 파이프라인 작성
+  - [ ] Node.js 22 & pnpm v9 환경 세팅 및 의존성 캐싱 최적화
+  - [ ] 전사 Turbo 모노레포 `pnpm lint` 자동 검증
+  - [ ] 백엔드 192개 Jest 테스트 + 프론트엔드 202개 Vitest 테스트 (총 394개) 자동 통과 검증
+  - [ ] Web Vite 빌드 + API NestJS 컴파일 무결성 자동 확인
 
-### 4. Phase 18-04: 모바일 테스트 및 독립 실행형 패키징 (Build & Packaging)
-- [ ] 모바일 컴포넌트 렌더링 단위 테스트 작성
-- [ ] 스마트폰 즉시 실행(Expo Go) QR 구동 검증
-- [ ] 독립 설치용 Android 바이너리(`.apk`) 빌드 파이프라인 구성 및 최종 검증
-- [ ] `CHANGELOG.md` 및 `README.md` 동기화 및 마일스톤 완료 커밋
+- [ ] **Phase 18-04: 보안 환경 변수 템플릿 및 배포 문서화**
+  - [ ] `.env.production.example`: 프로덕션 배포 시 필수 보안 환경 변수 가이드 템플릿 완비
+  - [ ] `docs/DEPLOYMENT.md`: 단 한 줄 명령어 원클릭 배포 가이드 문서화
+  - [ ] 품질 검증 및 사용자 승인 하 커밋 진행
