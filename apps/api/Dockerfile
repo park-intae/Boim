@@ -36,16 +36,18 @@ ENV PORT=4000
 # 보안을 위해 non-root node 유저 권한 부여
 USER node
 
-# 빌드 결과물 및 필수 런타임 의존성 복사
-COPY --chown=node:node --from=dependencies /app/node_modules ./node_modules
-COPY --chown=node:node --from=dependencies /app/apps/api/node_modules ./apps/api/node_modules
+# 빌드 결과물 및 필수 런타임 의존성 복사 (Prisma Client가 생성된 builder 스테이지에서 복사)
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --chown=node:node --from=builder /app/packages/shared-types ./packages/shared-types
 COPY --chown=node:node --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --chown=node:node --from=builder /app/apps/api/prisma ./apps/api/prisma
 COPY --chown=node:node --from=builder /app/apps/api/package.json ./apps/api/package.json
 
+ENV NODE_PATH=/app/node_modules:/app/apps/api/node_modules
+
 WORKDIR /app/apps/api
 
 EXPOSE 4000
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "if [ -f dist/src/main.js ]; then node dist/src/main.js; else node dist/main.js; fi"]

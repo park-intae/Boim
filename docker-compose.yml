@@ -1,8 +1,9 @@
 services:
+  # 1. PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: boim-postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -11,6 +12,61 @@ services:
       - "5432:5432"
     volumes:
       - boim_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d boim"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - boim-network
+
+  # 2. NestJS Backend API
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: boim-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/boim?schema=public"
+      JWT_SECRET: ${JWT_SECRET:-boim_jwt_secret_key_production_2026}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      USE_MOCK_PARSER: ${USE_MOCK_PARSER:-true}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-mock-kakao-client-id}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
+      KAKAO_CALLBACK_URL: ${KAKAO_CALLBACK_URL:-http://localhost/api/auth/kakao/callback}
+      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-mock-naver-client-id}
+      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-mock-naver-secret}
+      NAVER_CALLBACK_URL: ${NAVER_CALLBACK_URL:-http://localhost/api/auth/naver/callback}
+    ports:
+      - "${API_PORT:-4000}:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - boim-network
+
+  # 3. React SPA Frontend & Nginx Reverse Proxy
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: boim-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    depends_on:
+      - api
+    networks:
+      - boim-network
 
 volumes:
   boim_pgdata:
+    driver: local
+
+networks:
+  boim-network:
+    driver: bridge

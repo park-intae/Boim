@@ -115,4 +115,15 @@
 - **오류 내용:** `pnpm --filter web test` 명령은 기본적으로 vitest의 인터랙티브 watch 모드로 진입하여 터미널이 무한 대기(Hang) 상태에 빠져 다음 자동화 파이프라인이 진행되지 않음.
 - **해결 및 예방:** 비대화형 일회성 테스트 검증 시에는 반드시 `pnpm --filter web exec vitest run` 플래그를 명시하여 테스트 종료 후 프로세스가 정상적으로 0/1 코드를 반환하고 종료되도록 실행할 것.
 
+## 18. pnpm 모노레포 Docker 멀티스테이지 빌드 & 런타임 모듈 누락 오류
+- **발생 상황:** Phase 18 Dockerfile 및 Docker Compose 패키징 중 (`apps/api`, `apps/web`).
+- **오류 내용:**
+  1. `COPY apps/web ./apps/web` 방식으로 호스트 디렉토리를 통째로 복사하면 컨테이너 내 pnpm 심볼릭 링크가 손상되어 `Cannot find module tsc` 에러 발생.
+  2. NestJS runner 스테이지에서 루트 `/app/node_modules`만 복사하고 `apps/api/node_modules`를 누락하여 `Cannot find module '@nestjs/core'` 런타임 에러 발생.
+  3. `prisma generate` 아티팩트(`@prisma/client`)는 `builder` 스테이지에서 생성되므로 `dependencies` 스테이지 node_modules를 runner로 복사하면 초기화되지 않은 클라이언트 에러 발생.
+- **해결 및 예방:**
+  1. 소스 코드는 필요한 디렉토리(`src/`, 설정 파일)만 선별 복사하여 심볼릭 링크 구조를 보존할 것.
+  2. runner 스테이지에는 Prisma client가 컴파일된 `builder` 스테이지의 `/app/node_modules`와 `/app/apps/api/node_modules`를 모두 복사하고, `NODE_PATH` 환경변수를 함께 지정할 것.
+  3. 컴파일 경로(`dist/src/main.js` vs `dist/main.js`) 분기 런타임 스크립트를 적용하여 빌드 아웃풋 불일치 크래시를 방지할 것.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
