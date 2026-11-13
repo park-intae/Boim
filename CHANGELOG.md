@@ -5,6 +5,30 @@
 
 ---
 
+## [Phase 19] - 2026-11-13
+
+### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)
+- **`apps/mobile` 프로젝트 세팅 및 Expo SDK 58 전면 업그레이드 (`Phase 19-01`):**
+  - 스마트폰 최신 `Expo Go` 환경에 완벽 대응하는 최신 **Expo SDK 58.0.25**, **React 19 (`react@19.3.0`)**, **React Native 0.88.1** 기반 모바일 패키지 구축.
+  - `@boim/shared-types` 공통 패키지 100% 참조 및 Metro 번들러 모노레포 심볼릭 링크 호환(`metro.config.js`).
+- **4대 핵심 탭 네이티브 UI 포팅 & 플로팅 탭 네비게이션 (`Phase 19-02`):**
+  - `@react-navigation/bottom-tabs` 기반 하단 플로팅 캡슐 탭 바(`TabNavigator.tsx`) 구현:
+    - 안드로이드 시스템 3버튼 및 제스처 바와의 영역 겹침을 방지하는 플로팅 카드 아일랜드(`borderRadius: 26`, `height: 72px`) 및 터치 영역 바운더리(`overflow: hidden`) 적용.
+    - `useSafeAreaInsets` 기반 기기별 하단 안전 마진 자동 계산.
+  - 4대 스크린 Empty State 기본 지원:
+    - `CalendarScreen.tsx`: 월간 보험료 납입 캘린더 및 일정 없는 날의 빈 상태 뷰.
+    - `InsuranceListScreen.tsx`: 총 월납입액 배너, 카테고리 필터 및 "가입된 보험이 없습니다" Empty State.
+    - `DiagnosisScreen.tsx`: Gemini AI 종합 진단 점수 및 "AI 분석 결과가 없습니다" Empty State.
+    - `MyPageScreen.tsx`: 프로필, PASS 인증 뱃지, 알림 설정 및 비로그인 상태 안내.
+- **백엔드 API 연동 모바일 인증 플로우 & 세션 유지 (`Phase 19-03`):**
+  - **조건부 RootNavigator:** 비로그인 사용자 접속 시 로그인 화면(`LoginScreen`)으로 첫 화면(랜딩) 렌더링.
+  - **실제 백엔드 API 연동 (`apps/mobile/src/api/authApi.ts`):** NestJS 백엔드(`POST /api/auth/login`)와의 실제 HTTP 통신으로 DB 시드 계정(`test@boim.com` / `password123`) 검증 및 실제 JWT 토큰 발급.
+  - **모바일 안전 스토리지 (`safeStorage`):** `@react-native-async-storage/async-storage` 및 메모리 폴백 기반 로그인 세션(`Remember Me`) 영구 보관 및 앱 재실행 시 자동 로그인 지원.
+  - **테스트 계정 공식 인식표:** 테스트/데모 계정 로그인 시 마이페이지에 `[테스트 계정]` 뱃지 부착.
+  - **실기기(Expo Go) QA 완료:** 스마트폰 실제 기기에서 로그인 ➔ 메인 탭 ➔ 마이페이지 ➔ 로그아웃 플로우 검증 및 전사 399개 단위/통합 테스트 100% Pass 무결성 확인.
+
+---
+
 ## [Phase 18] - 2026-11-13
 
 ### 🐳 DevOps & Infrastructure (컨테이너화 및 CI/CD 자동화 배포 파이프라인)
