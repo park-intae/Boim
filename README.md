@@ -4,6 +4,22 @@
 
 ---
 
+## 🚀 빠른 시작 (Quick Start with Docker)
+
+어떤 환경에서도 Node.js나 데이터베이스를 별도로 설치할 필요 없이, **Docker만 설치되어 있다면 단 한 줄의 명령어로 풀스택 서비스를 즉시 실행**할 수 있습니다.
+
+```bash
+# 1. 저장소 클론 및 디렉토리 이동
+git clone https://github.com/your-username/Boim.git && cd Boim
+
+# 2. Docker Compose 원클릭 컨테이너 빌드 및 기동
+docker compose up -d
+```
+> 기동 완료 후 브라우저에서 **`http://localhost`**로 접속하시면 즉시 모든 기능을 체험하실 수 있습니다.  
+> 상세한 상용 클라우드 배포 및 운영 방법은 **[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md)** 문서를 참조하세요.
+
+---
+
 ## 🛠️ 기술 스택 (Tech Stack)
 
 - **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, TanStack Query, Zustand, React Hook Form, Zod, Lucide Icons, Recharts, oxlint
@@ -85,7 +101,8 @@
 | **Phase 15** | **상용 소셜 OAuth2 (카카오 / 네이버) 실연동 및 1:N 다중 계정 연동/해제 파이프라인** | **완료** |
 | **Phase 16** | **프론트엔드 번들 최적화(-90%), PWA 오프라인 캐싱, WAI-ARIA 및 Lighthouse 96/100/100/100 품질 고도화** | **완료** |
 | **Phase 17** | **공개 서비스 소개 랜딩 페이지(Landing Page) 구현, 브랜드 로고 통일 및 인터랙션 고도화** | **완료** |
-| **Phase 18** | **Docker 컨테이너화 및 GitHub Actions CI/CD 자동화 배포 파이프라인 (DevOps & Infrastructure)** | **진행 예정** |
+| **Phase 18** | **Docker 컨테이너화 및 GitHub Actions CI/CD 자동화 배포 파이프라인 (DevOps & Infrastructure)** | **완료** |
+| **Phase 19** | **Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)** | **진행 예정** |
 
 ---
 

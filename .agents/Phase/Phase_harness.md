@@ -51,11 +51,11 @@
 - [x] **Phase 17: 공개 서비스 소개 랜딩 페이지(Landing Page) 구현 & 서비스 첫인상 고도화 (완료)**
   - [x] **Phase 17-01:** 공개 서비스 소개 랜딩 페이지 컴포넌트화, 실감형 목업 & 기본 페이지(`/`) 라우팅
   - [x] **Phase 17-02:** 브랜드 로고 전면 통일, Hero 아이콘 단일톤 일원화, 기능 카드 호버 인터랙션, 이용방법 3단계 인터랙티브 전환(페이드) 및 GNB 스크롤 안정화 (완료)
-- [ ] **Phase 18: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 구축 (DevOps & Infrastructure)**
-  - [ ] **Phase 18-01:** 백엔드(NestJS) 및 프론트엔드(Nginx SPA 서빙) Multi-stage Dockerfile 작성
-  - [ ] **Phase 18-02:** Docker Compose 풀스택 오케스트레이션 (PostgreSQL + API + Web/Nginx 리버스 프록시)
-  - [ ] **Phase 18-03:** GitHub Actions CI 파이프라인 구축 (Lint, 394개 Test, Build 자동 검증)
-  - [ ] **Phase 18-04:** 상용 배포 보안 환경 변수 템플릿(`.env.production.example`) 및 배포 가이드 문서화
+- [x] **Phase 18: Docker 컨테이너화 및 CI/CD 자동화 배포 파이프라인 구축 (DevOps & Infrastructure) (완료)**
+  - [x] **Phase 18-01:** 백엔드(NestJS) 및 프론트엔드(Nginx SPA 서빙) Multi-stage Dockerfile 작성
+  - [x] **Phase 18-02:** Docker Compose 풀스택 오케스트레이션 (PostgreSQL + API + Web/Nginx 리버스 프록시)
+  - [x] **Phase 18-03:** GitHub Actions CI 파이프라인 구축 (Lint, 394개 Test, Build 자동 검증)
+  - [x] **Phase 18-04:** 상용 배포 보안 환경 변수 템플릿(`.env.production.example`) 및 배포 가이드 문서화
 - [ ] **Phase 19: Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)**
   - [ ] **Phase 19-01:** `apps/mobile` Expo(React Native) 프로젝트 세팅 및 `shared-types` 연동
   - [ ] **Phase 19-02:** 4대 핵심 탭(캘린더, 내 보험, AI 리포트, 마이페이지) 네이티브 UI 포팅

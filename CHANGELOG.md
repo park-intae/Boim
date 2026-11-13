@@ -5,6 +5,33 @@
 
 ---
 
+## [Phase 18] - 2026-11-13
+
+### 🐳 DevOps & Infrastructure (컨테이너화 및 CI/CD 자동화 배포 파이프라인)
+- **Multi-stage Dockerfile 컨테이너 패키징 (`Phase 18-01`):**
+  - **백엔드 (`apps/api/Dockerfile`):** NestJS 11 + Prisma Client + Node 22 Alpine 멀티스테이지 빌드로 **293MB** 초경량화 달성. Non-root `node` 유저 권한 부여로 상용 컨테이너 보안 무결성 확보.
+  - **프론트엔드 (`apps/web/Dockerfile`):** React 19 Vite 번들 컴파일 및 Nginx 1.27 Alpine 기반 정적 서빙으로 **26.7MB** 극초경량화 달성.
+  - **웹 Nginx 구성 (`apps/web/nginx.conf`):** SPA 라우팅 Fallback(`try_files`), Gzip 압축, 보안 헤더, 정적 자산 1년 장기 캐시 및 `/api/` 리버스 프록시 일괄 탑재.
+  - **`.dockerignore` 최적화:** `node_modules`, `dist`, `.turbo`, `.git`, `.env*` 배제로 빌드 컨텍스트 전송 시간 최소화.
+- **풀스택 Docker Compose 원클릭 오케스트레이션 (`Phase 18-02`):**
+  - `docker-compose.yml` 3대 핵심 서비스 일괄 연동:
+    - `postgres`: PostgreSQL 16 Alpine, `pg_isready` 기반 헬스체크 등록, `boim_pgdata` 볼륨 영속화.
+    - `api`: NestJS 11, DB 헬스체크 완료(`service_healthy`) 후 기동되는 안전한 의존성 체계, 포트 오버라이드 지원.
+    - `web`: React 19 Nginx 웹서버, API 컨테이너 기동 후 시작, 포트 80 매핑.
+  - 전용 브릿지 네트워크(`boim-network`) 격리로 컨테이너 간 안전한 통신 보장.
+  - pnpm 모노레포 심링크 및 Prisma Client 런타임 호환을 위한 `apps/api/node_modules` 복사 및 `NODE_PATH` 환경변수 보강.
+  - 로컬 통합 검증 완료: API 직접 호출(`4001`), 프론트엔드 서빙(`80`), Nginx 리버스 프록시(`/api/health`) 200 OK 무결성 확인.
+- **GitHub Actions CI 자동화 파이프라인 구축 (`Phase 18-03`):**
+  - `.github/workflows/ci.yml` 구축: `master`, `main`, `develop` 브랜치 Push 및 PR 시 자동 실행.
+  - `ubuntu-latest`, Node.js 22, pnpm 9 및 pnpm store 캐싱 최적화.
+  - 린트(`pnpm lint`), 백엔드 192개 테스트 + 프론트엔드 202개 테스트(**전사 394개 테스트 100% Pass**), 모노레포 전체 프로덕션 빌드(`pnpm build`), Docker Buildx 이미지 빌드 자동 검증 파이프라인 완비.
+- **상용 배포 보안 템플릿 및 배포 운영 가이드 (`Phase 18-04`):**
+  - `.env.production.example`: PostgreSQL DB, 64바이트 난수 JWT 시크릿, 카카오/네이버 OAuth2, Google Gemini AI, SMTP 이메일 환경변수 템플릿 완비 (실제 시크릿 제로 격리).
+  - `docs/DEPLOYMENT.md`: 시스템 아키텍처 다이어그램(Mermaid), 사전 요구사항 및 방화벽 인바운드 표, 4단계 원클릭 배포 가이드, 헬스체크 모니터링, 무중단 롤링 업데이트 및 롤백 가이드, Host Nginx + Let's Encrypt Certbot 연동 안내 수록.
+  - `.gitignore` 갱신 (`!.env*.example`).
+
+---
+
 ## [Phase 17] - 2026-11-13
 
 ### 🌐 Public Landing Page & First Impression (공개 랜딩 페이지 및 UX 고도화)
