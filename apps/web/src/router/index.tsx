@@ -51,67 +51,72 @@ const RootRoute: FC = () => {
   );
 };
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <RootRoute />,
+    },
+    {
+      path: '/dashboard',
+      element: (
+        <ProtectedRoute>
+          <AppLayout>
+            <HomePage />
+          </AppLayout>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: '/login',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <Login />
+        </Suspense>
+      ),
+    },
+    {
+      path: '/signup',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <SignUp />
+        </Suspense>
+      ),
+    },
+    {
+      path: '/onboarding',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <Onboarding onComplete={() => (window.location.href = `${import.meta.env.BASE_URL}login`)} />
+        </Suspense>
+      ),
+    },
+    {
+      path: '/pass-verify',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <PassVerification onVerifySuccess={() => (window.location.href = `${import.meta.env.BASE_URL}`)} />
+        </Suspense>
+      ),
+    },
+    {
+      path: '/auth/callback',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <OAuthCallbackPage />
+        </Suspense>
+      ),
+    },
+    {
+      path: '/landing',
+      element: (
+        <Suspense fallback={<PageFallback />}>
+          <LandingPage />
+        </Suspense>
+      ),
+    },
+  ],
   {
-    path: '/',
-    element: <RootRoute />,
+    basename: import.meta.env.BASE_URL || '/',
   },
-  {
-    path: '/dashboard',
-    element: (
-      <ProtectedRoute>
-        <AppLayout>
-          <HomePage />
-        </AppLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/login',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <Login />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/signup',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <SignUp />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/onboarding',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <Onboarding onComplete={() => (window.location.href = '/login')} />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/pass-verify',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <PassVerification onVerifySuccess={() => (window.location.href = '/')} />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/auth/callback',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <OAuthCallbackPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/landing',
-    element: (
-      <Suspense fallback={<PageFallback />}>
-        <LandingPage />
-      </Suspense>
-    ),
-  },
-]);
+);

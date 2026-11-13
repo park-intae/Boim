@@ -9,7 +9,7 @@
 
 | 구분 | 접속 및 실행 방법 | 설명 |
 | :--- | :--- | :--- |
-| **🚀 Live Web Demo** | **[`https://boim.vercel.app`](https://boim.vercel.app)** *(배포 예정)* | 브라우저/스마트폰에서 클릭 한 번으로 토스 감성의 랜딩 페이지, 캘린더 인터랙션, AI 진단 리포트를 0.1초 만에 즉시 체험 |
+| **🚀 Live Web Demo** | **[`https://park-intae.github.io/Boim/`](https://park-intae.github.io/Boim/)** | 브라우저/스마트폰에서 클릭 한 번으로 토스 감성의 랜딩 페이지, 캘린더 인터랙션, AI 진단 리포트를 0.1초 만에 즉시 체험 |
 | **🐳 Docker Full-Stack** | `git clone https://github.com/your-username/Boim.git && cd Boim`<br/>`docker compose up -d` | NestJS 11 백엔드 + PostgreSQL 16 DB + React 19 Nginx 웹서버를 단 한 줄의 명령어로 로컬에 즉시 기동 (`http://localhost`) |
 | **📑 API Specification** | `http://localhost/api/docs` (로컬 기동 시) | NestJS Swagger 기반 RESTful API 엔드포인트 및 DTO 명세 확인 |
 
