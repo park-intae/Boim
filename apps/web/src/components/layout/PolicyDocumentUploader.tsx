@@ -92,7 +92,7 @@ export function PolicyDocumentUploader({ onParsed }: PolicyDocumentUploaderProps
     setErrorMessage('');
     try {
       setParsingStep('parsing');
-      setStatusMessage('모의 증권 샘플 계약 정보를 분석 중입니다...');
+      setStatusMessage('샘플 증권 계약 정보를 분석 중입니다...');
 
       const parseRes = await parseSampleDocument();
       const parsedData =
@@ -187,7 +187,7 @@ export function PolicyDocumentUploader({ onParsed }: PolicyDocumentUploaderProps
         </div>
       )}
 
-      {/* 원클릭 모의 샘플 테스트 버튼 */}
+      {/* 온보딩 샘플 증권 테스트 버튼 */}
       <button
         type="button"
         disabled={isBusy}
@@ -195,7 +195,7 @@ export function PolicyDocumentUploader({ onParsed }: PolicyDocumentUploaderProps
         className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-gray-50 active:bg-gray-100 disabled:opacity-50 text-indigo-600 border border-indigo-200 rounded-xl text-[12px] font-bold transition-all shadow-xs"
       >
         <FileText className="w-3.5 h-3.5" />
-        <span>🧪 가상 모의 증권 샘플로 원클릭 분석해보기</span>
+        <span>📄 온보딩 샘플 증권으로 원클릭 분석해보기</span>
       </button>
     </div>
   );

@@ -41,7 +41,7 @@ describe('PolicyDocumentUploader Component', () => {
     expect(screen.getByText('증권 파일로 간편 자동 채우기')).toBeInTheDocument();
     expect(screen.getByText('증권 파일 선택 또는 여기로 드래그')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /가상 모의 증권 샘플로 원클릭 분석해보기/i }),
+      screen.getByRole('button', { name: /온보딩 샘플 증권으로 원클릭 분석해보기/i }),
     ).toBeInTheDocument();
   });
 
@@ -67,7 +67,7 @@ describe('PolicyDocumentUploader Component', () => {
     render(<PolicyDocumentUploader onParsed={mockOnParsed} />);
 
     const sampleBtn = screen.getByRole('button', {
-      name: /가상 모의 증권 샘플로 원클릭 분석해보기/i,
+      name: /온보딩 샘플 증권으로 원클릭 분석해보기/i,
     });
     fireEvent.click(sampleBtn);
 
@@ -101,20 +101,24 @@ describe('PolicyDocumentUploader Component', () => {
 
     mockParseMutate.mockResolvedValueOnce({
       documentId: 12,
-      ocrText: '추출 텍스트',
+      ocrText: '추출된 OCR 텍스트',
       parsedData: mockParsedData,
     });
 
     render(<PolicyDocumentUploader onParsed={mockOnParsed} />);
 
-    const dropZone = screen.getByText('증권 파일 선택 또는 여기로 드래그').parentElement;
-    expect(dropZone).not.toBeNull();
+    const dropZone = screen
+      .getByText('증권 파일 선택 또는 여기로 드래그')
+      .closest('div[class*="border-dashed"]');
+    expect(dropZone).toBeInTheDocument();
 
-    fireEvent.drop(dropZone!, {
-      dataTransfer: {
-        files: [mockFile],
-      },
-    });
+    if (dropZone) {
+      fireEvent.drop(dropZone, {
+        dataTransfer: {
+          files: [mockFile],
+        },
+      });
+    }
 
     await waitFor(() => {
       expect(mockUploadMutate).toHaveBeenCalledWith({ file: mockFile });

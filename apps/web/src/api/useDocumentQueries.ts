@@ -67,13 +67,15 @@ export function useGetSamplePreset() {
         sampleName: string;
         fileName: string;
         mimeType: string;
-        mockData: ParsedInsuranceData;
+        presetData?: ParsedInsuranceData;
+        mockData?: ParsedInsuranceData;
       }>>('/documents/sample/preset');
       return unwrapResponse<{
         sampleName: string;
         fileName: string;
         mimeType: string;
-        mockData: ParsedInsuranceData;
+        presetData?: ParsedInsuranceData;
+        mockData?: ParsedInsuranceData;
       }>(res);
     },
   });

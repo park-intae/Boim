@@ -257,21 +257,24 @@ export class DocumentService {
   }
 
   getSamplePreset() {
+    const samplePresetData = {
+      institution: '한화손해보험',
+      name: '무배당 한화 라이프케어 건강종합보험',
+      category: 'HEALTH',
+      monthlyPayment: 85000,
+      paymentDay: 15,
+      startDate: '2024-03-01',
+      maturityDate: '2044-03-01',
+      coverageAmount: 50000000,
+      confidence: 0.99,
+    };
+
     return {
-      sampleName: '무배당 한화 라이프케어 건강종합보험 증권 (모의 샘플)',
+      sampleName: '무배당 한화 라이프케어 건강종합보험 증권 (온보딩 샘플)',
       fileName: 'sample_policy_preset.txt',
       mimeType: 'text/plain',
-      mockData: {
-        institution: '한화손해보험',
-        name: '무배당 한화 라이프케어 건강종합보험',
-        category: 'HEALTH',
-        monthlyPayment: 85000,
-        paymentDay: 15,
-        startDate: '2024-03-01',
-        maturityDate: '2044-03-01',
-        coverageAmount: 50000000,
-        confidence: 0.99,
-      },
+      presetData: samplePresetData,
+      mockData: samplePresetData, // 프론트엔드 하위 호환
     };
   }
 }
