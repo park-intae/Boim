@@ -5,6 +5,28 @@
 
 ---
 
+## [Phase 21] - 2026-11-15
+
+### 🧹 프론트엔드 전수 Mock/더미 데이터 정리 및 실데이터 연동 무결성 검증 (Frontend Mock & Dummy Cleanup)
+- **소셜 콜백 및 인증 플로우 내 잔여 더미 완전 제거 (`Phase 21-01`):**
+  - `OAuthCallbackPage.tsx`: 토큰 임시 잔류 키(`temp_token`) 및 미사용 더미 값(`mock_state`) 완전 제거.
+  - 프로필 조회(`/users/me`) 실패 시 임의 계정(`social_user`, `social@boim.internal`)으로 자동 로그인되던 비정상 폴백을 전면 폐기하고, 사용자 직관적인 실패 알림 화면 및 로그인 복귀 플로우 제공.
+  - `Login.tsx`: 구버전 소셜 토큰 파싱 중복 코드 정리 및 일반 로그인 시 임의 하드코딩(`id: 'user_id'`) 폴백 제거.
+  - `OAuthCallbackPage.spec.tsx`: 프로필 조회 실패 시 에러 화면 표시 검증 등 단위 테스트 최신화 및 100% Pass.
+- **문서/증권 분석 API 및 업로더 잔여 Mock 용어 정제 (`Phase 21-02`):**
+  - `PolicyDocumentUploader.tsx`: "🧪 가상 모의 증권 샘플로 원클릭 분석해보기" ➔ "📄 온보딩 샘플 증권으로 원클릭 분석해보기"로 서비스 온보딩 UX에 맞게 명칭 정제.
+  - `apps/api/src/document/document.service.ts`: `getSamplePreset()` 응답에 `presetData` 정식 반영 및 `mockData` 하위 호환성 동시 보장.
+  - `apps/web/src/api/useDocumentQueries.ts`: `useGetSamplePreset` 반환 타입 정식 갱신 및 단위 테스트 통과.
+- **프론트엔드 전역 하드코딩/더미 데이터 전수 감사 및 실데이터 바인딩 검증 (`Phase 21-03`):**
+  - 4대 핵심 영역(대시보드 통계 카드, 내 보험 목록/필터, 보험료 분석 차트, 인앱 알림 실시간 동기화, AI 종합 진단 리포트)의 실데이터 바인딩 및 빈 상태(Empty State) 전수 무결성 확인.
+  - `HeroSection.tsx` 및 `StepGuideSection.tsx`: 랜딩 페이지 정적 인터랙티브 쇼케이스 목업 UI와 실제 로그인 사용자 데이터 계층의 분리 경계를 명확히 설명하는 안내 주석 보강.
+- **전사 테스트, 빌드 무결성 검증 및 하네스 단일화 (`Phase 21-04`):**
+  - 프론트엔드 Vitest 211개, 백엔드 Jest 205개 (총 416개 테스트 전수 100% Pass)
+  - `turbo run build` 전사 빌드(NestJS + React/Vite) 성공 및 번들 청크 500kB 이하 유지.
+  - Phase 21 하위 하네스를 `Phase21_sub_harness.md`로 단일 통합 정리 (2-File Rule 준수).
+
+---
+
 ## [Phase 20] - 2026-11-14
 
 ### 🌐 상용 외부 API 실연동 & 대표 본계정 및 OAuth 연동 파이프라인 (External Integration)
