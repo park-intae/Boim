@@ -24,8 +24,7 @@ export const OAuthCallbackPage: React.FC = () => {
       const token = searchParams.get('token');
       if (token) {
         try {
-          // 토큰 임시 설정 후 내 프로필 정보 조회
-          localStorage.setItem('temp_token', token);
+          // 토큰을 사용하여 내 프로필 정보 조회
           const response = (await apiClient.get('/users/me', {
             headers: { Authorization: `Bearer ${token}` },
           })) as Record<string, unknown>;
@@ -34,24 +33,28 @@ export const OAuthCallbackPage: React.FC = () => {
           const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
           const rawUser = dataLevel2?.id ? dataLevel2 : (dataLevel1?.id ? dataLevel1 : response);
 
+          if (!rawUser?.id || !rawUser?.email) {
+            throw new Error('유효한 사용자 프로필 정보를 불러올 수 없습니다.');
+          }
+
           const user = {
-            id: rawUser?.id ? String(rawUser.id) : 'social_user',
-            email: (rawUser?.email as string) || 'social@boim.internal',
-            name: (rawUser?.name as string) || '소셜 사용자',
-            profileImage: (rawUser?.profileImage as string) || null,
-            isPassVerified: Boolean(rawUser?.isPassVerified),
+            id: String(rawUser.id),
+            email: String(rawUser.email),
+            name: typeof rawUser.name === 'string' ? rawUser.name : undefined,
+            profileImage: typeof rawUser.profileImage === 'string' ? rawUser.profileImage : null,
+            isPassVerified: Boolean(rawUser.isPassVerified),
           };
 
           login(user, token);
           navigate('/', { replace: true });
           return;
-        } catch {
-          // 프로필 조회 실패 시에도 기본 정보로 로그인 처리
-          login(
-            { id: 'social_user', email: 'social@boim.internal', isPassVerified: false },
-            token,
+        } catch (err: unknown) {
+          const apiErr = err as { error?: { message?: string }; message?: string };
+          setErrorMessage(
+            apiErr?.error?.message ||
+            apiErr?.message ||
+            '사용자 정보를 불러올 수 없습니다. 다시 로그인해 주세요.',
           );
-          navigate('/', { replace: true });
           return;
         }
       }
@@ -64,7 +67,10 @@ export const OAuthCallbackPage: React.FC = () => {
       if (code) {
         try {
           const endpoint = provider === 'naver' ? '/auth/naver/login' : '/auth/kakao/login';
-          const payload = provider === 'naver' ? { code, state: state || 'mock_state' } : { code };
+          const payload: Record<string, string> = { code };
+          if (provider === 'naver' && state) {
+            payload.state = state;
+          }
 
           interface SocialLoginResponse {
             user?: { id: string; email?: string; name?: string; profileImage?: string | null; isPassVerified?: boolean };
@@ -76,12 +82,12 @@ export const OAuthCallbackPage: React.FC = () => {
           const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
           const authData = (dataLevel2?.tokens ? dataLevel2 : (dataLevel1?.tokens ? dataLevel1 : resObj)) as unknown as SocialLoginResponse;
 
-          if (authData?.tokens?.accessToken && authData.user) {
+          if (authData?.tokens?.accessToken && authData.user?.id && authData.user?.email) {
             login(
               {
                 id: String(authData.user.id),
-                email: authData.user.email || 'social@boim.internal',
-                name: authData.user.name || '소셜 사용자',
+                email: authData.user.email,
+                name: authData.user.name,
                 profileImage: authData.user.profileImage || null,
                 isPassVerified: !!authData.user.isPassVerified,
               },
@@ -90,7 +96,7 @@ export const OAuthCallbackPage: React.FC = () => {
             navigate('/', { replace: true });
             return;
           } else {
-            throw new Error('인증 토큰을 수신하지 못했습니다.');
+            throw new Error('소셜 사용자 정보 또는 인증 토큰을 수신하지 못했습니다.');
           }
         } catch (e: unknown) {
           const apiErr = e as { error?: { message?: string }; message?: string };

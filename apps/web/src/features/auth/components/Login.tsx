@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock } from 'lucide-react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import type { ApiResponse } from '@boim/shared-types';
 import { useAuthStore } from '../store/authStore';
 import { apiClient } from '../../../api/client';
@@ -19,7 +19,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const login = useAuthStore((state) => state.login);
   const setRememberMe = useAuthStore((state) => state.setRememberMe);
 
@@ -35,34 +34,6 @@ export const Login: React.FC = () => {
       rememberMe: false,
     },
   });
-
-  useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      // 소셜 로그인 후 리다이렉트 된 경우 실제 프로필 조회
-      apiClient
-        .get('/users/me', { headers: { Authorization: `Bearer ${token}` } })
-        .then((response) => {
-          const resObj = response as unknown as Record<string, unknown>;
-          const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
-          const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
-          const rawUser = dataLevel2?.id ? dataLevel2 : (dataLevel1?.id ? dataLevel1 : resObj);
-          const userInfo = {
-            id: rawUser?.id ? String(rawUser.id) : 'social_user',
-            email: (rawUser?.email as string) || 'social@boim.internal',
-            name: (rawUser?.name as string) || '소셜 사용자',
-            profileImage: (rawUser?.profileImage as string) || null,
-            isPassVerified: Boolean(rawUser?.isPassVerified),
-          };
-          login(userInfo, token);
-          navigate('/', { replace: true });
-        })
-        .catch(() => {
-          login({ id: 'social_user', email: 'social@boim.internal', isPassVerified: false }, token);
-          navigate('/', { replace: true });
-        });
-    }
-  }, [searchParams, login, navigate]);
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -85,19 +56,21 @@ export const Login: React.FC = () => {
         (dataLevel2?.user as Record<string, unknown> | undefined) ||
         (resObj?.user as Record<string, unknown> | undefined);
 
+      const resolvedId = rawUser?.id ? String(rawUser.id) : undefined;
+
+      if (!token || !resolvedId) {
+        throw new Error('로그인 응답 형식이 올바르지 않습니다. 다시 시도해 주세요.');
+      }
+
       const userInfo = {
-        id: typeof rawUser?.id === 'string' ? rawUser.id : 'user_id',
+        id: resolvedId,
         email: typeof rawUser?.email === 'string' ? rawUser.email : data.email,
         name: typeof rawUser?.name === 'string' ? rawUser.name : undefined,
         isPassVerified: typeof rawUser?.isPassVerified === 'boolean' ? rawUser.isPassVerified : false,
       };
 
-      if (token) {
-        login(userInfo, token);
-        navigate('/', { replace: true });
-      } else {
-        alert('로그인 처리에 실패했습니다. 서버 응답 형식을 확인해주세요.');
-      }
+      login(userInfo, token);
+      navigate('/', { replace: true });
     } catch (error: unknown) {
       console.error('Login failed:', error);
       const apiError = error as { error?: { message?: string }; message?: string } | undefined;

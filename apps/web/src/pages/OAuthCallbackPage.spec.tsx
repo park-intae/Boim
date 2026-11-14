@@ -72,6 +72,23 @@ describe('OAuthCallbackPage', () => {
     });
   });
 
+  it('displays error message when token profile fetch fails', async () => {
+    mockSearchParams = new URLSearchParams('token=sample_jwt_token');
+
+    (apiClient.get as any).mockRejectedValueOnce({
+      error: { message: '만료되었거나 유효하지 않은 세션입니다.' },
+    });
+
+    render(<OAuthCallbackPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('소셜 로그인 실패')).toBeInTheDocument();
+      expect(screen.getByText('만료되었거나 유효하지 않은 세션입니다.')).toBeInTheDocument();
+    });
+
+    expect(mockLogin).not.toHaveBeenCalled();
+  });
+
   it('handles error in URL parameters and displays error message with return button', async () => {
     mockSearchParams = new URLSearchParams('error=access_denied&error_description=사용자가+취소함');
     render(<OAuthCallbackPage />);
