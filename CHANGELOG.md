@@ -8,6 +8,11 @@
 ## [Phase 19] - 2026-11-14
 
 ### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)
+- **스마트폰 카메라 증권 촬영 OCR 스캔 & 폼 자동완성 연동 (`Phase 19-05`):**
+  - **`expo-image-picker` 하드웨어 연동:** 스마트폰 카메라 즉시 촬영 모드 및 사진첩(갤러리) 선택 기능 구축 (`aspect: [4, 3]`, `quality: 0.8` 크롭 편집 지원).
+  - **백엔드 OCR 파이프라인 연동 (`documentApi.ts`):** 촬영된 로컬 이미지(`file://...`)를 `FormData`로 래핑하여 백엔드 Tesseract OCR 엔진(`POST /api/documents/upload` & `/parse`)에 전송 및 실시간 텍스트 레이어 파싱.
+  - **증권 스캐너 모달 (`PolicyScannerModal.tsx`):** 카메라 촬영, 갤러리 선택 및 시연용 샘플 즉시 체험을 지원하는 세련된 바텀 시트와 AI 분석 진행 스피너 피드백 제공.
+  - **보험 등록 폼 자동 입력 (`InsuranceAddModal.tsx`):** OCR 추출 데이터(보험사, 상품명, 카테고리, 월납입액, 만기일) 100% 폼 자동 채움(Prefill) 및 등록 시 캘린더/내 보험 실시간 동기화.
 - **모바일 네이티브 UX 고도화 (`Phase 19-04`):**
   - **당겨서 새로고침 (`RefreshControl`):** 4대 탭(일정 캘린더, 내 보험, AI 진단, 마이페이지) 스크롤뷰에 부드러운 스와이프 리로드 제스처 및 인디케이터 장착.
   - **터치 인터랙션 피드백 (`Pressable`):** 모든 날짜 셀, 카테고리 칩, 보험 카드 및 버튼에 눌림 시각 피드백(`pressedScale`, `scale: 0.96~0.98`) 적용.

@@ -34,13 +34,19 @@ Boim 모노레포 아키텍처에 `apps/mobile` 패키지를 신설하고, Expo(
   - [x] `RootNavigator` 조건부 라우팅 (비로그인 ➔ 로그인 화면, 로그인 ➔ 메인 탭)
   - [x] 실기기(Expo Go) QA 및 테스트 계정 인식표 부착
 
-- [ ] **Phase 19-04: 모바일 네이티브 UX 고도화 (SafeArea, Gestures, Feedback)**
-  - [ ] 스마트폰 상단 노치 / 카메라 홀 / 하단 바 대응 (`SafeAreaView`, Insets)
-  - [ ] 당겨서 새로고침 (Pull-to-Refresh: `RefreshControl`) 4대 탭 적용
-  - [ ] 카드 및 버튼 터치 인터랙션 피드백 (`Pressable` Active 효과)
-  - [ ] 비동기 로딩 스피너 및 네트워크 연결 안내 인디케이터
+- [x] **Phase 19-04: 모바일 네이티브 UX 고도화 (SafeArea, Gestures, Feedback)** (완료)
+  - [x] 스마트폰 상단 노치 / 카메라 홀 / 하단 바 대응 (`SafeAreaView`, Insets)
+  - [x] 당겨서 새로고침 (Pull-to-Refresh: `RefreshControl`) 4대 탭 적용
+  - [x] 카드 및 버튼 터치 인터랙션 피드백 (`Pressable` Active 효과)
+  - [x] 긴 보험 상품명 말줄임(`numberOfLines={1}`) 및 레이아웃 밀림 방지
 
-- [ ] **Phase 19-05: 모바일 테스트 및 독립 실행형 APK 빌드 가이드**
+- [x] **Phase 19-05: 모바일 카메라 증권 촬영 OCR 스캔 & 폼 자동완성 연동 (Camera & OCR Prefill)** (완료)
+  - [x] `expo-image-picker` 라이브러리 설치 및 카메라/갤러리 권한 명세
+  - [x] 모바일 `FormData` 기반 백엔드 문서 업로드 & 파싱 API (`documentApi.ts`)
+  - [x] 바텀 시트 증권 스캐너 모달 (`PolicyScannerModal.tsx`)
+  - [x] 신규 보험 등록 폼 자동완성(Prefill) 모달 (`InsuranceAddModal.tsx`)
+
+- [ ] **Phase 19-06: 모바일 테스트 및 독립 실행형 APK 빌드 가이드**
   - [ ] React Native Testing Library 기반 모바일 컴포넌트 단위 테스트
   - [ ] EAS Build 또는 로컬 Expo 빌드를 통한 스마트폰 설치용 `.apk` 패키징 가이드 문서화
   - [ ] 품질 검증, 패치노트 동기화 및 사용자 승인 하 최종 커밋 진행

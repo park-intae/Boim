@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { InsuranceAddModal } from '../components/InsuranceAddModal';
 import type { InsuranceProductDto } from '@boim/shared-types';
 
 const CATEGORY_MAP: Record<string, string> = {
@@ -20,17 +21,18 @@ const CATEGORY_MAP: Record<string, string> = {
 
 interface Props {
   insurances?: InsuranceProductDto[];
-  onAddPress?: () => void;
+  onAddInsurance?: (product: InsuranceProductDto) => void;
   onRefresh?: () => Promise<void> | void;
 }
 
 export const InsuranceListScreen: React.FC<Props> = ({
   insurances = [],
-  onAddPress,
+  onAddInsurance,
   onRefresh: externalRefresh,
 }) => {
   const [selectedKey, setSelectedKey] = useState<string>('ALL');
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -44,6 +46,16 @@ export const InsuranceListScreen: React.FC<Props> = ({
       setRefreshing(false);
     }
   }, [externalRefresh]);
+
+  const handleOpenAddModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleAddSubmit = (product: InsuranceProductDto) => {
+    if (onAddInsurance) {
+      onAddInsurance(product);
+    }
+  };
 
   const filtered =
     selectedKey === 'ALL'
@@ -75,7 +87,7 @@ export const InsuranceListScreen: React.FC<Props> = ({
             styles.addButton,
             pressed && styles.pressedScale,
           ]}
-          onPress={onAddPress}
+          onPress={handleOpenAddModal}
         >
           <Ionicons name="add" size={18} color="#ffffff" />
           <Text style={styles.addButtonText}>보험 등록</Text>
@@ -119,7 +131,7 @@ export const InsuranceListScreen: React.FC<Props> = ({
               styles.emptyButton,
               pressed && styles.pressedScale,
             ]}
-            onPress={onAddPress}
+            onPress={handleOpenAddModal}
           >
             <Text style={styles.emptyButtonText}>보험 증권 등록하기</Text>
           </Pressable>
@@ -179,6 +191,13 @@ export const InsuranceListScreen: React.FC<Props> = ({
           ))}
         </View>
       )}
+
+      {/* 새 보험 등록 및 증권 OCR 스캔 모달 */}
+      <InsuranceAddModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onAdd={handleAddSubmit}
+      />
     </ScrollView>
   );
 };

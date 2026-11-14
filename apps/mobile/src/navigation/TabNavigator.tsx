@@ -21,6 +21,10 @@ export const TabNavigator: React.FC = () => {
   const [insurances, setInsurances] = useState<InsuranceProductDto[]>(INITIAL_INSURANCES);
   const [diagnosis, setDiagnosis] = useState<InsuranceDiagnosisDto | null>(INITIAL_DIAGNOSIS);
 
+  const handleAddInsurance = useCallback((newProduct: InsuranceProductDto) => {
+    setInsurances((prev) => [newProduct, ...prev]);
+  }, []);
+
   const handleRefreshData = useCallback(async () => {
     // 당겨서 새로고침 시 데이터 재동기화 시뮬레이션
     await new Promise((resolve) => setTimeout(resolve, 600));
@@ -120,6 +124,7 @@ export const TabNavigator: React.FC = () => {
           <InsuranceListScreen
             {...props}
             insurances={insurances}
+            onAddInsurance={handleAddInsurance}
             onRefresh={handleRefreshData}
           />
         )}

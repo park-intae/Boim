@@ -7,17 +7,33 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.boim.app"
+      "bundleIdentifier": "com.boim.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "종이 보험 증권을 촬영하여 자동 분석하기 위해 카메라 권한이 필요합니다.",
+        "NSPhotoLibraryUsageDescription": "보험 증권 사진을 선택하기 위해 사진첩 접근 권한이 필요합니다."
+      }
     },
     "android": {
-      "package": "com.boim.app"
+      "package": "com.boim.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro"
     },
     "plugins": [
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "보험 증권 사진을 선택하기 위해 사진첩 접근 권한이 필요합니다.",
+          "cameraPermission": "종이 보험 증권을 촬영하여 자동 분석하기 위해 카메라 권한이 필요합니다."
+        }
+      ]
     ]
   }
 }
