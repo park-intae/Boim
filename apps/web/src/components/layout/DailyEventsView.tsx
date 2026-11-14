@@ -103,13 +103,15 @@ export const DailyEventsView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
                     <Icon className="w-5 h-5 text-gray-500" strokeWidth={2} />
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[12px] font-semibold text-gray-500">{evt.company}</span>
-                    <span className="text-[15px] font-bold text-gray-900 line-clamp-1">
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="text-[12px] font-semibold text-gray-500 truncate" title={evt.company}>
+                      {evt.company}
+                    </span>
+                    <span className="text-[15px] font-bold text-gray-900 truncate" title={evt.title}>
                       {evt.title}
                     </span>
                   </div>

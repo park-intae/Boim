@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Switch,
   KeyboardAvoidingView,
@@ -108,7 +108,7 @@ export const LoginScreen: React.FC = () => {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
               />
-              <TouchableOpacity
+              <Pressable
                 onPress={() => setShowPassword(!showPassword)}
                 style={styles.eyeButton}
               >
@@ -117,7 +117,7 @@ export const LoginScreen: React.FC = () => {
                   size={20}
                   color="#94a3b8"
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -131,18 +131,21 @@ export const LoginScreen: React.FC = () => {
             />
           </View>
 
-          <TouchableOpacity
-            style={[styles.loginButton, isSubmitting && styles.disabledButton]}
+          <Pressable
+            style={({ pressed }) => [
+              styles.loginButton,
+              isSubmitting && styles.disabledButton,
+              pressed && styles.pressedScale,
+            ]}
             onPress={handleLogin}
             disabled={isSubmitting}
-            activeOpacity={0.8}
           >
             {isSubmitting ? (
               <ActivityIndicator color="#ffffff" size="small" />
             ) : (
               <Text style={styles.loginButtonText}>로그인</Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
@@ -150,32 +153,41 @@ export const LoginScreen: React.FC = () => {
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity
-            style={styles.kakaoButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.kakaoButton,
+              isSubmitting && styles.disabledButton,
+              pressed && styles.pressedScale,
+            ]}
             onPress={() => handleSnsLogin('카카오')}
             disabled={isSubmitting}
-            activeOpacity={0.8}
           >
             <Ionicons name="chatbubble" size={18} color="#000000" />
             <Text style={styles.kakaoButtonText}>카카오로 시작하기</Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
-            style={styles.naverButton}
+          <Pressable
+            style={({ pressed }) => [
+              styles.naverButton,
+              isSubmitting && styles.disabledButton,
+              pressed && styles.pressedScale,
+            ]}
             onPress={() => handleSnsLogin('네이버')}
             disabled={isSubmitting}
-            activeOpacity={0.8}
           >
             <Text style={styles.naverSymbol}>N</Text>
             <Text style={styles.naverButtonText}>네이버로 시작하기</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>아직 Boim 계정이 없으신가요?</Text>
-          <TouchableOpacity onPress={() => Alert.alert('회원가입', '회원가입 페이지로 이동합니다.')}>
+          <Pressable
+            style={({ pressed }) => [pressed && styles.pressedText]}
+            onPress={() => Alert.alert('회원가입', '회원가입 페이지로 이동합니다.')}
+          >
             <Text style={styles.signUpLink}>회원가입</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -358,5 +370,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4f46e5',
     fontWeight: '700',
+  },
+  pressedScale: {
+    opacity: 0.75,
+    transform: [{ scale: 0.98 }],
+  },
+  pressedText: {
+    opacity: 0.6,
   },
 });

@@ -1,20 +1,55 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 
 interface Props {
   diagnosis?: InsuranceDiagnosisDto | null;
   onDiagnosePress?: () => void;
+  onRefresh?: () => Promise<void> | void;
 }
 
 export const DiagnosisScreen: React.FC<Props> = ({
   diagnosis = null,
   onDiagnosePress,
+  onRefresh: externalRefresh,
 }) => {
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (externalRefresh) {
+        await externalRefresh();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [externalRefresh]);
+
   if (!diagnosis) {
     return (
-      <View style={styles.emptyContainer}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.emptyContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#4f46e5']}
+            tintColor="#4f46e5"
+          />
+        }
+      >
         <View style={styles.emptyIconCircle}>
           <Ionicons name="analytics-outline" size={36} color="#94a3b8" />
         </View>
@@ -22,15 +57,32 @@ export const DiagnosisScreen: React.FC<Props> = ({
         <Text style={styles.emptySubtitle}>
           보유 중인 보험을 기반으로 빈틈없는 맞춤 분석 리포트를 받아보세요.
         </Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={onDiagnosePress}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.primaryButton,
+            pressed && styles.pressedScale,
+          ]}
+          onPress={onDiagnosePress}
+        >
           <Text style={styles.primaryButtonText}>AI 종합 진단 시작하기</Text>
-        </TouchableOpacity>
-      </View>
+        </Pressable>
+      </ScrollView>
     );
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#4f46e5']}
+          tintColor="#4f46e5"
+        />
+      }
+    >
       <View style={styles.scoreCard}>
         <View style={styles.scoreBadge}>
           <Text style={styles.scoreBadgeText}>안심 등급</Text>
@@ -314,5 +366,9 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+  },
+  pressedScale: {
+    opacity: 0.75,
+    transform: [{ scale: 0.96 }],
   },
 });

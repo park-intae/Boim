@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +7,9 @@ import { InsuranceListScreen } from '../screens/InsuranceListScreen';
 import { DiagnosisScreen } from '../screens/DiagnosisScreen';
 import { MyPageScreen } from '../screens/MyPageScreen';
 import { useMobileAuth } from '../store/authStore';
+import { INITIAL_INSURANCES, INITIAL_DIAGNOSIS } from '../data/mockData';
 import type { RootTabParamList } from '../types/navigation';
+import type { InsuranceProductDto, InsuranceDiagnosisDto } from '@boim/shared-types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -15,6 +17,16 @@ export const TabNavigator: React.FC = () => {
   const insets = useSafeAreaInsets();
   const bottomMargin = insets.bottom > 0 ? insets.bottom + 8 : 16;
   const { user, logout } = useMobileAuth();
+
+  const [insurances, setInsurances] = useState<InsuranceProductDto[]>(INITIAL_INSURANCES);
+  const [diagnosis, setDiagnosis] = useState<InsuranceDiagnosisDto | null>(INITIAL_DIAGNOSIS);
+
+  const handleRefreshData = useCallback(async () => {
+    // 당겨서 새로고침 시 데이터 재동기화 시뮬레이션
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    setInsurances([...INITIAL_INSURANCES]);
+    setDiagnosis({ ...INITIAL_DIAGNOSIS });
+  }, []);
 
   return (
     <Tab.Navigator
@@ -90,24 +102,53 @@ export const TabNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Calendar"
-        component={CalendarScreen}
         options={{ title: '일정 캘린더' }}
-      />
+      >
+        {(props) => (
+          <CalendarScreen
+            {...props}
+            insurances={insurances}
+            onRefresh={handleRefreshData}
+          />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="InsuranceList"
-        component={InsuranceListScreen}
         options={{ title: '내 보험' }}
-      />
+      >
+        {(props) => (
+          <InsuranceListScreen
+            {...props}
+            insurances={insurances}
+            onRefresh={handleRefreshData}
+          />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Diagnosis"
-        component={DiagnosisScreen}
         options={{ title: 'AI 보장 진단' }}
-      />
+      >
+        {(props) => (
+          <DiagnosisScreen
+            {...props}
+            diagnosis={diagnosis}
+            onRefresh={handleRefreshData}
+            onDiagnosePress={() => setDiagnosis({ ...INITIAL_DIAGNOSIS })}
+          />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="MyPage"
         options={{ title: '마이' }}
       >
-        {(props) => <MyPageScreen {...props} user={user} onLogoutPress={logout} />}
+        {(props) => (
+          <MyPageScreen
+            {...props}
+            user={user}
+            onLogoutPress={logout}
+            onRefresh={handleRefreshData}
+          />
+        )}
       </Tab.Screen>
     </Tab.Navigator>
   );

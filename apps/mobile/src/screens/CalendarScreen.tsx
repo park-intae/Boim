@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { InsuranceProductDto } from '@boim/shared-types';
 
 interface Props {
   insurances?: InsuranceProductDto[];
+  onRefresh?: () => Promise<void> | void;
 }
 
-export const CalendarScreen: React.FC<Props> = ({ insurances = [] }) => {
+export const CalendarScreen: React.FC<Props> = ({
+  insurances = [],
+  onRefresh: externalRefresh,
+}) => {
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (externalRefresh) {
+        await externalRefresh();
+      } else {
+        // 기본 갱신 시뮬레이션 지연 (부드러운 UX 피드백)
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [externalRefresh]);
 
   const getDaySchedules = (day: number) => {
     return insurances.filter((ins) => {
@@ -22,18 +48,32 @@ export const CalendarScreen: React.FC<Props> = ({ insurances = [] }) => {
   const totalMonthly = insurances.reduce((acc, curr) => acc + curr.monthlyPayment, 0);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#4f46e5']}
+          tintColor="#4f46e5"
+        />
+      }
+    >
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>2026년 11월</Text>
           <Text style={styles.subtitle}>총 납입 예정 {totalMonthly.toLocaleString()}원</Text>
         </View>
-        <TouchableOpacity
-          style={styles.todayButton}
+        <Pressable
+          style={({ pressed }) => [
+            styles.todayButton,
+            pressed && styles.pressedScale,
+          ]}
           onPress={() => setSelectedDay(new Date().getDate())}
         >
           <Text style={styles.todayButtonText}>오늘</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View style={styles.calendarCard}>
@@ -58,14 +98,18 @@ export const CalendarScreen: React.FC<Props> = ({ insurances = [] }) => {
             const isSelected = selectedDay === day;
 
             return (
-              <TouchableOpacity
+              <Pressable
                 key={day}
-                style={[styles.dayCell, isSelected && styles.selectedDayCell]}
+                style={({ pressed }) => [
+                  styles.dayCell,
+                  isSelected && styles.selectedDayCell,
+                  pressed && styles.pressedCell,
+                ]}
                 onPress={() => setSelectedDay(day)}
               >
                 <Text style={[styles.dayText, isSelected && styles.selectedDayText]}>{day}</Text>
                 {hasSchedule && <View style={[styles.dot, isSelected && styles.selectedDot]} />}
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
@@ -80,18 +124,32 @@ export const CalendarScreen: React.FC<Props> = ({ insurances = [] }) => {
           </View>
         ) : (
           selectedSchedules.map((item) => (
-            <View key={String(item.id)} style={styles.scheduleCard}>
+            <Pressable
+              key={String(item.id)}
+              style={({ pressed }) => [
+                styles.scheduleCard,
+                pressed && styles.pressedCard,
+              ]}
+            >
               <View style={styles.scheduleLeft}>
                 <View style={styles.typeBadge}>
                   <Text style={styles.typeText}>납입일</Text>
                 </View>
                 <View style={styles.scheduleInfo}>
-                  <Text style={styles.companyText}>{item.institution}</Text>
-                  <Text style={styles.nameText}>{item.name}</Text>
+                  <Text style={styles.companyText} numberOfLines={1}>
+                    {item.institution}
+                  </Text>
+                  <Text
+                    style={styles.nameText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.name}
+                  </Text>
                 </View>
               </View>
               <Text style={styles.amountText}>{item.monthlyPayment.toLocaleString()}원</Text>
-            </View>
+            </Pressable>
           ))
         )}
       </View>
@@ -135,6 +193,17 @@ const styles = StyleSheet.create({
     color: '#4338ca',
     fontSize: 12,
     fontWeight: '700',
+  },
+  pressedScale: {
+    opacity: 0.7,
+    transform: [{ scale: 0.96 }],
+  },
+  pressedCell: {
+    opacity: 0.6,
+  },
+  pressedCard: {
+    opacity: 0.75,
+    backgroundColor: '#f8fafc',
   },
   calendarCard: {
     backgroundColor: '#ffffff',
@@ -238,15 +307,18 @@ const styles = StyleSheet.create({
     borderColor: '#f1f5f9',
   },
   scheduleLeft: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    marginRight: 12,
   },
   typeBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     backgroundColor: '#e0e7ff',
+    alignSelf: 'center',
   },
   typeText: {
     fontSize: 11,
@@ -254,7 +326,9 @@ const styles = StyleSheet.create({
     color: '#4338ca',
   },
   scheduleInfo: {
+    flex: 1,
     gap: 2,
+    justifyContent: 'center',
   },
   companyText: {
     fontSize: 11,
@@ -270,5 +344,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: '#0f172a',
+    textAlign: 'right',
   },
 });

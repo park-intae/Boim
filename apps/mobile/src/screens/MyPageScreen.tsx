@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Switch,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserDto, NotificationSettingsDto } from '@boim/shared-types';
 
@@ -16,6 +24,7 @@ interface Props {
   settings?: NotificationSettingsDto;
   onLoginPress?: () => void;
   onLogoutPress?: () => void;
+  onRefresh?: () => Promise<void> | void;
 }
 
 export const MyPageScreen: React.FC<Props> = ({
@@ -23,13 +32,39 @@ export const MyPageScreen: React.FC<Props> = ({
   settings = DEFAULT_SETTINGS,
   onLoginPress,
   onLogoutPress,
+  onRefresh: externalRefresh,
 }) => {
   const [pushEnabled, setPushEnabled] = useState(settings.pushEnabled);
   const [kakaoEnabled, setKakaoEnabled] = useState(settings.kakaoEnabled);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (externalRefresh) {
+        await externalRefresh();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [externalRefresh]);
 
   if (!user) {
     return (
-      <View style={styles.emptyContainer}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.emptyContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#4f46e5']}
+            tintColor="#4f46e5"
+          />
+        }
+      >
         <View style={styles.emptyIconCircle}>
           <Ionicons name="person-outline" size={36} color="#94a3b8" />
         </View>
@@ -37,17 +72,34 @@ export const MyPageScreen: React.FC<Props> = ({
         <Text style={styles.emptySubtitle}>
           로그인 후 내 보험 캘린더와 정밀 진단 리포트를 안전하게 확인하세요.
         </Text>
-        <TouchableOpacity style={styles.primaryButton} onPress={onLoginPress}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.primaryButton,
+            pressed && styles.pressedScale,
+          ]}
+          onPress={onLoginPress}
+        >
           <Text style={styles.primaryButtonText}>로그인 / 회원가입</Text>
-        </TouchableOpacity>
-      </View>
+        </Pressable>
+      </ScrollView>
     );
   }
 
   const isTestUser = user.email.includes('test') || user.email.includes('demo');
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#4f46e5']}
+          tintColor="#4f46e5"
+        />
+      }
+    >
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{user.name.slice(0, 1)}</Text>
@@ -105,21 +157,32 @@ export const MyPageScreen: React.FC<Props> = ({
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>계정 및 보안</Text>
         <View style={styles.menuCard}>
-          <TouchableOpacity style={styles.menuItemButton}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuItemButton,
+              pressed && styles.pressedMenuItem,
+            ]}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name="shield-checkmark-outline" size={20} color="#475569" />
               <Text style={styles.menuItemLabel}>PASS 본인인증 갱신</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
+          </Pressable>
           <View style={styles.divider} />
-          <TouchableOpacity style={styles.menuItemButton} onPress={onLogoutPress}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuItemButton,
+              pressed && styles.pressedMenuItem,
+            ]}
+            onPress={onLogoutPress}
+          >
             <View style={styles.menuItemLeft}>
               <Ionicons name="log-out-outline" size={20} color="#ef4444" />
               <Text style={[styles.menuItemLabel, styles.logoutText]}>로그아웃</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -304,5 +367,13 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+  },
+  pressedMenuItem: {
+    backgroundColor: '#f1f5f9',
+    opacity: 0.75,
+  },
+  pressedScale: {
+    opacity: 0.75,
+    transform: [{ scale: 0.96 }],
   },
 });

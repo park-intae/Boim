@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { InsuranceProductDto } from '@boim/shared-types';
 
@@ -14,13 +21,29 @@ const CATEGORY_MAP: Record<string, string> = {
 interface Props {
   insurances?: InsuranceProductDto[];
   onAddPress?: () => void;
+  onRefresh?: () => Promise<void> | void;
 }
 
 export const InsuranceListScreen: React.FC<Props> = ({
   insurances = [],
   onAddPress,
+  onRefresh: externalRefresh,
 }) => {
   const [selectedKey, setSelectedKey] = useState<string>('ALL');
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (externalRefresh) {
+        await externalRefresh();
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [externalRefresh]);
 
   const filtered =
     selectedKey === 'ALL'
@@ -30,16 +53,33 @@ export const InsuranceListScreen: React.FC<Props> = ({
   const totalMonthly = insurances.reduce((sum, item) => sum + item.monthlyPayment, 0);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          colors={['#4f46e5']}
+          tintColor="#4f46e5"
+        />
+      }
+    >
       <View style={styles.summaryCard}>
         <View style={styles.summaryLeft}>
           <Text style={styles.summaryLabel}>가입 보험 {insurances.length}건</Text>
           <Text style={styles.summaryValue}>{totalMonthly.toLocaleString()}원</Text>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={onAddPress}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.addButton,
+            pressed && styles.pressedScale,
+          ]}
+          onPress={onAddPress}
+        >
           <Ionicons name="add" size={18} color="#ffffff" />
           <Text style={styles.addButtonText}>보험 등록</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -50,15 +90,19 @@ export const InsuranceListScreen: React.FC<Props> = ({
         {Object.entries(CATEGORY_MAP).map(([key, label]) => {
           const isSelected = selectedKey === key;
           return (
-            <TouchableOpacity
+            <Pressable
               key={key}
-              style={[styles.filterChip, isSelected && styles.activeFilterChip]}
+              style={({ pressed }) => [
+                styles.filterChip,
+                isSelected && styles.activeFilterChip,
+                pressed && styles.pressedScale,
+              ]}
               onPress={() => setSelectedKey(key)}
             >
               <Text style={[styles.filterText, isSelected && styles.activeFilterText]}>
                 {label}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </ScrollView>
@@ -70,18 +114,38 @@ export const InsuranceListScreen: React.FC<Props> = ({
           </View>
           <Text style={styles.emptyTitle}>가입된 보험이 없습니다</Text>
           <Text style={styles.emptySubtitle}>보유하신 보험 증권을 등록하고 맞춤 관리를 시작해보세요.</Text>
-          <TouchableOpacity style={styles.emptyButton} onPress={onAddPress}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.emptyButton,
+              pressed && styles.pressedScale,
+            ]}
+            onPress={onAddPress}
+          >
             <Text style={styles.emptyButtonText}>보험 증권 등록하기</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       ) : (
         <View style={styles.listContainer}>
           {filtered.map((item) => (
-            <TouchableOpacity key={String(item.id)} style={styles.card} activeOpacity={0.7}>
+            <Pressable
+              key={String(item.id)}
+              style={({ pressed }) => [
+                styles.card,
+                pressed && styles.pressedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View>
-                  <Text style={styles.companyText}>{item.institution}</Text>
-                  <Text style={styles.nameText}>{item.name}</Text>
+                <View style={styles.cardHeaderLeft}>
+                  <Text style={styles.companyText} numberOfLines={1}>
+                    {item.institution}
+                  </Text>
+                  <Text
+                    style={styles.nameText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {item.name}
+                  </Text>
                 </View>
                 <View style={styles.categoryBadge}>
                   <Text style={styles.categoryBadgeText}>
@@ -111,7 +175,7 @@ export const InsuranceListScreen: React.FC<Props> = ({
                 <Text style={styles.monthlyLabel}>월 납입액</Text>
                 <Text style={styles.monthlyValue}>{item.monthlyPayment.toLocaleString()}원</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       )}
@@ -164,6 +228,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  pressedScale: {
+    opacity: 0.75,
+    transform: [{ scale: 0.96 }],
+  },
+  pressedCard: {
+    opacity: 0.8,
+    backgroundColor: '#f8fafc',
+  },
   filterScroll: {
     flexDirection: 'row',
     gap: 8,
@@ -208,6 +280,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  cardHeaderLeft: {
+    flex: 1,
+    marginRight: 8,
   },
   companyText: {
     fontSize: 12,

@@ -15,25 +15,32 @@ Boim 모노레포 아키텍처에 `apps/mobile` 패키지를 신설하고, Expo(
 
 ## 📋 Phase 19 종합 체크리스트
 
-- [ ] **Phase 19-01: `apps/mobile` 프로젝트 세팅 및 모노레포 연동**
-  - [ ] 모노레포 루트 `pnpm-workspace.yaml`에 `apps/mobile` 등록 확인
-  - [ ] Expo SDK 52+ / React Native 환경 템플릿 세팅
-  - [ ] `@boim/shared-types` 의존성 연결 및 타입 참조 검증
-  - [ ] Metro 번들러 모노레포 심볼릭 링크 호환 설정 (`metro.config.js`)
+- [x] **Phase 19-01: `apps/mobile` 프로젝트 세팅 및 모노레포 연동** (완료)
+  - [x] 모노레포 루트 `pnpm-workspace.yaml`에 `apps/mobile` 등록 확인
+  - [x] Expo SDK 58 / React Native 환경 템플릿 세팅
+  - [x] `@boim/shared-types` 의존성 연결 및 타입 참조 검증
+  - [x] Metro 번들러 모노레포 심볼릭 링크 호환 설정 (`metro.config.js`)
 
-- [ ] **Phase 19-02: 4대 핵심 탭 네이티브 UI 포팅 (Navigation & Screens)**
-  - [ ] React Navigation / Expo Router 기반 하단 탭 바 (Bottom Tab Navigator) 구축
-  - [ ] 탭 1 (CalendarScreen): 월간 보험료 납입일/만기일 캘린더 네이티브 뷰
-  - [ ] 탭 2 (InsuranceListScreen): 내 가입 보험 카드 리스트 및 카테고리 필터
-  - [ ] 탭 3 (DiagnosisScreen): Gemini AI 85점 보장 적정도 게이지 및 리모델링 조언 카드
-  - [ ] 탭 4 (MyPageScreen): 사용자 프로필, 간이 인증 상태, 설정 메뉴
+- [x] **Phase 19-02: 4대 핵심 탭 네이티브 UI 포팅 (Navigation & Screens)** (완료)
+  - [x] React Navigation 기반 플로팅 캡슐 하단 탭 바 (`TabNavigator`) 구축
+  - [x] 탭 1 (`CalendarScreen`): 월간 보험료 납입일/만기일 캘린더 네이티브 뷰
+  - [x] 탭 2 (`InsuranceListScreen`): 내 가입 보험 카드 리스트 및 카테고리 필터
+  - [x] 탭 3 (`DiagnosisScreen`): Gemini AI 85점 보장 적정도 게이지 및 리모델링 조언 카드
+  - [x] 탭 4 (`MyPageScreen`): 사용자 프로필, 간이 인증 상태, 설정 메뉴
+
+- [x] **Phase 19-03: 모바일 인증 플로우 & 세션 유지 (Auth Navigation & Remember Me)** (완료)
+  - [x] `safeStorage` 기반 세션 및 Remember Me 영구 보관
+  - [x] `LoginScreen` 네이티브 화면 및 실제 백엔드 API 연동
+  - [x] `RootNavigator` 조건부 라우팅 (비로그인 ➔ 로그인 화면, 로그인 ➔ 메인 탭)
+  - [x] 실기기(Expo Go) QA 및 테스트 계정 인식표 부착
 
 - [ ] **Phase 19-04: 모바일 네이티브 UX 고도화 (SafeArea, Gestures, Feedback)**
-  - [ ] 스마트폰 상단 노치 / 카메라 홀 대응 (`react-native-safe-area-context`)
-  - [ ] 당겨서 새로고침 (Pull-to-Refresh) 및 터치 피드백 인터랙션
-  - [ ] 오프라인 네트워크 감지 및 로딩 스켈레톤 인디케이터
+  - [ ] 스마트폰 상단 노치 / 카메라 홀 / 하단 바 대응 (`SafeAreaView`, Insets)
+  - [ ] 당겨서 새로고침 (Pull-to-Refresh: `RefreshControl`) 4대 탭 적용
+  - [ ] 카드 및 버튼 터치 인터랙션 피드백 (`Pressable` Active 효과)
+  - [ ] 비동기 로딩 스피너 및 네트워크 연결 안내 인디케이터
 
-- [ ] **Phase 19-04: 모바일 테스트 및 독립 실행형 APK 빌드 가이드**
+- [ ] **Phase 19-05: 모바일 테스트 및 독립 실행형 APK 빌드 가이드**
   - [ ] React Native Testing Library 기반 모바일 컴포넌트 단위 테스트
   - [ ] EAS Build 또는 로컬 Expo 빌드를 통한 스마트폰 설치용 `.apk` 패키징 가이드 문서화
   - [ ] 품질 검증, 패치노트 동기화 및 사용자 승인 하 최종 커밋 진행

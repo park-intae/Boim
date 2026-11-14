@@ -8,6 +8,13 @@
 ## [Phase 19] - 2026-11-14
 
 ### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)
+- **모바일 네이티브 UX 고도화 (`Phase 19-04`):**
+  - **당겨서 새로고침 (`RefreshControl`):** 4대 탭(일정 캘린더, 내 보험, AI 진단, 마이페이지) 스크롤뷰에 부드러운 스와이프 리로드 제스처 및 인디케이터 장착.
+  - **터치 인터랙션 피드백 (`Pressable`):** 모든 날짜 셀, 카테고리 칩, 보험 카드 및 버튼에 눌림 시각 피드백(`pressedScale`, `scale: 0.96~0.98`) 적용.
+  - **SafeArea & 플로팅 탭 바 영역 보호:** 스크롤뷰 하단 패딩(`paddingBottom: 110`) 확보로 캡슐 탭 바에 의한 콘텐츠 잘림 방지.
+- **캘린더 긴 보험 상품명 텍스트 말줄임 및 레이아웃 오버플로우 방지 (Web & Mobile):**
+  - **모바일 (`CalendarScreen.tsx`, `InsuranceListScreen.tsx`):** 상품명 `<Text>`에 `numberOfLines={1}` 및 `ellipsizeMode="tail"` 적용, `scheduleInfo`에 `flex: 1` 부여로 납입 금액 및 뱃지가 카드 바깥으로 밀리는 현상 완벽 방어.
+  - **웹 (`MainCalendar.tsx`, `DailyEventsView.tsx`):** 7열 Grid 셀에 `min-w-0` 및 `overflow-hidden` 제약 부여로 긴 상품명으로 인한 달력 찌그러짐 차단, 마우스 호버 시 전체 이름을 확인할 수 있는 `title` 툴팁 지원.
 - **모바일 의존성 정합성 교정 (`@babel/runtime` 7.29.7 통일):**
   - Expo SDK 58 및 Metro 번들러 환경에 맞게 `apps/mobile`의 `@babel/runtime` 버전을 8.x(`8.1.2`)에서 생태계 표준인 **`^7.29.7`**로 다운그레이드 및 통일.
   - Metro 번들러 구동 시 발생하던 `./regenerator` exports 서브패스 불일치 경고를 완벽히 제거하고, 모노레포 전체(Expo, Testing Library) 패키지와 동일한 런타임을 공유하도록 최적화.

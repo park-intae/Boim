@@ -191,7 +191,7 @@ export function MainCalendar() {
           <div
             key={day.toString()}
             onClick={() => onDateClick(cloneDay)}
-            className={`min-h-[120px] p-2 border-r border-b border-gray-100 transition-colors duration-200 cursor-pointer group hover:bg-gray-50 active:bg-gray-100 flex flex-col gap-1.5
+            className={`min-h-[120px] p-2 border-r border-b border-gray-100 transition-colors duration-200 cursor-pointer group hover:bg-gray-50 active:bg-gray-100 flex flex-col gap-1.5 min-w-0 overflow-hidden
               ${!isCurrentMonth ? 'bg-gray-50/30' : 'bg-white'}
               ${i === 6 ? 'border-r-0' : ''}
             `}
@@ -210,11 +210,12 @@ export function MainCalendar() {
             </div>
             
             {/* 2. Event Badges Area */}
-            <div className="flex flex-col gap-1 mt-1 px-1">
+            <div className="flex flex-col gap-1 mt-1 px-0.5 min-w-0 overflow-hidden">
               {dayEvents.map((evt, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold truncate transition-all
+                  title={evt.label}
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-bold transition-all min-w-0 overflow-hidden
                     ${evt.type === 'payment' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' : ''}
                     ${evt.type === 'renewal' ? 'bg-amber-50 text-amber-600 border border-amber-100/50' : ''}
                     ${evt.type === 'info' ? 'bg-indigo-50 text-indigo-600 border border-indigo-100/50' : ''}
@@ -225,7 +226,7 @@ export function MainCalendar() {
                     ${evt.type === 'renewal' ? 'bg-amber-500' : ''}
                     ${evt.type === 'info' ? 'bg-indigo-500' : ''}
                   `} />
-                  <span className="truncate">{evt.label}</span>
+                  <span className="truncate flex-1 min-w-0">{evt.label}</span>
                 </div>
               ))}
             </div>
