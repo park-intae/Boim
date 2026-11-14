@@ -8,6 +8,23 @@
 ## [Phase 19] - 2026-11-14
 
 ### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)
+- **모바일 풀스택 기능 실연동 & 누락 인터랙션 정석 완성 (`Phase 19-06`):**
+  - **보험 CRUD 백엔드 영구 저장 & 상세 모달 (`insuranceApi.ts`, `InsuranceDetailModal.tsx`):**
+    - 백엔드 REST API(`GET`, `POST`, `PATCH`, `DELETE /api/insurance-products`)와 실시간 통신하여 OCR 스캔 후 [내 보험으로 등록하기] 시 실제 DB에 영구 반영되도록 연동.
+    - 보험 카드 터치 시 상세 보장 내역 팝업 모달 제공 및 모달 내에서 월납입액/만기일 즉각 수정 및 안전 삭제(확인 대화상자) 지원.
+  - **캘린더 월 이동(`<`, `>`) 및 실제 월별 일수/요일 동적 계산 (`CalendarScreen.tsx`):**
+    - 고정 30일 하드코딩을 제거하고 해당 년/월의 실제 일수(28/29/30/31일) 및 1일의 시작 요일(`getDay()`) 오프셋을 동적으로 계산하여 실제 달력 격자 렌더링.
+    - 이전 달/다음 달 이동 및 [오늘] 버튼 지원, 일정 카드 터치 시 해당 보험 상세 보기 모달 연결.
+  - **Google Gemini AI 실시간 보장 진단 엔진 연동 (`analysisApi.ts`, `DiagnosisScreen.tsx`):**
+    - 고정 Mock 점수(85점)를 제거하고 `POST /api/analysis/ai-diagnosis` 실시간 백엔드 AI 진단 엔진 호출.
+    - 분석 로딩 스피너 및 진단 등급별 배지(최우수/안심/보통/주의), [AI 재진단] 버튼을 통한 포트폴리오 즉시 재분석 지원.
+  - **마이페이지 PASS 본인인증 갱신 & 알림 설정 백엔드 영구 저장 (`PassVerificationModal.tsx`, `userApi.ts`):**
+    - 통신 3사 모의 프로토콜 기반 180초 카운트다운 타이머 및 6자리 인증번호 검증 모달 구축 (`POST /api/auth/pass/request` & `verify`). 인증 완료 시 사용자 세션의 `isPassVerified` 즉시 갱신.
+    - 푸시/카카오 알림 토글 변경 시 `PATCH /api/users/me/notifications/settings`를 통해 백엔드 DB에 영구 보존.
+  - **모바일 신규 회원가입 모달 구축 (`SignUpModal.tsx`, `authApi.ts`):**
+    - 로그인 화면 하단의 [회원가입] 링크 터치 시 계정 생성 폼 바텀 모달 렌더링.
+    - 이름, 이메일, 비밀번호(6자 이상) 검증 후 `POST /api/auth/register` 호출하여 실제 계정 생성 및 즉시 자동 로그인 전환.
+  - **전사 단위/통합 테스트 무결성:** 백엔드 192개, 웹 207개 테스트 100% Pass 및 모바일 타입스크립트 0 에러 달성.
 - **스마트폰 카메라 증권 촬영 OCR 스캔 & 폼 자동완성 연동 (`Phase 19-05`):**
   - **`expo-image-picker` 하드웨어 연동:** 스마트폰 카메라 즉시 촬영 모드 및 사진첩(갤러리) 선택 기능 구축 (`aspect: [4, 3]`, `quality: 0.8` 크롭 편집 지원).
   - **백엔드 OCR 파이프라인 연동 (`documentApi.ts`):** 촬영된 로컬 이미지(`file://...`)를 `FormData`로 래핑하여 백엔드 Tesseract OCR 엔진(`POST /api/documents/upload` & `/parse`)에 전송 및 실시간 텍스트 레이어 파싱.

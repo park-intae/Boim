@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { UserDto, NotificationSettingsDto } from '@boim/shared-types';
+import { PassVerificationModal } from '../components/PassVerificationModal';
+import { fetchNotificationSettings, updateNotificationSettings } from '../api/userApi';
+import { useMobileAuth } from '../store/authStore';
 
 const DEFAULT_SETTINGS: NotificationSettingsDto = {
   pushEnabled: true,
@@ -34,22 +37,65 @@ export const MyPageScreen: React.FC<Props> = ({
   onLogoutPress,
   onRefresh: externalRefresh,
 }) => {
+  const { accessToken } = useMobileAuth();
   const [pushEnabled, setPushEnabled] = useState(settings.pushEnabled);
   const [kakaoEnabled, setKakaoEnabled] = useState(settings.kakaoEnabled);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isPassModalVisible, setIsPassModalVisible] = useState(false);
+
+  // 백엔드 알림 설정 로드
+  useEffect(() => {
+    let isMounted = true;
+    fetchNotificationSettings(accessToken)
+      .then((res) => {
+        if (isMounted && res) {
+          setPushEnabled(res.pushEnabled);
+          setKakaoEnabled(res.kakaoEnabled);
+        }
+      })
+      .catch(() => {
+        // 백엔드 오프라인 시 props 기본값 유지
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [accessToken]);
+
+  const handleTogglePush = async (val: boolean) => {
+    setPushEnabled(val);
+    try {
+      await updateNotificationSettings({ pushEnabled: val }, accessToken);
+    } catch {
+      // 롤백 없이 오프라인 대응
+    }
+  };
+
+  const handleToggleKakao = async (val: boolean) => {
+    setKakaoEnabled(val);
+    try {
+      await updateNotificationSettings({ kakaoEnabled: val }, accessToken);
+    } catch {
+      // 롤백 없이 오프라인 대응
+    }
+  };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       if (externalRefresh) {
         await externalRefresh();
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 600));
       }
+      const res = await fetchNotificationSettings(accessToken);
+      if (res) {
+        setPushEnabled(res.pushEnabled);
+        setKakaoEnabled(res.kakaoEnabled);
+      }
+    } catch {
+      // 조용히 통과
     } finally {
       setRefreshing(false);
     }
-  }, [externalRefresh]);
+  }, [externalRefresh, accessToken]);
 
   if (!user) {
     return (
@@ -88,6 +134,7 @@ export const MyPageScreen: React.FC<Props> = ({
   const isTestUser = user.email.includes('test') || user.email.includes('demo');
 
   return (
+    <>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
@@ -133,7 +180,7 @@ export const MyPageScreen: React.FC<Props> = ({
             </View>
             <Switch
               value={pushEnabled}
-              onValueChange={setPushEnabled}
+              onValueChange={handleTogglePush}
               trackColor={{ false: '#cbd5e1', true: '#818cf8' }}
               thumbColor={pushEnabled ? '#4f46e5' : '#f8fafc'}
             />
@@ -146,7 +193,7 @@ export const MyPageScreen: React.FC<Props> = ({
             </View>
             <Switch
               value={kakaoEnabled}
-              onValueChange={setKakaoEnabled}
+              onValueChange={handleToggleKakao}
               trackColor={{ false: '#cbd5e1', true: '#818cf8' }}
               thumbColor={kakaoEnabled ? '#4f46e5' : '#f8fafc'}
             />
@@ -162,9 +209,10 @@ export const MyPageScreen: React.FC<Props> = ({
               styles.menuItemButton,
               pressed && styles.pressedMenuItem,
             ]}
+            onPress={() => setIsPassModalVisible(true)}
           >
             <View style={styles.menuItemLeft}>
-              <Ionicons name="shield-checkmark-outline" size={20} color="#475569" />
+              <Ionicons name="shield-checkmark-outline" size={20} color="#4f46e5" />
               <Text style={styles.menuItemLabel}>PASS 본인인증 갱신</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#94a3b8" />
@@ -190,6 +238,14 @@ export const MyPageScreen: React.FC<Props> = ({
         <Text style={styles.versionText}>Boim Mobile v1.0.0 (Expo SDK 58)</Text>
       </View>
     </ScrollView>
+    <PassVerificationModal
+      visible={isPassModalVisible}
+      onClose={() => setIsPassModalVisible(false)}
+      onSuccess={() => {
+        handleRefresh();
+      }}
+    />
+    </>
   );
 };
 

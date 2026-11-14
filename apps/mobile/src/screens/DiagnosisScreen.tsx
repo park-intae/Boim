@@ -6,15 +6,24 @@ import {
   ScrollView,
   Pressable,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 
 interface Props {
   diagnosis?: InsuranceDiagnosisDto | null;
-  onDiagnosePress?: () => void;
+  onDiagnosePress?: () => Promise<void> | void;
   onRefresh?: () => Promise<void> | void;
 }
+
+const GRADE_MAP: Record<string, { label: string; color: string; bg: string }> = {
+  EXCELLENT: { label: '최우수 안심', color: '#059669', bg: '#ecfdf5' },
+  GOOD: { label: '안심 등급', color: '#059669', bg: '#ecfdf5' },
+  NORMAL: { label: '보통 등급', color: '#d97706', bg: '#fef3c7' },
+  NEEDS_ATTENTION: { label: '보강 필요', color: '#dc2626', bg: '#fee2e2' },
+  WARNING: { label: '주의 등급', color: '#dc2626', bg: '#fee2e2' },
+};
 
 export const DiagnosisScreen: React.FC<Props> = ({
   diagnosis = null,
@@ -22,6 +31,17 @@ export const DiagnosisScreen: React.FC<Props> = ({
   onRefresh: externalRefresh,
 }) => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isDiagnosing, setIsDiagnosing] = useState<boolean>(false);
+
+  const handleDiagnose = async () => {
+    if (!onDiagnosePress) return;
+    setIsDiagnosing(true);
+    try {
+      await onDiagnosePress();
+    } finally {
+      setIsDiagnosing(false);
+    }
+  };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -60,15 +80,26 @@ export const DiagnosisScreen: React.FC<Props> = ({
         <Pressable
           style={({ pressed }) => [
             styles.primaryButton,
+            isDiagnosing && styles.disabledButton,
             pressed && styles.pressedScale,
           ]}
-          onPress={onDiagnosePress}
+          onPress={handleDiagnose}
+          disabled={isDiagnosing}
         >
-          <Text style={styles.primaryButtonText}>AI 종합 진단 시작하기</Text>
+          {isDiagnosing ? (
+            <View style={styles.btnLoadingRow}>
+              <ActivityIndicator size="small" color="#ffffff" />
+              <Text style={styles.primaryButtonText}>AI 종합 분석 진행 중...</Text>
+            </View>
+          ) : (
+            <Text style={styles.primaryButtonText}>AI 종합 진단 시작하기</Text>
+          )}
         </Pressable>
       </ScrollView>
     );
   }
+
+  const gradeInfo = GRADE_MAP[diagnosis.grade] || GRADE_MAP.GOOD;
 
   return (
     <ScrollView
@@ -84,9 +115,33 @@ export const DiagnosisScreen: React.FC<Props> = ({
       }
     >
       <View style={styles.scoreCard}>
-        <View style={styles.scoreBadge}>
-          <Text style={styles.scoreBadgeText}>안심 등급</Text>
+        <View style={styles.scoreTopRow}>
+          <View style={[styles.scoreBadge, { backgroundColor: gradeInfo.bg }]}>
+            <Text style={[styles.scoreBadgeText, { color: gradeInfo.color }]}>
+              {gradeInfo.label}
+            </Text>
+          </View>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.reDiagnoseBtn,
+              isDiagnosing && styles.disabledButton,
+              pressed && styles.pressedScale,
+            ]}
+            onPress={handleDiagnose}
+            disabled={isDiagnosing}
+          >
+            {isDiagnosing ? (
+              <ActivityIndicator size="small" color="#4f46e5" />
+            ) : (
+              <>
+                <Ionicons name="refresh" size={14} color="#4f46e5" />
+                <Text style={styles.reDiagnoseBtnText}>AI 재진단</Text>
+              </>
+            )}
+          </Pressable>
         </View>
+
         <View style={styles.scoreRow}>
           <Text style={styles.scoreNumber}>{diagnosis.score}</Text>
           <Text style={styles.scoreMax}>/ 100점</Text>
@@ -185,17 +240,47 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
+  scoreTopRow: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   scoreBadge: {
     backgroundColor: '#ecfdf5',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 20,
-    marginBottom: 8,
   },
   scoreBadgeText: {
     color: '#059669',
     fontSize: 12,
     fontWeight: '700',
+  },
+  reDiagnoseBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: '#eef2ff',
+    borderWidth: 1,
+    borderColor: '#e0e7ff',
+  },
+  reDiagnoseBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#4f46e5',
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  btnLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   scoreRow: {
     flexDirection: 'row',

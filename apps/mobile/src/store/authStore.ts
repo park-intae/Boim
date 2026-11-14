@@ -84,6 +84,27 @@ export const authActions = {
     }
   },
 
+  updateUser: (updatedUser: Partial<UserDto>) => {
+    if (!globalState.user) return;
+    const newUser: UserDto = { ...globalState.user, ...updatedUser };
+    globalState = {
+      ...globalState,
+      user: newUser,
+    };
+    notify();
+
+    if (globalState.rememberMe && globalState.accessToken) {
+      safeStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({
+          token: globalState.accessToken,
+          user: newUser,
+          rememberMe: true,
+        }),
+      );
+    }
+  },
+
   logout: async () => {
     globalState = {
       ...globalState,
@@ -144,5 +165,6 @@ export const useMobileAuth = () => {
     ...state,
     login: authActions.login,
     logout: authActions.logout,
+    updateUser: authActions.updateUser,
   };
 };

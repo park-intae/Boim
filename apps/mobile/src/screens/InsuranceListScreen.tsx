@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { InsuranceAddModal } from '../components/InsuranceAddModal';
-import type { InsuranceProductDto } from '@boim/shared-types';
+import { InsuranceDetailModal } from '../components/InsuranceDetailModal';
+import type { InsuranceProductDto, UpdateInsuranceProductDto } from '@boim/shared-types';
 
 const CATEGORY_MAP: Record<string, string> = {
   ALL: '전체',
@@ -22,17 +23,22 @@ const CATEGORY_MAP: Record<string, string> = {
 interface Props {
   insurances?: InsuranceProductDto[];
   onAddInsurance?: (product: InsuranceProductDto) => void;
+  onUpdateInsurance?: (id: string | number | bigint, dto: UpdateInsuranceProductDto) => Promise<void> | void;
+  onDeleteInsurance?: (id: string | number | bigint) => Promise<void> | void;
   onRefresh?: () => Promise<void> | void;
 }
 
 export const InsuranceListScreen: React.FC<Props> = ({
   insurances = [],
   onAddInsurance,
+  onUpdateInsurance,
+  onDeleteInsurance,
   onRefresh: externalRefresh,
 }) => {
   const [selectedKey, setSelectedKey] = useState<string>('ALL');
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
+  const [selectedInsurance, setSelectedInsurance] = useState<InsuranceProductDto | null>(null);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -48,13 +54,32 @@ export const InsuranceListScreen: React.FC<Props> = ({
   }, [externalRefresh]);
 
   const handleOpenAddModal = () => {
-    setModalVisible(true);
+    setAddModalVisible(true);
+  };
+
+  const handleCardPress = (item: InsuranceProductDto) => {
+    setSelectedInsurance(item);
   };
 
   const handleAddSubmit = (product: InsuranceProductDto) => {
     if (onAddInsurance) {
       onAddInsurance(product);
     }
+  };
+
+  const handleUpdateSubmit = async (id: string | number | bigint, dto: UpdateInsuranceProductDto) => {
+    if (onUpdateInsurance) {
+      await onUpdateInsurance(id, dto);
+    }
+    // 현재 선택된 상세 객체도 갱신
+    setSelectedInsurance((prev) => (prev ? { ...prev, ...dto } : null));
+  };
+
+  const handleDeleteSubmit = async (id: string | number | bigint) => {
+    if (onDeleteInsurance) {
+      await onDeleteInsurance(id);
+    }
+    setSelectedInsurance(null);
   };
 
   const filtered =
@@ -145,6 +170,7 @@ export const InsuranceListScreen: React.FC<Props> = ({
                 styles.card,
                 pressed && styles.pressedCard,
               ]}
+              onPress={() => handleCardPress(item)}
             >
               <View style={styles.cardHeader}>
                 <View style={styles.cardHeaderLeft}>
@@ -194,9 +220,18 @@ export const InsuranceListScreen: React.FC<Props> = ({
 
       {/* 새 보험 등록 및 증권 OCR 스캔 모달 */}
       <InsuranceAddModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        visible={addModalVisible}
+        onClose={() => setAddModalVisible(false)}
         onAdd={handleAddSubmit}
+      />
+
+      {/* 보험 상세 정보 / 수정 / 삭제 모달 */}
+      <InsuranceDetailModal
+        visible={!!selectedInsurance}
+        insurance={selectedInsurance}
+        onClose={() => setSelectedInsurance(null)}
+        onUpdate={handleUpdateSubmit}
+        onDelete={handleDeleteSubmit}
       />
     </ScrollView>
   );

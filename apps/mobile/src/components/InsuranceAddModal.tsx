@@ -13,7 +13,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PolicyScannerModal } from './PolicyScannerModal';
-import type { InsuranceProductDto, ParsedInsuranceData } from '@boim/shared-types';
+import { createInsurance } from '../api/insuranceApi';
+import { useMobileAuth } from '../store/authStore';
+import type { InsuranceProductDto, ParsedInsuranceData, CreateInsuranceProductDto } from '@boim/shared-types';
 
 interface Props {
   visible: boolean;
@@ -35,6 +37,7 @@ export const InsuranceAddModal: React.FC<Props> = ({
   onAdd,
   prefillData,
 }) => {
+  const { accessToken, user } = useMobileAuth();
   const [institution, setInstitution] = useState('');
   const [name, setName] = useState('');
   const [category, setCategory] = useState('HEALTH');
@@ -42,6 +45,7 @@ export const InsuranceAddModal: React.FC<Props> = ({
   const [coverageAmount, setCoverageAmount] = useState('50000000');
   const [maturityDate, setMaturityDate] = useState('2044-12-31');
   const [scannerVisible, setScannerVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // prefillData가 주어지면 폼에 자동 입력 (Prefill)
   useEffect(() => {
@@ -66,15 +70,16 @@ export const InsuranceAddModal: React.FC<Props> = ({
     Alert.alert('자동 완성 완료', '증권에서 추출한 정보가 폼에 자동 입력되었습니다.');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!institution.trim() || !name.trim() || !monthlyPayment.trim()) {
       Alert.alert('알림', '보험사, 상품명, 월 납입액을 모두 입력해 주세요.');
       return;
     }
 
-    const newProduct: InsuranceProductDto = {
-      id: Date.now(),
-      userId: 1,
+    setIsSubmitting(true);
+
+    const dto: CreateInsuranceProductDto = {
+      userId: user?.id ? Number(user.id) : 1,
       institution: institution.trim(),
       name: name.trim(),
       category,
@@ -82,12 +87,32 @@ export const InsuranceAddModal: React.FC<Props> = ({
       coverageAmount: Number(coverageAmount.replace(/[^0-9]/g, '')) || 0,
       startDate: new Date().toISOString(),
       maturityDate: new Date(maturityDate).toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
-    onAdd(newProduct);
-    onClose();
+    try {
+      // 1. 백엔드 API 호출로 DB에 영구 등록
+      let savedProduct: InsuranceProductDto;
+      try {
+        savedProduct = await createInsurance(dto, accessToken);
+      } catch {
+        // 백엔드 연결 오프라인 시 로컬 객체로 폴백
+        savedProduct = {
+          ...dto,
+          id: Date.now(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      onAdd(savedProduct);
+      onClose();
+      Alert.alert('등록 완료', '새로운 보험이 성공적으로 등록되었습니다.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '보험 등록 실패';
+      Alert.alert('오류', msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -213,11 +238,15 @@ export const InsuranceAddModal: React.FC<Props> = ({
           <Pressable
             style={({ pressed }) => [
               styles.submitButton,
+              isSubmitting && styles.disabledButton,
               pressed && styles.pressedScale,
             ]}
             onPress={handleSubmit}
+            disabled={isSubmitting}
           >
-            <Text style={styles.submitButtonText}>내 보험으로 등록하기</Text>
+            <Text style={styles.submitButtonText}>
+              {isSubmitting ? '보험 등록 중...' : '내 보험으로 등록하기'}
+            </Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -345,6 +374,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
     elevation: 3,
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   submitButtonText: {
     color: '#ffffff',

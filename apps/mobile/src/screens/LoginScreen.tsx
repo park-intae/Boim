@@ -15,6 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useMobileAuth } from '../store/authStore';
 import { requestLogin } from '../api/authApi';
+import { SignUpModal } from '../components/SignUpModal';
 
 export const LoginScreen: React.FC = () => {
   const { login } = useMobileAuth();
@@ -23,6 +24,7 @@ export const LoginScreen: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSignUpVisible, setIsSignUpVisible] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -184,12 +186,17 @@ export const LoginScreen: React.FC = () => {
           <Text style={styles.footerText}>아직 Boim 계정이 없으신가요?</Text>
           <Pressable
             style={({ pressed }) => [pressed && styles.pressedText]}
-            onPress={() => Alert.alert('회원가입', '회원가입 페이지로 이동합니다.')}
+            onPress={() => setIsSignUpVisible(true)}
           >
             <Text style={styles.signUpLink}>회원가입</Text>
           </Pressable>
         </View>
       </ScrollView>
+
+      <SignUpModal
+        visible={isSignUpVisible}
+        onClose={() => setIsSignUpVisible(false)}
+      />
     </KeyboardAvoidingView>
   );
 };

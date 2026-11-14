@@ -8,20 +8,52 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { InsuranceProductDto } from '@boim/shared-types';
+import { InsuranceDetailModal } from '../components/InsuranceDetailModal';
+import type { InsuranceProductDto, UpdateInsuranceProductDto } from '@boim/shared-types';
 
 interface Props {
   insurances?: InsuranceProductDto[];
+  onUpdateInsurance?: (id: string | number | bigint, dto: UpdateInsuranceProductDto) => Promise<void> | void;
+  onDeleteInsurance?: (id: string | number | bigint) => Promise<void> | void;
   onRefresh?: () => Promise<void> | void;
 }
 
 export const CalendarScreen: React.FC<Props> = ({
   insurances = [],
+  onUpdateInsurance,
+  onDeleteInsurance,
   onRefresh: externalRefresh,
 }) => {
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
+  const [selectedInsurance, setSelectedInsurance] = useState<InsuranceProductDto | null>(null);
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1;
+
+  // 해당 월의 실제 마지막 날짜 (28~31일)
+  const lastDay = new Date(year, month, 0).getDate();
+  const daysInMonth = Array.from({ length: lastDay }, (_, i) => i + 1);
+
+  // 해당 월 1일의 요일 (0: 일요일 ~ 6: 토요일)
+  const firstDayOffset = new Date(year, month - 1, 1).getDay();
+
+  const handlePrevMonth = () => {
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    setSelectedDay(1);
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    setSelectedDay(1);
+  };
+
+  const handleGoToday = () => {
+    const today = new Date();
+    setCurrentDate(today);
+    setSelectedDay(today.getDate());
+  };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -29,7 +61,6 @@ export const CalendarScreen: React.FC<Props> = ({
       if (externalRefresh) {
         await externalRefresh();
       } else {
-        // 기본 갱신 시뮬레이션 지연 (부드러운 UX 피드백)
         await new Promise((resolve) => setTimeout(resolve, 600));
       }
     } finally {
@@ -61,19 +92,33 @@ export const CalendarScreen: React.FC<Props> = ({
       }
     >
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>2026년 11월</Text>
+        <View style={styles.headerTitleGroup}>
+          <Text style={styles.title}>{year}년 {month}월</Text>
           <Text style={styles.subtitle}>총 납입 예정 {totalMonthly.toLocaleString()}원</Text>
         </View>
-        <Pressable
-          style={({ pressed }) => [
-            styles.todayButton,
-            pressed && styles.pressedScale,
-          ]}
-          onPress={() => setSelectedDay(new Date().getDate())}
-        >
-          <Text style={styles.todayButtonText}>오늘</Text>
-        </Pressable>
+
+        <View style={styles.headerControls}>
+          <Pressable
+            style={({ pressed }) => [styles.arrowButton, pressed && styles.pressedScale]}
+            onPress={handlePrevMonth}
+          >
+            <Ionicons name="chevron-back" size={18} color="#475569" />
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [styles.todayButton, pressed && styles.pressedScale]}
+            onPress={handleGoToday}
+          >
+            <Text style={styles.todayButtonText}>오늘</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [styles.arrowButton, pressed && styles.pressedScale]}
+            onPress={handleNextMonth}
+          >
+            <Ionicons name="chevron-forward" size={18} color="#475569" />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.calendarCard}>
@@ -93,6 +138,11 @@ export const CalendarScreen: React.FC<Props> = ({
         </View>
 
         <View style={styles.daysGrid}>
+          {/* 1일 이전 요일 빈 칸 채우기 */}
+          {Array.from({ length: firstDayOffset }).map((_, idx) => (
+            <View key={`empty-${idx}`} style={styles.dayCell} />
+          ))}
+
           {daysInMonth.map((day) => {
             const hasSchedule = getDaySchedules(day).length > 0;
             const isSelected = selectedDay === day;
@@ -116,7 +166,7 @@ export const CalendarScreen: React.FC<Props> = ({
       </View>
 
       <View style={styles.detailSection}>
-        <Text style={styles.sectionTitle}>11월 {selectedDay}일 일정</Text>
+        <Text style={styles.sectionTitle}>{month}월 {selectedDay}일 일정</Text>
         {selectedSchedules.length === 0 ? (
           <View style={styles.emptyCard}>
             <Ionicons name="calendar-outline" size={32} color="#94a3b8" />
@@ -130,6 +180,7 @@ export const CalendarScreen: React.FC<Props> = ({
                 styles.scheduleCard,
                 pressed && styles.pressedCard,
               ]}
+              onPress={() => setSelectedInsurance(item)}
             >
               <View style={styles.scheduleLeft}>
                 <View style={styles.typeBadge}>
@@ -153,6 +204,21 @@ export const CalendarScreen: React.FC<Props> = ({
           ))
         )}
       </View>
+
+      {/* 일정 터치 시 상세 보기 / 수정 / 삭제 모달 */}
+      <InsuranceDetailModal
+        visible={!!selectedInsurance}
+        insurance={selectedInsurance}
+        onClose={() => setSelectedInsurance(null)}
+        onUpdate={async (id, dto) => {
+          if (onUpdateInsurance) await onUpdateInsurance(id, dto);
+          setSelectedInsurance((prev) => (prev ? { ...prev, ...dto } : null));
+        }}
+        onDelete={async (id) => {
+          if (onDeleteInsurance) await onDeleteInsurance(id);
+          setSelectedInsurance(null);
+        }}
+      />
     </ScrollView>
   );
 };
@@ -172,8 +238,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  headerTitleGroup: {
+    flex: 1,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  arrowButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     color: '#0f172a',
   },

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,29 +8,92 @@ import { DiagnosisScreen } from '../screens/DiagnosisScreen';
 import { MyPageScreen } from '../screens/MyPageScreen';
 import { useMobileAuth } from '../store/authStore';
 import { INITIAL_INSURANCES, INITIAL_DIAGNOSIS } from '../data/mockData';
+import { fetchInsurances, updateInsurance, deleteInsurance } from '../api/insuranceApi';
+import { requestAiDiagnosis, fetchAiDiagnosis } from '../api/analysisApi';
 import type { RootTabParamList } from '../types/navigation';
-import type { InsuranceProductDto, InsuranceDiagnosisDto } from '@boim/shared-types';
+import type { InsuranceProductDto, InsuranceDiagnosisDto, UpdateInsuranceProductDto } from '@boim/shared-types';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 export const TabNavigator: React.FC = () => {
   const insets = useSafeAreaInsets();
   const bottomMargin = insets.bottom > 0 ? insets.bottom + 8 : 16;
-  const { user, logout } = useMobileAuth();
+  const { user, accessToken, logout } = useMobileAuth();
 
   const [insurances, setInsurances] = useState<InsuranceProductDto[]>(INITIAL_INSURANCES);
   const [diagnosis, setDiagnosis] = useState<InsuranceDiagnosisDto | null>(INITIAL_DIAGNOSIS);
+
+  // 백엔드 실제 DB 보험 목록 로드
+  const loadInsurances = useCallback(async () => {
+    try {
+      const data = await fetchInsurances(accessToken);
+      if (data && data.length > 0) {
+        setInsurances(data);
+      }
+    } catch {
+      // 오프라인이거나 백엔드 에러 시 기존 시드 유지
+    }
+  }, [accessToken]);
+
+  // 백엔드 최신 AI 진단 데이터 로드
+  const loadDiagnosis = useCallback(async () => {
+    try {
+      const data = await fetchAiDiagnosis(accessToken);
+      if (data) {
+        setDiagnosis(data);
+      }
+    } catch {
+      // 오프라인이거나 에러 시 유지
+    }
+  }, [accessToken]);
+
+  const handleDiagnose = useCallback(async () => {
+    try {
+      const result = await requestAiDiagnosis(accessToken);
+      setDiagnosis(result);
+    } catch {
+      // 오류 시 유지
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    loadInsurances();
+    loadDiagnosis();
+  }, [loadInsurances, loadDiagnosis]);
 
   const handleAddInsurance = useCallback((newProduct: InsuranceProductDto) => {
     setInsurances((prev) => [newProduct, ...prev]);
   }, []);
 
+  const handleUpdateInsurance = useCallback(
+    async (id: string | number | bigint, dto: UpdateInsuranceProductDto) => {
+      try {
+        await updateInsurance(id, dto, accessToken);
+      } catch {
+        // 오프라인 시 로컬 반영
+      }
+      setInsurances((prev) =>
+        prev.map((item) => (String(item.id) === String(id) ? { ...item, ...dto } : item)),
+      );
+    },
+    [accessToken],
+  );
+
+  const handleDeleteInsurance = useCallback(
+    async (id: string | number | bigint) => {
+      try {
+        await deleteInsurance(id, accessToken);
+      } catch {
+        // 오프라인 시 로컬 반영
+      }
+      setInsurances((prev) => prev.filter((item) => String(item.id) !== String(id)));
+    },
+    [accessToken],
+  );
+
   const handleRefreshData = useCallback(async () => {
-    // 당겨서 새로고침 시 데이터 재동기화 시뮬레이션
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setInsurances([...INITIAL_INSURANCES]);
-    setDiagnosis({ ...INITIAL_DIAGNOSIS });
-  }, []);
+    await loadInsurances();
+  }, [loadInsurances]);
 
   return (
     <Tab.Navigator
@@ -112,6 +175,8 @@ export const TabNavigator: React.FC = () => {
           <CalendarScreen
             {...props}
             insurances={insurances}
+            onUpdateInsurance={handleUpdateInsurance}
+            onDeleteInsurance={handleDeleteInsurance}
             onRefresh={handleRefreshData}
           />
         )}
@@ -125,6 +190,8 @@ export const TabNavigator: React.FC = () => {
             {...props}
             insurances={insurances}
             onAddInsurance={handleAddInsurance}
+            onUpdateInsurance={handleUpdateInsurance}
+            onDeleteInsurance={handleDeleteInsurance}
             onRefresh={handleRefreshData}
           />
         )}
@@ -137,8 +204,10 @@ export const TabNavigator: React.FC = () => {
           <DiagnosisScreen
             {...props}
             diagnosis={diagnosis}
-            onRefresh={handleRefreshData}
-            onDiagnosePress={() => setDiagnosis({ ...INITIAL_DIAGNOSIS })}
+            onRefresh={async () => {
+              await Promise.all([loadInsurances(), loadDiagnosis()]);
+            }}
+            onDiagnosePress={handleDiagnose}
           />
         )}
       </Tab.Screen>
