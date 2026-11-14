@@ -12,10 +12,12 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PolicyScannerModal } from './PolicyScannerModal';
+import { AutoPolicyScannerModal } from './AutoPolicyScannerModal';
 import { createInsurance } from '../api/insuranceApi';
 import { useMobileAuth } from '../store/authStore';
 import type { InsuranceProductDto, ParsedInsuranceData, CreateInsuranceProductDto } from '@boim/shared-types';
+
+import { INSURANCE_CATEGORIES } from '../constants/categories';
 
 interface Props {
   visible: boolean;
@@ -23,13 +25,6 @@ interface Props {
   onAdd: (product: InsuranceProductDto) => void;
   prefillData?: ParsedInsuranceData | null;
 }
-
-const CATEGORIES = [
-  { key: 'HEALTH', label: '건강/실손' },
-  { key: 'CANCER', label: '암' },
-  { key: 'AUTO', label: '운전자/자동차' },
-  { key: 'SAVING', label: '연금/저축' },
-];
 
 export const InsuranceAddModal: React.FC<Props> = ({
   visible,
@@ -146,12 +141,12 @@ export const InsuranceAddModal: React.FC<Props> = ({
             onPress={() => setScannerVisible(true)}
           >
             <View style={styles.scanBannerIcon}>
-              <Ionicons name="camera" size={24} color="#ffffff" />
+              <Ionicons name="scan" size={24} color="#ffffff" />
             </View>
             <View style={styles.scanBannerText}>
-              <Text style={styles.scanBannerTitle}>증권 사진으로 자동 입력</Text>
+              <Text style={styles.scanBannerTitle}>증권 자동 감지 스캔 (제로 클릭)</Text>
               <Text style={styles.scanBannerSubtitle}>
-                카메라로 찰칵 찍으면 폼이 한 번에 채워집니다.
+                화면에 증권을 비추면 셔터 없이 실시간으로 읽어옵니다.
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#4f46e5" />
@@ -185,7 +180,7 @@ export const InsuranceAddModal: React.FC<Props> = ({
           <View style={styles.inputGroup}>
             <Text style={styles.label}>카테고리</Text>
             <View style={styles.categoryRow}>
-              {CATEGORIES.map((cat) => {
+              {INSURANCE_CATEGORIES.map((cat) => {
                 const isSelected = category === cat.key;
                 return (
                   <Pressable
@@ -251,8 +246,8 @@ export const InsuranceAddModal: React.FC<Props> = ({
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* 증권 촬영 모달 연결 */}
-      <PolicyScannerModal
+      {/* 증권 자동 감지 스캔 모달 연결 */}
+      <AutoPolicyScannerModal
         visible={scannerVisible}
         onClose={() => setScannerVisible(false)}
         onScanComplete={handleScanComplete}

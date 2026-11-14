@@ -1,7 +1,12 @@
 import Constants from 'expo-constants';
 import type { ApiResponse, UserDto } from '@boim/shared-types';
 
-const debuggerHost = Constants.expoConfig?.hostUri;
+const debuggerHost: string | undefined =
+  Constants.expoConfig?.hostUri ||
+  (Constants as { expoGoConfig?: { debuggerHost?: string } }).expoGoConfig?.debuggerHost ||
+  (Constants as { manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } } }).manifest2?.extra?.expoGo?.debuggerHost ||
+  (Constants as { manifest?: { debuggerHost?: string } }).manifest?.debuggerHost;
+
 const hostIp = debuggerHost ? debuggerHost.split(':')[0] : '10.138.11.34';
 export const API_BASE_URL = `http://${hostIp}:4000/api`;
 

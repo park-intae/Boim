@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { CATEGORY_MAP } from '../constants/categories';
 import type { InsuranceProductDto, UpdateInsuranceProductDto } from '@boim/shared-types';
 
 interface Props {
@@ -19,13 +20,6 @@ interface Props {
   onUpdate: (id: string | number | bigint, dto: UpdateInsuranceProductDto) => Promise<void> | void;
   onDelete: (id: string | number | bigint) => Promise<void> | void;
 }
-
-const CATEGORY_MAP: Record<string, string> = {
-  HEALTH: '건강/실손',
-  CANCER: '암',
-  AUTO: '운전자/자동차',
-  SAVING: '연금/저축',
-};
 
 export const InsuranceDetailModal: React.FC<Props> = ({
   visible,

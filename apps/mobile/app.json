@@ -9,8 +9,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.boim.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "종이 보험 증권을 촬영하여 자동 분석하기 위해 카메라 권한이 필요합니다.",
-        "NSPhotoLibraryUsageDescription": "보험 증권 사진을 선택하기 위해 사진첩 접근 권한이 필요합니다."
+        "NSCameraUsageDescription": "종이 보험 증권을 실시간으로 감지하고 자동 분석하기 위해 카메라 권한이 필요합니다."
       }
     },
     "android": {
@@ -28,10 +27,9 @@
       "expo-asset",
       "expo-font",
       [
-        "expo-image-picker",
+        "expo-camera",
         {
-          "photosPermission": "보험 증권 사진을 선택하기 위해 사진첩 접근 권한이 필요합니다.",
-          "cameraPermission": "종이 보험 증권을 촬영하여 자동 분석하기 위해 카메라 권한이 필요합니다."
+          "cameraPermission": "종이 보험 증권을 실시간으로 감지하고 자동 분석하기 위해 카메라 권한이 필요합니다."
         }
       ]
     ]

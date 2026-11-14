@@ -10,15 +10,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { InsuranceAddModal } from '../components/InsuranceAddModal';
 import { InsuranceDetailModal } from '../components/InsuranceDetailModal';
+import { CATEGORY_MAP } from '../constants/categories';
 import type { InsuranceProductDto, UpdateInsuranceProductDto } from '@boim/shared-types';
-
-const CATEGORY_MAP: Record<string, string> = {
-  ALL: '전체',
-  HEALTH: '건강/실손',
-  CANCER: '암',
-  AUTO: '운전자/자동차',
-  SAVING: '연금/저축',
-};
 
 interface Props {
   insurances?: InsuranceProductDto[];

@@ -29,7 +29,7 @@ export class DocumentService {
     'image/jpg',
     'text/plain',
   ];
-  private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
+  private readonly maxFileSize = 30 * 1024 * 1024; // 30MB
 
   constructor(
     private readonly prisma: PrismaService,

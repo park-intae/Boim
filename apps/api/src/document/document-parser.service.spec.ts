@@ -78,5 +78,29 @@ describe('DocumentParserService', () => {
       expect(result.maturityDate).toBe('2073-05-01');
       expect(result.coverageAmount).toBe(100000000);
     });
+
+    it('OCR 노이즈 및 가상 손해보험사(한빛손해보험)와 종합보험 상품명을 정확하게 추출해야 한다', () => {
+      const ocrNoisyText = `
+# 한빛손해보험
+보험기간: 2026년 10월 01일 ~ 2036년 10월 01일
+무배당 행복플러스 종합보험
+보험상품명: ae Sa -
+월 납입보험료 합계 95,000원
+상해사망 후유장해 1억원
+안빛손해보험 주식회사
+random noise string with aia token and words
+`;
+
+      const result = service.parseInsuranceText(ocrNoisyText);
+
+      expect(result.institution).toBe('한빛손해보험');
+      expect(result.name).toBe('무배당 행복플러스 종합보험');
+      expect(result.category).toBe('HEALTH');
+      expect(result.monthlyPayment).toBe(95000);
+      expect(result.paymentDay).toBe(1);
+      expect(result.startDate).toBe('2026-10-01');
+      expect(result.maturityDate).toBe('2036-10-01');
+      expect(result.coverageAmount).toBe(100000000);
+    });
   });
 });

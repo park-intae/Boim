@@ -1,3 +1,4 @@
+import { File } from 'expo-file-system';
 import { API_BASE_URL } from './authApi';
 import type {
   ApiResponse,
@@ -13,25 +14,29 @@ export const uploadPolicyImage = async (
   const formData = new FormData();
 
   const filename = imageUri.split('/').pop() || 'policy_document.jpg';
-  const match = /\.(\w+)$/.exec(filename);
-  const type = match ? `image/${match[1]}` : 'image/jpeg';
+  const cleanFilename = filename.includes('.') ? filename : `${filename}.jpg`;
 
-  formData.append('file', {
-    uri: imageUri,
-    name: filename,
-    type,
-  } as unknown as Blob);
+  // Expo SDK 58의 표준 File(Blob 구현체)을 생성하여 append (Unsupported FormDataPart 방지)
+  const filePart = new File(imageUri);
+  formData.append('file', filePart, cleanFilename);
 
   const headers: Record<string, string> = {};
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  console.log('[uploadPolicyImage] Uploading File(Blob) to:', `${API_BASE_URL}/documents/upload`);
   const response = await fetch(`${API_BASE_URL}/documents/upload`, {
     method: 'POST',
     headers,
     body: formData,
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[uploadPolicyImage] Server upload error:', response.status, errorText);
+    throw new Error(`서버 업로드 오류 (${response.status})`);
+  }
 
   const result: ApiResponse<DocumentUploadResponse> = await response.json();
 
@@ -53,10 +58,17 @@ export const parsePolicyDocument = async (
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  console.log('[parsePolicyDocument] Sending parse request to:', `${API_BASE_URL}/documents/${documentId}/parse`);
   const response = await fetch(`${API_BASE_URL}/documents/${documentId}/parse`, {
     method: 'POST',
     headers,
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[parsePolicyDocument] Server parse error response:', response.status, errorText);
+    throw new Error(`서버 파싱 오류 (${response.status})`);
+  }
 
   const result: ApiResponse<DocumentParseResponse> = await response.json();
 

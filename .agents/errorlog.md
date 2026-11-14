@@ -152,4 +152,25 @@
   1. `apps/mobile/package.json`의 `@babel/runtime` 버전을 모노레포 타 패키지(Expo, Testing Library)와 동일한 **`^7.29.7`**로 명시하여 버전을 통일함.
   2. Expo/React Native 프로젝트 세팅 시 코어 번들러/컴파일러 관련 패키지(`@babel/*`, `react-native`, `typescript`)는 임의로 최신 major 버전을 올리지 않고, Expo 프레임워크가 요구하는 peer/권장 버전을 철저히 사전 점검하여 동기화할 것.
 
+## 23. Multer 기본 파일 용량(10MB) 초과로 인한 모바일 카메라 원본 사진 업로드 단절
+- **발생 상황:** 스마트폰 실기기 카메라로 촬영한 고해상도 보험 증권 이미지 업로드 중 `Network request failed (백엔드 서버 연결 상태를 확인해주세요)` 에러 발생.
+- **오류 내용:** 최신 스마트폰 카메라 원본 사진 용량(12MB~18MB)이 백엔드 `FileInterceptor`의 기본 10MB 제한을 초과하여 백엔드 파이프라인에서 연결을 강제 종료함.
+- **해결 및 예방:**
+  1. 백엔드 `DocumentController` 및 `DocumentService`의 파일 업로드 제한을 30MB(`limits: { fileSize: 30 * 1024 * 1024 }`)로 확대함.
+  2. 모바일 카메라 촬영 시 `quality: 0.6` 압축 옵션을 적용하여 전송 대역폭과 서버 메모리 부하를 줄임.
+
+## 24. Expo SDK 58 `expo/fetch`의 구형 FormData 객체 비호환 오류 (`Unsupported FormDataPart implementation`)
+- **발생 상황:** React Native 모바일 앱에서 백엔드로 증권 이미지를 멀티파트(`FormData`)로 전송할 때 발생.
+- **오류 내용:** 기존 React Native 관례인 `{ uri, name, type }` 형태의 가짜 Blob 객체를 `formData.append('file', ...)`에 전달했을 때, Expo SDK 58에 내장된 WinterCG 표준 `expo/fetch`가 이를 거부하며 `[Error: Unsupported FormDataPart implementation]` 런타임 크래시를 일으킴.
+- **해결 및 예방:** `expo-file-system`의 정규 `File` 클래스를 도입하여 `const filePart = new File(imageUri); formData.append('file', filePart, filename);` 형태로 표준 Blob 객체를 전송하도록 규격화함.
+
+## 25. OCR 노이즈의 정규식 침범 및 표(Table) 레이아웃으로 인한 상품명 오인식
+- **발생 상황:** 사용자가 증권 사진을 스캔했을 때 실제 `한빛손해보험`과 `무배당 행복플러스 종합보험` 대신 `AIA생명` 및 `ae Sa -`로 파싱되는 현상 발생.
+- **오류 내용:**
+  1. Tesseract OCR이 배경 노이즈로 인식한 라틴 소문자 `... aia SEs ...`에 기존 파서의 `AIA생명` 정규식(`/AIA/i`)이 매칭되어 대형 보험사로 오인식함.
+  2. 표 레이아웃에서 OCR이 행과 열을 교차 분할하면서 "보험상품명" 라벨 옆에 깨진 영문 셀(`ae Sa -`)이 배치되었고, 유효 한글 검증 없이 단순 글자 수 체크만 수행하여 엉뚱한 노이즈를 상품명으로 채택함.
+- **해결 및 예방:**
+  1. 영문 약어(AIA, AXA, MG, DB, KB 등) 매칭 시 단어 경계(`\b`)와 대소문자를 엄격히 구분하도록 정규식을 보호함.
+  2. 대한민국 보험 상품명의 고유 특징인 `무배당 / (무) ... 종합보험/건강보험` 패턴을 최우선으로 검출하고, 라벨 기반 매칭 시 최소 2글자 이상의 한글 존재 여부를 필수 검증하도록 개선함.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

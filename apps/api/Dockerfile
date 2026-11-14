@@ -33,6 +33,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=4000
 
+RUN mkdir -p /app/apps/api/uploads/documents && chown -R node:node /app
+
 # 보안을 위해 non-root node 유저 권한 부여
 USER node
 
@@ -43,6 +45,7 @@ COPY --chown=node:node --from=builder /app/packages/shared-types ./packages/shar
 COPY --chown=node:node --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --chown=node:node --from=builder /app/apps/api/prisma ./apps/api/prisma
 COPY --chown=node:node --from=builder /app/apps/api/package.json ./apps/api/package.json
+COPY --chown=node:node apps/api/traineddata* ./apps/api/traineddata/
 
 ENV NODE_PATH=/app/node_modules:/app/apps/api/node_modules
 
