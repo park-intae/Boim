@@ -10,6 +10,11 @@ import {
   CreditCard,
 } from 'lucide-react';
 
+/**
+ * 💡 랜딩 페이지 이용 방법(Step Guide) 3단계 섹션
+ * 비로그인 방문자 대상 단계별 기능 체험 및 시각적 이해를 돕기 위한 인터랙티브 쇼케이스 목업을 포함합니다.
+ * (실제 로그인 사용자의 데이터 계층과는 명확히 분리된 온보딩 쇼케이스 전용 UI입니다.)
+ */
 export const StepGuideSection: React.FC = () => {
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
 

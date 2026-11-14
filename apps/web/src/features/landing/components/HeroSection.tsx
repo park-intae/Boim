@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, ChevronRight } from 'lucide-react';
 import { BrandLogo } from '../../../components/common/BrandLogo';
 
+/**
+ * 💡 랜딩 페이지 Hero 섹션
+ * 비로그인 방문자 대상 서비스 소개 및 시각적 기능 전달을 위한 정적 인터랙티브 쇼케이스 목업을 포함합니다.
+ * (실제 로그인 사용자의 데이터 계층과는 명확히 분리된 온보딩 쇼케이스 전용 UI입니다.)
+ */
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
 
