@@ -306,6 +306,55 @@ describe('AuthController', () => {
     });
   });
 
+  describe('initiateSocialLink', () => {
+    it('should redirect to kakao authorization url with signed state when token is valid', async () => {
+      authService.verifyToken = jest.fn().mockReturnValue({ sub: 'user_123' });
+      socialAuthService.generateLinkState = jest
+        .fn()
+        .mockReturnValue('link.kakao.user_123.test');
+
+      const mockRes = {
+        redirect: jest.fn(),
+      } as any;
+
+      await controller.initiateSocialLink('kakao', 'valid_token', mockRes);
+
+      expect(authService.verifyToken).toHaveBeenCalledWith('valid_token');
+      expect(socialAuthService.generateLinkState).toHaveBeenCalledWith(
+        'user_123',
+        'kakao',
+      );
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('https://kauth.kakao.com/oauth/authorize'),
+      );
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('state=link.kakao.user_123.test'),
+      );
+    });
+
+    it('should redirect to naver authorization url with signed state when token is valid', async () => {
+      authService.verifyToken = jest.fn().mockReturnValue({ sub: 'user_456' });
+      socialAuthService.generateLinkState = jest
+        .fn()
+        .mockReturnValue('link.naver.user_456.test');
+
+      const mockRes = {
+        redirect: jest.fn(),
+      } as any;
+
+      await controller.initiateSocialLink('naver', 'valid_token', mockRes);
+
+      expect(authService.verifyToken).toHaveBeenCalledWith('valid_token');
+      expect(socialAuthService.generateLinkState).toHaveBeenCalledWith(
+        'user_456',
+        'naver',
+      );
+      expect(mockRes.redirect).toHaveBeenCalledWith(
+        expect.stringContaining('https://nid.naver.com/oauth2.0/authorize'),
+      );
+    });
+  });
+
   describe('social link status and mock endpoints', () => {
     it('should call getSocialLinkStatus with userId', async () => {
       const mockReq = { user: { userId: '1' } } as any;

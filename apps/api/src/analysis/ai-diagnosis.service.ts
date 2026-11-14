@@ -141,18 +141,42 @@ ${productSummary}
 }
 `;
 
-    const response = await this.aiClient.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    const candidateModels = ['gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+    let text: string | undefined;
 
-    const text = response.text?.trim();
+    for (const model of candidateModels) {
+      try {
+        const response = await this.aiClient.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+        const candidateText = response.text?.trim();
+        if (candidateText) {
+          text = candidateText;
+          this.logger.log(`Google Gemini AI 진단 성공 (모델: ${model})`);
+          break;
+        }
+      } catch (err: unknown) {
+        this.logger.warn(
+          `Gemini 모델(${model}) 호출 실패, 대체 모델로 전환 시도:`,
+          err,
+        );
+      }
+    }
+
     if (!text) return null;
 
-    const parsed = JSON.parse(text);
+    // 마크다운 백틱 코드블록 방어 정제
+    const cleanedText = text
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+
+    const parsed = JSON.parse(cleanedText);
 
     return {
       score: typeof parsed.score === 'number' ? parsed.score : 75,

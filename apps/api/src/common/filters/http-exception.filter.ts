@@ -23,7 +23,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.message
         : 'Internal Server Error';
 
-    console.error(`[HttpExceptionFilter] Status ${status} - Error: ${message}`, exception);
+    console.error(
+      `[HttpExceptionFilter] Status ${status} - Error: ${message}`,
+      exception,
+    );
 
     const errorResponse: ApiResponse = {
       success: false,

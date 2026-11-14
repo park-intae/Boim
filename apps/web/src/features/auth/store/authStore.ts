@@ -6,6 +6,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  profileImage?: string | null;
   isPassVerified: boolean;
 }
 

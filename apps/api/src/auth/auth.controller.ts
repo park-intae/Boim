@@ -2,18 +2,27 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
+  Param,
+  Query,
   Req,
   Res,
   UseGuards,
+  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { SocialAuthService, SocialAuthResult } from './social-auth.service';
+import type {
+  UpdateSocialPriorityDto,
+  UpdatePrimaryAccountDto,
+} from '@boim/shared-types';
 
 export interface RequestWithSocialAuthResult extends Request {
-  user: SocialAuthResult;
+  user: SocialAuthResult & { isLinked?: boolean };
 }
 
 export interface JwtUser {
@@ -81,6 +90,27 @@ export class AuthController {
     return this.authService.getSocialLinkStatus(req.user.userId);
   }
 
+  @Patch('social/priority')
+  @UseGuards(AuthGuard('jwt'))
+  async updateSocialPriority(
+    @Req() req: RequestWithJwtUser,
+    @Body() dto: UpdateSocialPriorityDto,
+  ) {
+    return this.socialAuthService.updateProfilePriority(req.user.userId, dto);
+  }
+
+  @Patch('social/primary-account')
+  @UseGuards(AuthGuard('jwt'))
+  async updatePrimaryAccount(
+    @Req() req: RequestWithJwtUser,
+    @Body() dto: UpdatePrimaryAccountDto,
+  ) {
+    return this.socialAuthService.setPrimaryAccount(
+      req.user.userId,
+      dto.primaryAccountProvider,
+    );
+  }
+
   @Post('social/mock-link')
   @UseGuards(AuthGuard('jwt'))
   async mockLinkSocial(
@@ -99,6 +129,49 @@ export class AuthController {
     return this.authService.mockUnlinkSocial(req.user.userId, provider);
   }
 
+  /**
+   * 로그인된 사용자가 실제 카카오/네이버 계정 연동 인가를 시작하도록 302 리다이렉트합니다.
+   */
+  @Get('social/link/:provider')
+  async initiateSocialLink(
+    @Param('provider') provider: string,
+    @Query('token') token: string,
+    @Res() res: Response,
+  ) {
+    if (provider !== 'kakao' && provider !== 'naver') {
+      throw new BadRequestException('지원하지 않는 소셜 로그인 제공자입니다.');
+    }
+    if (!token) {
+      throw new UnauthorizedException('로그인 인증 토큰이 필요합니다.');
+    }
+
+    const decoded = this.authService.verifyToken(token);
+    if (!decoded?.sub) {
+      throw new UnauthorizedException('유효하지 않거나 만료된 토큰입니다.');
+    }
+
+    const state = this.socialAuthService.generateLinkState(
+      decoded.sub,
+      provider,
+    );
+
+    if (provider === 'kakao') {
+      const clientId = process.env.KAKAO_CLIENT_ID || 'mock-kakao-client-id';
+      const redirectUri =
+        process.env.KAKAO_CALLBACK_URL ||
+        'http://localhost:4000/api/auth/kakao/callback';
+      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}`;
+      return res.redirect(kakaoAuthUrl);
+    } else {
+      const clientId = process.env.NAVER_CLIENT_ID || 'mock-naver-client-id';
+      const redirectUri =
+        process.env.NAVER_CALLBACK_URL ||
+        'http://localhost:4000/api/auth/naver/callback';
+      const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}`;
+      return res.redirect(naverAuthUrl);
+    }
+  }
+
   // ==================== 카카오 소셜 인증 ====================
 
   @Get('kakao')
@@ -115,6 +188,13 @@ export class AuthController {
   ) {
     const result = req.user;
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    if (result?.isLinked) {
+      return res.redirect(
+        `${frontendUrl}/dashboard?tab=settings&social_link_success=kakao`,
+      );
+    }
+
     res.redirect(
       `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
     );
@@ -170,6 +250,13 @@ export class AuthController {
   ) {
     const result = req.user;
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    if (result?.isLinked) {
+      return res.redirect(
+        `${frontendUrl}/dashboard?tab=settings&social_link_success=naver`,
+      );
+    }
+
     res.redirect(
       `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
     );

@@ -56,11 +56,20 @@
   - [x] **Phase 18-02:** Docker Compose 풀스택 오케스트레이션 (PostgreSQL + API + Web/Nginx 리버스 프록시)
   - [x] **Phase 18-03:** GitHub Actions CI 파이프라인 구축 (Lint, 394개 Test, Build 자동 검증)
   - [x] **Phase 18-04:** 상용 배포 보안 환경 변수 템플릿(`.env.production.example`) 및 배포 가이드 문서화
-- [ ] **Phase 19: Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)**
-  - [ ] **Phase 19-01:** `apps/mobile` Expo(React Native) 프로젝트 세팅 및 `shared-types` 연동
-  - [ ] **Phase 19-02:** 4대 핵심 탭(캘린더, 내 보험, AI 리포트, 마이페이지) 네이티브 UI 포팅
-  - [ ] **Phase 19-03:** 모바일 SafeArea 최적화, 제스처, 오프라인 폴백 UI 고도화
-  - [ ] **Phase 19-04:** 모바일 단위 테스트 및 스마트폰 설치용 독립 실행형 APK 빌드
+- [x] **Phase 19: Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application) (완료)**
+  - [x] **Phase 19-01:** `apps/mobile` Expo(React Native) 프로젝트 세팅 및 `shared-types` 연동
+  - [x] **Phase 19-02:** 4대 핵심 탭(캘린더, 내 보험, AI 리포트, 마이페이지) 네이티브 UI 포팅
+  - [x] **Phase 19-03:** 모바일 백엔드 인증 연동 및 세션 유지(`safeStorage`)
+  - [x] **Phase 19-04:** 모바일 네이티브 UX 고도화 및 캘린더 긴 상품명 말줄임 레이아웃 오버플로우 방지
+  - [x] **Phase 19-05:** 스마트폰 카메라 증권 촬영 OCR 스캔 및 폼 자동완성 연동
+  - [x] **Phase 19-06:** 모바일 풀스택 기능 실연동 (CRUD, 동적 캘린더, AI 진단, PASS 본인인증)
+  - [x] **Phase 19-07:** 실시간 인앱 뷰파인더 & 제로 클릭 무수동 오토 스캐너 및 10대 카테고리 확장
+- [ ] **Phase 20: 상용 외부 API 실연동 (Google Gemini AI & 카카오/네이버 상용 OAuth2)**
+  - [ ] **Phase 20-01:** Google Gemini AI 실시간 종합 보장 진단 API 연동 & 장애 폴백 검증
+  - [ ] **Phase 20-02:** 카카오 Developers 상용 OAuth2 실연동 & 계정 연동/해제 파이프라인
+  - [x] **Phase 20-03:** 네이버 Developers 상용 OAuth2 실연동 & 본계정 기본값/SNS 대표계정 전환
+  - [x] **Phase 20-04:** 실제 소셜 계정(카카오/네이버) 실시간 OAuth 연동 및 해제(Link/Unlink) 실 파이프라인 구축 (완료)
+  - [ ] **Phase 20-05:** 전사 단위/통합 테스트, Docker 컨테이너 배포 및 최종 무결성 검증
 
 ---
 

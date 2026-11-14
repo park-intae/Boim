@@ -8,10 +8,11 @@ export interface KakaoProfilePayload {
   _json?: {
     kakao_account?: {
       email?: string;
-      profile?: { nickname?: string };
+      profile?: { nickname?: string; profile_image_url?: string };
     };
     properties?: {
       nickname?: string;
+      profile_image?: string;
     };
   };
 }
@@ -25,15 +26,31 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
       callbackURL:
         process.env.KAKAO_CALLBACK_URL ||
         'http://localhost:3000/api/auth/kakao/callback',
+      passReqToCallback: true,
     });
   }
 
   async validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: KakaoProfilePayload,
-    done: (err: Error | null, user?: unknown) => void,
+    reqOrAccessToken: any,
+    accessTokenOrRefreshToken: any,
+    refreshTokenOrProfile: any,
+    profileOrDone: any,
+    doneParam?: (err: Error | null, user?: unknown) => void,
   ) {
+    let req: any;
+    let profile: KakaoProfilePayload;
+    let done: (err: Error | null, user?: unknown) => void;
+
+    if (typeof doneParam === 'function') {
+      req = reqOrAccessToken;
+      profile = profileOrDone;
+      done = doneParam;
+    } else {
+      req = null;
+      profile = refreshTokenOrProfile;
+      done = profileOrDone;
+    }
+
     try {
       const { _json } = profile;
       const providerId = String(profile.id);
@@ -42,15 +59,38 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
         _json?.kakao_account?.profile?.nickname ||
         _json?.properties?.nickname ||
         '카카오 사용자';
+      const rawImage =
+        _json?.kakao_account?.profile?.profile_image_url ||
+        _json?.properties?.profile_image;
+      const profileImage = rawImage
+        ? rawImage.replace(/^http:\/\//i, 'https://')
+        : undefined;
 
-      const result = await this.socialAuthService.processSocialUser({
-        provider: 'kakao',
-        providerId,
-        email,
-        name,
+      const state = req?.query?.state as string | undefined;
+      const linkVerification =
+        typeof this.socialAuthService.verifyLinkState === 'function'
+          ? this.socialAuthService.verifyLinkState(state)
+          : { valid: false };
+
+      const result = await this.socialAuthService.processSocialUser(
+        {
+          provider: 'kakao',
+          providerId,
+          email,
+          name,
+          profileImage,
+        },
+        linkVerification?.valid && linkVerification?.provider === 'kakao'
+          ? linkVerification.userId
+          : undefined,
+      );
+
+      done(null, {
+        ...result,
+        isLinked: Boolean(
+          linkVerification?.valid && linkVerification?.provider === 'kakao',
+        ),
       });
-
-      done(null, result);
     } catch (error) {
       done(error as Error, false);
     }

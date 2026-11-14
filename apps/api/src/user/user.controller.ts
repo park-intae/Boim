@@ -6,8 +6,10 @@ import {
   Delete,
   Body,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import type { Request } from 'express';
+import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
+import type { RequestWithJwtUser } from '../auth/auth.controller';
 import { UserService } from './user.service';
 import type {
   UpdateUserDto,
@@ -16,13 +18,17 @@ import type {
 } from '@boim/shared-types';
 
 @Controller('users')
+@UseGuards(OptionalJwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  private extractUserId(req?: RequestWithJwtUser): bigint {
+    return BigInt(req?.user?.userId || '1');
+  }
+
   @Get('me')
-  async getProfile(@Req() req: Request) {
-    // TODO: JWT Auth Guard 연동 후 req.user.id 사용
-    const userId = 1n; // 임시 하드코딩
+  async getProfile(@Req() req?: RequestWithJwtUser) {
+    const userId = this.extractUserId(req);
     const user = await this.userService.getUserById(userId);
     return {
       success: true,
@@ -35,10 +41,10 @@ export class UserController {
 
   @Patch('me')
   async updateProfile(
-    @Req() req: Request,
+    @Req() req: RequestWithJwtUser,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const userId = 1n; // 임시 하드코딩
+    const userId = this.extractUserId(req);
     const user = await this.userService.updateUser(userId, updateUserDto);
     return {
       success: true,
@@ -51,10 +57,10 @@ export class UserController {
 
   @Patch('me/password')
   async updatePassword(
-    @Req() req: Request,
-    @Body() updatePasswordDto: import('@boim/shared-types').UpdatePasswordDto,
+    @Req() req: RequestWithJwtUser,
+    @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
-    const userId = 1n; // 임시 하드코딩
+    const userId = this.extractUserId(req);
     await this.userService.updatePassword(
       userId,
       updatePasswordDto.newPassword,
@@ -66,8 +72,8 @@ export class UserController {
   }
 
   @Get('me/notifications/settings')
-  async getNotificationSettings(@Req() req: Request) {
-    const userId = 1n;
+  async getNotificationSettings(@Req() req?: RequestWithJwtUser) {
+    const userId = this.extractUserId(req);
     const settings = await this.userService.getNotificationSettings(userId);
     return {
       success: true,
@@ -81,10 +87,10 @@ export class UserController {
 
   @Patch('me/notifications/settings')
   async updateNotificationSettings(
-    @Req() req: Request,
-    @Body() dto: import('@boim/shared-types').UpdateNotificationSettingsDto,
+    @Req() req: RequestWithJwtUser,
+    @Body() dto: UpdateNotificationSettingsDto,
   ) {
-    const userId = 1n;
+    const userId = this.extractUserId(req);
     const settings = await this.userService.updateNotificationSettings(
       userId,
       dto,
@@ -100,8 +106,8 @@ export class UserController {
   }
 
   @Get('me/export')
-  async exportData() {
-    const userId = 1n; // 임시 하드코딩
+  async exportData(@Req() req?: RequestWithJwtUser) {
+    const userId = this.extractUserId(req);
     const data = await this.userService.exportData(userId);
     return {
       success: true,
@@ -113,22 +119,25 @@ export class UserController {
   }
 
   @Post('me/import')
-  async importData(@Body() data: any) {
-    const userId = 1n;
+  async importData(
+    @Req() req: RequestWithJwtUser,
+    @Body() data: Record<string, unknown>,
+  ) {
+    const userId = this.extractUserId(req);
     await this.userService.importData(userId, data);
     return { success: true, message: '데이터 가져오기가 완료되었습니다.' };
   }
 
   @Delete('me')
-  async deleteAccount() {
-    const userId = 1n;
+  async deleteAccount(@Req() req?: RequestWithJwtUser) {
+    const userId = this.extractUserId(req);
     await this.userService.softDeleteUser(userId);
     return { success: true, message: '계정이 안전하게 탈퇴 처리되었습니다.' };
   }
 
   @Get('me/login-history')
-  async getLoginHistory() {
-    const userId = 1n;
+  async getLoginHistory(@Req() req?: RequestWithJwtUser) {
+    const userId = this.extractUserId(req);
     const history = await this.userService.getLoginHistory(userId);
     return {
       success: true,

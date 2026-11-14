@@ -4,7 +4,10 @@ import { SocialAuthService } from './social-auth.service';
 
 describe('NaverStrategy', () => {
   let strategy: NaverStrategy;
-  let socialAuthService: { processSocialUser: jest.Mock };
+  let socialAuthService: {
+    processSocialUser: jest.Mock;
+    verifyLinkState: jest.Mock;
+  };
 
   beforeEach(async () => {
     socialAuthService = {
@@ -22,6 +25,7 @@ describe('NaverStrategy', () => {
         },
         isNew: false,
       }),
+      verifyLinkState: jest.fn().mockReturnValue({ valid: false }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -52,12 +56,15 @@ describe('NaverStrategy', () => {
 
     await strategy.validate('accessToken', 'refreshToken', profile, done);
 
-    expect(socialAuthService.processSocialUser).toHaveBeenCalledWith({
-      provider: 'naver',
-      providerId: 'naver_123',
-      email: 'naver@example.com',
-      name: 'Naver User',
-    });
+    expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(
+      {
+        provider: 'naver',
+        providerId: 'naver_123',
+        email: 'naver@example.com',
+        name: 'Naver User',
+      },
+      undefined,
+    );
 
     expect(resultUser).toEqual({
       user: {
@@ -72,7 +79,54 @@ describe('NaverStrategy', () => {
         refreshToken: 'mock_naver_jwt_refresh',
       },
       isNew: false,
+      isLinked: false,
     });
+  });
+
+  it('should link to existing user when valid link state is present', async () => {
+    socialAuthService.verifyLinkState.mockReturnValue({
+      valid: true,
+      userId: 'user_888',
+      provider: 'naver',
+    });
+
+    const mockReq = {
+      query: { state: 'link.naver.user_888.12345.nonce.sig' },
+    };
+    const profile = {
+      id: 'naver_888',
+      email: 'naver_linked@example.com',
+      name: 'Naver Linked User',
+    };
+
+    let resultUser: unknown;
+    const done = (_err: Error | null, user?: unknown) => {
+      resultUser = user;
+    };
+
+    await strategy.validate(
+      mockReq,
+      'accessToken',
+      'refreshToken',
+      profile,
+      done,
+    );
+
+    expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(
+      {
+        provider: 'naver',
+        providerId: 'naver_888',
+        email: 'naver_linked@example.com',
+        name: 'Naver Linked User',
+      },
+      'user_888',
+    );
+
+    expect(resultUser).toEqual(
+      expect.objectContaining({
+        isLinked: true,
+      }),
+    );
   });
 
   it('should handle errors by calling done with error', async () => {

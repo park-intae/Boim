@@ -27,20 +27,15 @@ services:
       dockerfile: apps/api/Dockerfile
     container_name: boim-api
     restart: unless-stopped
+    env_file:
+      - apps/api/.env
     environment:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/boim?schema=public"
       JWT_SECRET: ${JWT_SECRET:-boim_jwt_secret_key_production_2026}
-      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       USE_MOCK_PARSER: ${USE_MOCK_PARSER:-true}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
-      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID:-mock-kakao-client-id}
-      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET:-}
-      KAKAO_CALLBACK_URL: ${KAKAO_CALLBACK_URL:-http://localhost/api/auth/kakao/callback}
-      NAVER_CLIENT_ID: ${NAVER_CLIENT_ID:-mock-naver-client-id}
-      NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET:-mock-naver-secret}
-      NAVER_CALLBACK_URL: ${NAVER_CALLBACK_URL:-http://localhost/api/auth/naver/callback}
     ports:
       - "${API_PORT:-4000}:4000"
     depends_on:

@@ -6,10 +6,25 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 
 describe('SocialAuthService', () => {
   let service: SocialAuthService;
-  let prismaService: any;
-  let authService: any;
+  let prismaService: {
+    user: {
+      findUnique: jest.Mock;
+      findFirst: jest.Mock;
+      create: jest.Mock;
+      update: jest.Mock;
+    };
+  };
+  let authService: {
+    generateTokens: jest.Mock;
+  };
+
+  const originalEnv = process.env;
 
   beforeEach(async () => {
+    process.env = { ...originalEnv };
+    delete process.env.KAKAO_CLIENT_ID;
+    delete process.env.NAVER_CLIENT_ID;
+
     prismaService = {
       user: {
         findUnique: jest.fn(),
@@ -35,6 +50,10 @@ describe('SocialAuthService', () => {
     }).compile();
 
     service = module.get<SocialAuthService>(SocialAuthService);
+  });
+
+  afterAll(() => {
+    process.env = originalEnv;
   });
 
   it('should be defined', () => {
@@ -247,6 +266,9 @@ describe('SocialAuthService', () => {
         data: {
           provider: 'local',
           providerId: 'naver:67890',
+          kakaoEmail: null,
+          kakaoNickname: null,
+          kakaoProfileImage: null,
         },
       });
     });
@@ -256,6 +278,172 @@ describe('SocialAuthService', () => {
       await expect(service.unlinkSocialAccount('999', 'kakao')).rejects.toThrow(
         UnauthorizedException,
       );
+    });
+  });
+
+  describe('updateProfilePriority', () => {
+    it('should update preferred image and name providers and reflect them in profile', async () => {
+      const user = {
+        id: BigInt(10),
+        name: '카카오이름',
+        profileImage: 'https://kakao.com/thumb.jpg',
+        kakaoNickname: '카카오이름',
+        kakaoProfileImage: 'https://kakao.com/thumb.jpg',
+        naverNickname: '네이버이름',
+        naverProfileImage: 'https://naver.com/thumb.jpg',
+        preferredImageProvider: 'kakao',
+        preferredNameProvider: 'kakao',
+      };
+      prismaService.user.findUnique.mockResolvedValue(user);
+      prismaService.user.update.mockResolvedValue({
+        ...user,
+        name: '네이버이름',
+        profileImage: 'https://naver.com/thumb.jpg',
+        preferredImageProvider: 'naver',
+        preferredNameProvider: 'naver',
+      });
+
+      const result = await service.updateProfilePriority('10', {
+        preferredImageProvider: 'naver',
+        preferredNameProvider: 'naver',
+      });
+
+      expect(result.name).toBe('네이버이름');
+      expect(result.profileImage).toBe('https://naver.com/thumb.jpg');
+      expect(result.preferredImageProvider).toBe('naver');
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(10) },
+        data: {
+          preferredImageProvider: 'naver',
+          profileImage: 'https://naver.com/thumb.jpg',
+          preferredNameProvider: 'naver',
+          name: '네이버이름',
+        },
+      });
+    });
+
+    it('should set profileImage to null when preferredImageProvider is default', async () => {
+      const user = {
+        id: BigInt(10),
+        name: '카카오이름',
+        profileImage: 'https://kakao.com/thumb.jpg',
+        kakaoNickname: '카카오이름',
+        kakaoProfileImage: 'https://kakao.com/thumb.jpg',
+        naverNickname: null,
+        naverProfileImage: null,
+        preferredImageProvider: 'kakao',
+        preferredNameProvider: 'kakao',
+      };
+      prismaService.user.findUnique.mockResolvedValue(user);
+      prismaService.user.update.mockResolvedValue({
+        ...user,
+        profileImage: null,
+        preferredImageProvider: 'default',
+      });
+
+      const result = await service.updateProfilePriority('10', {
+        preferredImageProvider: 'default',
+      });
+
+      expect(result.profileImage).toBeNull();
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(10) },
+        data: {
+          preferredImageProvider: 'default',
+          profileImage: null,
+        },
+      });
+    });
+  });
+
+  describe('setPrimaryAccount', () => {
+    it('should switch primary account to local and reset profile image', async () => {
+      const user = {
+        id: BigInt(10),
+        name: '카카오이름',
+        localNickname: '원래가입이름',
+        kakaoNickname: '카카오이름',
+        kakaoProfileImage: 'https://kakao.com/thumb.jpg',
+        primaryAccountProvider: 'kakao',
+      };
+      prismaService.user.findUnique.mockResolvedValue(user);
+      prismaService.user.update.mockResolvedValue({
+        ...user,
+        name: '원래가입이름',
+        profileImage: null,
+        primaryAccountProvider: 'local',
+        preferredImageProvider: 'default',
+        preferredNameProvider: 'custom',
+      });
+
+      const result = await service.setPrimaryAccount('10', 'local');
+
+      expect(result.primaryAccountProvider).toBe('local');
+      expect(result.name).toBe('원래가입이름');
+      expect(result.profileImage).toBeNull();
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: BigInt(10) },
+        data: {
+          primaryAccountProvider: 'local',
+          name: '원래가입이름',
+          profileImage: null,
+          preferredImageProvider: 'default',
+          preferredNameProvider: 'custom',
+        },
+      });
+    });
+
+    it('should switch primary account to kakao and sync avatar and name', async () => {
+      const user = {
+        id: BigInt(10),
+        name: '원래가입이름',
+        localNickname: '원래가입이름',
+        kakaoNickname: '카카오라이언',
+        kakaoProfileImage: 'https://kakao.com/lion.jpg',
+        primaryAccountProvider: 'local',
+      };
+      prismaService.user.findUnique.mockResolvedValue(user);
+      prismaService.user.update.mockResolvedValue({
+        ...user,
+        name: '카카오라이언',
+        profileImage: 'https://kakao.com/lion.jpg',
+        primaryAccountProvider: 'kakao',
+        preferredImageProvider: 'kakao',
+        preferredNameProvider: 'kakao',
+      });
+
+      const result = await service.setPrimaryAccount('10', 'kakao');
+
+      expect(result.primaryAccountProvider).toBe('kakao');
+      expect(result.name).toBe('카카오라이언');
+      expect(result.profileImage).toBe('https://kakao.com/lion.jpg');
+    });
+  });
+
+  describe('generateLinkState and verifyLinkState', () => {
+    it('should generate valid HMAC signed link state and verify it successfully', () => {
+      const state = service.generateLinkState('user_123', 'kakao');
+      expect(state.startsWith('link.kakao.user_123.')).toBe(true);
+
+      const verification = service.verifyLinkState(state);
+      expect(verification.valid).toBe(true);
+      expect(verification.userId).toBe('user_123');
+      expect(verification.provider).toBe('kakao');
+    });
+
+    it('should reject tampered or invalid link state', () => {
+      const state = service.generateLinkState('user_123', 'naver');
+      const tampered = state.replace('user_123', 'user_999');
+
+      const verification = service.verifyLinkState(tampered);
+      expect(verification.valid).toBe(false);
+    });
+
+    it('should reject expired link state', () => {
+      const pastTimestamp = Date.now() - 11 * 60 * 1000;
+      const fakeState = `link.kakao.user_123.${pastTimestamp}.fakeNonce.fakeSig`;
+      const verification = service.verifyLinkState(fakeState);
+      expect(verification.valid).toBe(false);
     });
   });
 });

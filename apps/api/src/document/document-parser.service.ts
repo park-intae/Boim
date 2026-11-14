@@ -59,7 +59,8 @@ export class DocumentParserService {
         path.resolve(process.cwd(), 'traineddata'),
         path.resolve(process.cwd(), 'apps', 'api', 'traineddata'),
       ];
-      const langPath = candidates.find((p) => fs.existsSync(p)) || process.cwd();
+      const langPath =
+        candidates.find((p) => fs.existsSync(p)) || process.cwd();
 
       worker = await createWorker('kor+eng', 1, {
         langPath,
@@ -105,13 +106,22 @@ export class DocumentParserService {
       { name: '삼성화재', pattern: /삼성\s*화재/ },
       { name: '현대해상', pattern: /현대\s*해상/ },
       { name: '한화손해보험', pattern: /한화\s*(?:손보|손해보\s*험|화재)/ },
-      { name: 'DB손해보험', pattern: /\bDB\s*(?:손보|손해보\s*험)|동부\s*화재|디비\s*손해/ },
-      { name: 'KB손해보험', pattern: /\bKB\s*(?:손보|손해보\s*험)|케이비\s*손해|LIG\s*손해/ },
+      {
+        name: 'DB손해보험',
+        pattern: /\bDB\s*(?:손보|손해보\s*험)|동부\s*화재|디비\s*손해/,
+      },
+      {
+        name: 'KB손해보험',
+        pattern: /\bKB\s*(?:손보|손해보\s*험)|케이비\s*손해|LIG\s*손해/,
+      },
       { name: '메리츠화재', pattern: /메리츠\s*화재|메리츠/ },
       { name: '교보생명', pattern: /교보\s*생명/ },
       { name: '삼성생명', pattern: /삼성\s*생명/ },
       { name: '한화생명', pattern: /한화\s*생명|대한\s*생명/ },
-      { name: '신한라이프', pattern: /신한\s*라이프|신한\s*생명|오렌지\s*라이프/ },
+      {
+        name: '신한라이프',
+        pattern: /신한\s*라이프|신한\s*생명|오렌지\s*라이프/,
+      },
       { name: '흥국화재', pattern: /흥국\s*화재/ },
       { name: '흥국생명', pattern: /흥국\s*생명/ },
       { name: '라이나생명', pattern: /라이나\s*생명/ },
@@ -119,8 +129,14 @@ export class DocumentParserService {
       { name: 'DB생명', pattern: /\bDB\s*생명|동부\s*생명/ },
       { name: 'KB라이프', pattern: /\bKB\s*라이프|푸르덴셜/ },
       { name: 'AIA생명', pattern: /\bAIA\s*(?:생명|보험)|에이아이에이/ },
-      { name: 'AXA손해보험', pattern: /\bAXA\s*(?:손보|손해보\s*험)|악사\s*손해/ },
-      { name: 'MG손해보험', pattern: /\bMG\s*(?:손보|손해보\s*험)|엠지\s*손해/ },
+      {
+        name: 'AXA손해보험',
+        pattern: /\bAXA\s*(?:손보|손해보\s*험)|악사\s*손해/,
+      },
+      {
+        name: 'MG손해보험',
+        pattern: /\bMG\s*(?:손보|손해보\s*험)|엠지\s*손해/,
+      },
       { name: '하나손해보험', pattern: /하나\s*(?:손해|손보)|더케이/ },
       { name: '하나생명', pattern: /하나\s*생명/ },
       { name: '우체국보험', pattern: /우체국\s*보험/ },
@@ -144,9 +160,15 @@ export class DocumentParserService {
         /([가-힣A-Za-z0-9]{2,10})\s*(?:손해보\s*[험엄]|생명보\s*[험엄]|화재보\s*[험엄]|해상보\s*[험엄]|손보|생명|공제|화재|해상|라이프)(?:\s*주식회사)?/,
       );
       if (genericCompanyMatch) {
-        let companyPrefix = genericCompanyMatch[1].replace(/[^가-힣A-Za-z0-9]/g, '');
+        let companyPrefix = genericCompanyMatch[1].replace(
+          /[^가-힣A-Za-z0-9]/g,
+          '',
+        );
         // OCR 오타 보정: '안빛', '하빈' -> 본문에 '한빛'이 있다면 '한빛'으로 보정
-        if ((companyPrefix === '안빛' || companyPrefix === '하빈') && /한빛/.test(text)) {
+        if (
+          (companyPrefix === '안빛' || companyPrefix === '하빈') &&
+          /한빛/.test(text)
+        ) {
           companyPrefix = '한빛';
         }
         let suffix = '손해보험';
@@ -210,7 +232,7 @@ export class DocumentParserService {
         /(?:상\s*품\s*명|보\s*험\s*종\s*목|보\s*험\s*명|계\s*약\s*명|가\s*입\s*상\s*품)\s*[:：]?\s*([^\n\r]+)/i,
       );
       if (nameMatch && nameMatch[1]) {
-        const candidate = nameMatch[1].replace(/[;:,\[\]]/g, '').trim();
+        const candidate = nameMatch[1].replace(/[;:,[\]]/g, '').trim();
         // 유효한 한글이 2자 이상 존재해야 노이즈가 아님 (ae Sa - 등 배제)
         const hangulOnly = candidate.replace(/[^가-힣]/g, '');
         if (hangulOnly.length >= 2 && candidate.length <= 40) {
@@ -234,7 +256,7 @@ export class DocumentParserService {
         const cleaned = line
           .replace(institution, '')
           .replace(/^(?:증서|보험증서|증권|보험증권)/, '')
-          .replace(/^[0-9Q_\-\s\.\:\[\]]+/, '')
+          .replace(/^[0-9Q_\-\s.:[\]]+/, '')
           .trim();
 
         const hangulOnly = cleaned.replace(/[^가-힣]/g, '');
@@ -373,9 +395,7 @@ export class DocumentParserService {
     }
 
     // 7. 보장금액 매칭 (억/천만/백만 단위 및 원 단위 포괄)
-    const eokMatch = text.match(
-      /([0-9]+)\s*억(?:\s*([0-9]+)\s*천)?만?원?/,
-    );
+    const eokMatch = text.match(/([0-9]+)\s*억(?:\s*([0-9]+)\s*천)?만?원?/);
     if (eokMatch && eokMatch[1]) {
       const eok = parseInt(eokMatch[1], 10) * 100000000;
       const cheon = eokMatch[2] ? parseInt(eokMatch[2], 10) * 10000000 : 0;

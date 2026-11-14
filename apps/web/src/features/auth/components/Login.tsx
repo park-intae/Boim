@@ -39,10 +39,28 @@ export const Login: React.FC = () => {
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
-      // 소셜 로그인 후 리다이렉트 된 경우
-      // 임시 소셜 사용자 정보 세팅
-      login({ id: 'social_user', email: 'social@example.com', isPassVerified: false }, token);
-      navigate('/', { replace: true });
+      // 소셜 로그인 후 리다이렉트 된 경우 실제 프로필 조회
+      apiClient
+        .get('/users/me', { headers: { Authorization: `Bearer ${token}` } })
+        .then((response) => {
+          const resObj = response as unknown as Record<string, unknown>;
+          const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
+          const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
+          const rawUser = dataLevel2?.id ? dataLevel2 : (dataLevel1?.id ? dataLevel1 : resObj);
+          const userInfo = {
+            id: rawUser?.id ? String(rawUser.id) : 'social_user',
+            email: (rawUser?.email as string) || 'social@boim.internal',
+            name: (rawUser?.name as string) || '소셜 사용자',
+            profileImage: (rawUser?.profileImage as string) || null,
+            isPassVerified: Boolean(rawUser?.isPassVerified),
+          };
+          login(userInfo, token);
+          navigate('/', { replace: true });
+        })
+        .catch(() => {
+          login({ id: 'social_user', email: 'social@boim.internal', isPassVerified: false }, token);
+          navigate('/', { replace: true });
+        });
     }
   }, [searchParams, login, navigate]);
 

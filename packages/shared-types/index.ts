@@ -2,6 +2,7 @@ export interface UserDto {
   id: bigint | number;
   email: string;
   name: string;
+  profileImage?: string | null;
   isPassVerified?: boolean;
   createdAt: Date;
 }
@@ -148,4 +149,32 @@ export interface ApiResponse<T = unknown> {
     code: string;
     message: string;
   };
+}
+
+export interface SocialProviderProfile {
+  linked: boolean;
+  email: string | null;
+  nickname: string | null;
+  profileImage: string | null;
+}
+
+export interface SocialStatusResponse {
+  primaryAccountProvider: 'local' | 'kakao' | 'naver';
+  localAccount: {
+    email: string | null;
+    nickname: string | null;
+  };
+  kakao: SocialProviderProfile;
+  naver: SocialProviderProfile;
+  preferredImageProvider: 'kakao' | 'naver' | 'default';
+  preferredNameProvider: 'kakao' | 'naver' | 'custom';
+}
+
+export interface UpdateSocialPriorityDto {
+  preferredImageProvider?: 'kakao' | 'naver' | 'default';
+  preferredNameProvider?: 'kakao' | 'naver' | 'custom';
+}
+
+export interface UpdatePrimaryAccountDto {
+  primaryAccountProvider: 'local' | 'kakao' | 'naver';
 }

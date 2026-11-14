@@ -8,6 +8,16 @@ export interface NaverProfilePayload {
   email?: string;
   name?: string;
   nickname?: string;
+  profileImage?: string;
+  profile_image?: string;
+  _json?: {
+    response?: {
+      profile_image?: string;
+      nickname?: string;
+      name?: string;
+      email?: string;
+    };
+  };
 }
 
 @Injectable()
@@ -19,28 +29,73 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
       callbackURL:
         process.env.NAVER_CALLBACK_URL ||
         'http://localhost:3000/api/auth/naver/callback',
+      passReqToCallback: true,
     });
   }
 
   async validate(
-    _accessToken: string,
-    _refreshToken: string,
-    profile: NaverProfilePayload,
-    done: (err: Error | null, user?: unknown) => void,
+    reqOrAccessToken: any,
+    accessTokenOrRefreshToken: any,
+    refreshTokenOrProfile: any,
+    profileOrDone: any,
+    doneParam?: (err: Error | null, user?: unknown) => void,
   ) {
+    let req: any;
+    let profile: NaverProfilePayload;
+    let done: (err: Error | null, user?: unknown) => void;
+
+    if (typeof doneParam === 'function') {
+      req = reqOrAccessToken;
+      profile = profileOrDone;
+      done = doneParam;
+    } else {
+      req = null;
+      profile = refreshTokenOrProfile;
+      done = profileOrDone;
+    }
+
     try {
       const providerId = String(profile.id);
       const email = profile.email;
-      const name = profile.name || profile.nickname || '네이버 사용자';
+      const name =
+        profile.name ||
+        profile.nickname ||
+        profile._json?.response?.name ||
+        profile._json?.response?.nickname ||
+        '네이버 사용자';
+      const rawImage =
+        profile.profileImage ||
+        profile.profile_image ||
+        profile._json?.response?.profile_image;
+      const profileImage = rawImage
+        ? rawImage.replace(/^http:\/\//i, 'https://')
+        : undefined;
 
-      const result = await this.socialAuthService.processSocialUser({
-        provider: 'naver',
-        providerId,
-        email,
-        name,
+      const state = req?.query?.state as string | undefined;
+      const linkVerification =
+        typeof this.socialAuthService.verifyLinkState === 'function'
+          ? this.socialAuthService.verifyLinkState(state)
+          : { valid: false };
+
+      const result = await this.socialAuthService.processSocialUser(
+        {
+          provider: 'naver',
+          providerId,
+          email,
+          name,
+          profileImage,
+        },
+        linkVerification?.valid && linkVerification?.provider === 'naver'
+          ? linkVerification.userId
+          : undefined,
+      );
+
+      done(null, {
+        ...result,
+        isLinked: Boolean(
+          linkVerification?.valid && linkVerification?.provider === 'naver',
+        ),
       });
-
-      done(null, result);
     } catch (error) {
       done(error as Error, false);
     }

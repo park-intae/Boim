@@ -5,6 +5,28 @@
 
 ---
 
+## [Phase 20] - 2026-11-14
+
+### 🌐 상용 외부 API 실연동 & 대표 본계정 및 OAuth 연동 파이프라인 (External Integration)
+- **실제 소셜 계정(카카오/네이버) 실시간 OAuth 연동 및 해제(Link/Unlink) 파이프라인 구축 (`Phase 20-04`):**
+  - **임시 Mock 연동 완전 제거:** `SocialAccountsSettings.tsx`에 남아있던 `mock-link`, `mock-unlink` 및 `(테스트 모드)` 문구를 전면 제거하고 실제 카카오 및 네이버 실계정 OAuth 연동/해제 파이프라인 구축.
+  - **백엔드 소셜 인가 리다이렉트 엔드포인트 신설:** `GET /api/auth/social/link/:provider?token=...` 엔드포인트를 통해 로그인 유저 JWT 검증 후 HMAC-SHA256 10분 만료 서명 State(`link.{provider}.{userId}...`)를 탑재하여 카카오/네이버 공식 인가 페이지로 302 리다이렉트.
+  - **소셜 콜백 계정 바인딩:** 사용자가 카카오/네이버에서 동의 완료 시 콜백에서 state의 HMAC 서명을 검증하여 해당 유저의 계정에 프로필(닉네임, 프로필 사진, 이메일)을 즉시 바인딩하고 대시보드(`/dashboard?tab=settings&social_link_success=...`)로 안전 복귀.
+  - **소셜 계정 실해제 및 대표 계정 복구:** `POST /api/auth/:provider/unlink` 엔드포인트를 통해 해당 SNS 원본 데이터를 초기화하고, 만약 해제되는 SNS가 대표 본계정인 경우 기본 가입 계정(`local`)으로 자동 복구.
+  - **전사 단위/통합 테스트 100% 통과:** 백엔드 205개 Jest 테스트, 프론트엔드 210개 Vitest 테스트 100% 통과 달성.
+- **네이버 Developers 상용 OAuth2 실연동 & 대표 본계정 전환 파이프라인 (`Phase 20-03`):**
+  - **본계정 기본값 보존 스키마 확장:** 회원가입 시 생성된 로컬 계정을 기본 본계정(`primaryAccountProvider: 'local'`, `localNickname`, `localEmail`)으로 영구 보존.
+  - **대표 본계정(Primary Identity) 전환 UI/API:** 연동된 SNS(카카오, 네이버)가 있을 때 사용자가 직접 원하는 계정을 서비스 대표 계정으로 원클릭 지정(`PATCH /api/auth/social/primary-account`).
+  - **헤더 및 전역 아바타 실시간 동기화:** 대표 본계정 전환 시 서비스 상단 헤더 아바타, 닉네임, 표시 이메일이 해당 계정의 원본 정보로 실시간 동기화.
+- **카카오 Developers 상용 OAuth2 실연동 (`Phase 20-02`):**
+  - 카카오 REST API 토큰 교환(`POST https://kauth.kakao.com/oauth/token`) 및 사용자 정보(`GET https://kapi.kakao.com/v2/user/me`) 실연동.
+  - 카카오 인가창 ➔ 콜백 ➔ JWT 발급 및 로그인/회원가입 플로우 검증.
+- **Google Gemini AI 종합 보장 진단 API 연동 (`Phase 20-01`):**
+  - 최신 `@google/genai` SDK 기반 `gemini-3.5-flash-lite` 모델 실시간 종합 보장 진단 파이프라인 가동.
+  - API 키 부재 또는 장애 시 `RuleBasedDiagnosisEngine` 무중단 자동 전환 테스트 완료.
+
+---
+
 ## [Phase 19] - 2026-11-14
 
 ### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)

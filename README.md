@@ -154,9 +154,9 @@ Boim 프로젝트는 기능 추가 및 리팩토링 시 **단 하나의 회귀 �
 
 | 영역 | 프레임워크 | 검증 항목 | 테스트 스위트 | 테스트 통과 수 | 통과율 |
 | :--- | :--- | :--- | :---: | :---: | :---: |
-| **Backend API** | Jest / Supertest | 컨트롤러, 서비스 비즈니스 로직, 인증/인가 가드, 크론 스케줄러, AI 진단 규칙 엔진 | **27 Suites** | **192 Tests** | **100% PASS** ✅ |
-| **Frontend Web** | Vitest / Testing Library | 컴포넌트 렌더링, 캘린더 인터랙션, React Query 훅, Zustand 스토어, PWA 캐싱 | **47 Files** | **202 Tests** | **100% PASS** ✅ |
-| **종합 무결성** | Turbo Monorepo | 모노레포 전체 통합 검증 (`pnpm test`) | **74 Suites** | **394 Tests** | **100% PASS** 🚀 |
+| **Backend API** | Jest / Supertest | 컨트롤러, 서비스 비즈니스 로직, 인증/인가 가드, 크론 스케줄러, AI 진단 규칙 엔진 | **27 Suites** | **193 Tests** | **100% PASS** ✅ |
+| **Frontend Web** | Vitest / Testing Library | 컴포넌트 렌더링, 캘린더 인터랙션, React Query 훅, Zustand 스토어, PWA 캐싱 | **48 Files** | **207 Tests** | **100% PASS** ✅ |
+| **종합 무결성** | Turbo Monorepo | 모노레포 전체 통합 검증 (`pnpm test`) | **75 Suites** | **400 Tests** | **100% PASS** 🚀 |
 
 ---
 
@@ -221,7 +221,8 @@ Boim 프로젝트는 기능 추가 및 리팩토링 시 **단 하나의 회귀 �
 | **Phase 16** | **프론트엔드 번들 최적화(-90%), PWA 오프라인 캐싱, WAI-ARIA 및 Lighthouse 96/100/100/100 품질 고도화** | **완료** ✅ |
 | **Phase 17** | **공개 서비스 소개 랜딩 페이지(Landing Page) 구현, 브랜드 로고 통일 및 인터랙션 고도화** | **완료** ✅ |
 | **Phase 18** | **Docker 컨테이너화 및 GitHub Actions CI/CD 자동화 배포 파이프라인 (DevOps & Infrastructure)** | **완료** ✅ |
-| **Phase 19** | **Expo(React Native) 기반 모바일 앱 구축 및 패키징 (Mobile Application)** | **진행 예정** ⏳ |
+| **Phase 19** | **Expo(React Native) 기반 모바일 앱 구축, 플로팅 탭 네비게이션 및 실시간 인앱 OCR 오토 스캐너** | **완료** ✅ |
+| **Phase 20** | **상용 외부 API 실연동 (Google Gemini AI 실시간 분석, 카카오/네이버 OAuth2 실연동 & 대표 본계정 파이프라인)** | **완료** ✅ |
 
 ---
 

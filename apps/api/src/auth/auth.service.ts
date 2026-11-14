@@ -49,7 +49,12 @@ export class AuthService {
         email,
         password: hashedPassword,
         name: name || undefined,
+        localEmail: email,
+        localNickname: name || undefined,
         provider: 'local',
+        primaryAccountProvider: 'local',
+        preferredImageProvider: 'default',
+        preferredNameProvider: 'custom',
         isPassVerified: false,
       },
     });
@@ -164,14 +169,34 @@ export class AuthService {
 
     const prefix = user.email?.split('@')[0] || 'user';
     return {
+      primaryAccountProvider:
+        (user.primaryAccountProvider as 'local' | 'kakao' | 'naver') || 'local',
+      localAccount: {
+        email:
+          user.localEmail || (user.provider === 'local' ? user.email : null),
+        nickname:
+          user.localNickname ||
+          (user.provider === 'local' ? user.name : '기본 회원'),
+      },
       kakao: {
         linked: isKakao,
-        email: isKakao ? `${prefix}@kakao.com` : null,
+        email: user.kakaoEmail || (isKakao ? `${prefix}@kakao.com` : null),
+        nickname: user.kakaoNickname || (isKakao ? user.name : null),
+        profileImage:
+          user.kakaoProfileImage || (isKakao ? user.profileImage : null),
       },
       naver: {
         linked: isNaver,
-        email: isNaver ? `${prefix}@naver.com` : null,
+        email: user.naverEmail || (isNaver ? `${prefix}@naver.com` : null),
+        nickname: user.naverNickname || (isNaver ? user.name : null),
+        profileImage:
+          user.naverProfileImage || (isNaver ? user.profileImage : null),
       },
+      preferredImageProvider:
+        (user.preferredImageProvider as 'kakao' | 'naver' | 'default') ||
+        'kakao',
+      preferredNameProvider:
+        (user.preferredNameProvider as 'kakao' | 'naver' | 'custom') || 'kakao',
     };
   }
 

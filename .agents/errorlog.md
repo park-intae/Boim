@@ -173,4 +173,33 @@
   1. 영문 약어(AIA, AXA, MG, DB, KB 등) 매칭 시 단어 경계(`\b`)와 대소문자를 엄격히 구분하도록 정규식을 보호함.
   2. 대한민국 보험 상품명의 고유 특징인 `무배당 / (무) ... 종합보험/건강보험` 패턴을 최우선으로 검출하고, 라벨 기반 매칭 시 최소 2글자 이상의 한글 존재 여부를 필수 검증하도록 개선함.
 
+## 26. passport-kakao의 기본 Client Secret('kakao') 주입으로 인한 Bad client credentials (500) 오류
+- **발생 상황:** 카카오 Developers REST API 키(`KAKAO_CLIENT_ID`)를 등록하고 브라우저에서 실제 카카오 소셜 로그인을 시도할 때 백엔드에서 `500 Internal Server Error` 발생.
+- **오류 내용:**
+  1. `passport-kakao` 라이브러리는 `clientSecret` 옵션이 제공되지 않으면 내부적으로 `DEFAULT_CLIENT_SECRET = 'kakao'`를 강제 할당하여 카카오 토큰 엔드포인트(`https://kauth.kakao.com/oauth/token`)로 전송함.
+  2. 카카오 인증 서버는 애플리케이션의 Client Secret이 활성화되어 있지 않거나 불일치하면 `invalid_client: Bad client credentials` 에러(HTTP 401)를 반환하고, Passport 미들웨어가 500 예외로 처리함.
+- **해결 및 예방:**
+  1. 카카오 Developers 콘솔의 **[제품 설정] > [카카오 로그인] > [보안]**에서 Client Secret 코드를 필수로 생성 및 [사용함]으로 활성화함.
+  2. 백엔드 `.env` 파일에 `KAKAO_CLIENT_SECRET`을 등록하고 Docker 컨테이너에 환경 변수를 주입하여 카카오 서버와 상호 일치하도록 구성함.
+
+## 27. Vite 코드 스플리팅(Dynamic Import) 배포 후 구버전 번들 해시 불일치로 인한 청크 404 및 런타임 크래시
+- **발생 상황:** Docker 컨테이너 재빌드/재배포 직후, 브라우저 세션을 새로고침하지 않고 로그인 화면에서 회원가입 버튼을 클릭할 때 발생.
+- **오류 내용:** `Failed to fetch dynamically imported module: http://localhost/assets/SignUp-DM0MXcLI.js (TypeError)` 에러와 함께 React Router의 기본 에러 화면이 노출됨.
+  1. Vite는 빌드할 때마다 파일 내용의 해시값을 파일명(예: `SignUp-DVNFBz4D.js`)에 부여함.
+  2. 사용자의 브라우저 메모리에 로드되어 있던 구버전 `index.html` 및 메인 번들은 이전 빌드의 청크 파일명(`SignUp-DM0MXcLI.js`)을 요청함.
+  3. 컨테이너가 최신 이미지로 교체되면서 이전 청크 파일이 존재하지 않아 Nginx에서 404를 반환하고, 동적 `import()`가 실패함.
+- **해결 및 예방:**
+  1. `RouteErrorBoundary`([RouteErrorBoundary.tsx](file:///C:/Users/pit19/OneDrive/바탕%20화면/프로그래밍/Boim/apps/web/src/components/common/RouteErrorBoundary.tsx))를 신설하고 모든 라우트와 동적 컴포넌트에 래핑함.
+  2. 동적 모듈 로드 실패(`Failed to fetch dynamically imported module`) 감지 시 세션 스토리지를 활용해 자동으로 최신 버전을 1회 강제 리로드(`window.location.reload()`)하여 사용자가 에러 화면을 보지 않고 즉시 최신 화면으로 전환되도록 방어 파이프라인 구축.
+
+## 28. 소셜 계정 연동 화면의 Mocking 잔재 및 실시간 OAuth2 인가 리다이렉트 미연동 결함
+- **발생 상황:** 설정 ➔ 소셜 계정 연동 화면에서 카카오/네이버 "연동하기" 버튼을 클릭할 때 발생.
+- **오류 내용:**
+  1. 실제 카카오/네이버 공식 인가창(`https://kauth.kakao.com/...`, `https://nid.naver.com/...`)으로 이동하지 않고, 브라우저 `window.confirm`에 `(테스트 모드: 즉시 연동 완료)`라는 안내창이 뜬 뒤 가짜 목업 API(`POST /auth/social/mock-link`)만 호출하고 종료됨.
+  2. 실제 소셜 계정 토큰 교환 및 프로필 바인딩 파이프라인이 누락되어, 사용자 관점에서 실계정 연동이 전혀 작동하지 않는 치명적 결함 발생.
+- **해결 및 예방:**
+  1. 프론트엔드의 `mock-link`, `mock-unlink` 및 `(테스트 모드)` 문구를 전면 제거함.
+  2. 백엔드에 `GET /api/auth/social/link/:provider?token=...` 엔드포인트를 신설하고, JWT 기반 유저 식별자 + 10분 만료 HMAC-SHA256 서명 State(`link.{provider}.{userId}...`)를 탑재하여 실제 카카오/네이버 공식 인가 화면으로 302 리다이렉트하는 표준 OAuth 바인딩 아키텍처 완성.
+  3. 카카오/네이버 동의 완료 후 콜백에서 `state` 서명을 검증하여 해당 사용자의 DB 계정에 원본 프로필을 바인딩하고 대시보드로 복귀시키는 전 과정 완성.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

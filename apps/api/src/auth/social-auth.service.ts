@@ -2,18 +2,21 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  BadRequestException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
+import { UpdateSocialPriorityDto } from '@boim/shared-types';
 
 export interface SocialProfile {
   provider: 'kakao' | 'naver';
   providerId: string;
   email?: string;
   name?: string;
+  profileImage?: string;
 }
 
 export interface SocialAuthResult {
@@ -22,7 +25,10 @@ export interface SocialAuthResult {
     email?: string | null;
     name?: string | null;
     provider?: string | null;
+    profileImage?: string | null;
     isPassVerified: boolean;
+    preferredImageProvider?: string | null;
+    preferredNameProvider?: string | null;
   };
   tokens: {
     accessToken: string;
@@ -117,10 +123,11 @@ export class SocialAuthService {
       id: number | string;
       kakao_account?: {
         email?: string;
-        profile?: { nickname?: string };
+        profile?: { nickname?: string; profile_image_url?: string };
       };
       properties?: {
         nickname?: string;
+        profile_image?: string;
       };
     }
 
@@ -131,13 +138,88 @@ export class SocialAuthService {
       data.kakao_account?.profile?.nickname ||
       data.properties?.nickname ||
       '카카오 사용자';
+    const profileImage =
+      data.kakao_account?.profile?.profile_image_url ||
+      data.properties?.profile_image;
 
     return {
       provider: 'kakao',
       providerId,
       email,
       name,
+      profileImage,
     };
+  }
+
+  /**
+   * 소셜 계정 연동(Linking) 전용 보안 State 문자열을 생성합니다. (유효시간: 10분)
+   * 형식: link.{provider}.{userId}.{timestamp}.{nonce}.{signature}
+   */
+  generateLinkState(userId: string, provider: 'kakao' | 'naver'): string {
+    const timestamp = Date.now().toString();
+    const nonce = crypto.randomBytes(8).toString('hex');
+    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+    const payload = `link.${provider}.${userId}.${timestamp}.${nonce}`;
+    const signature = crypto
+      .createHmac('sha256', secret)
+      .update(payload)
+      .digest('hex');
+
+    return `${payload}.${signature}`;
+  }
+
+  /**
+   * 소셜 계정 연동 State를 검증하고 유효한 경우 userId 및 provider를 반환합니다.
+   */
+  verifyLinkState(state?: string): {
+    valid: boolean;
+    userId?: string;
+    provider?: 'kakao' | 'naver';
+  } {
+    if (!state || !state.startsWith('link.')) {
+      return { valid: false };
+    }
+
+    try {
+      const parts = state.split('.');
+      if (parts.length !== 6) return { valid: false };
+
+      const [prefix, provider, userId, timestampStr, nonce, signature] = parts;
+      if (prefix !== 'link' || (provider !== 'kakao' && provider !== 'naver')) {
+        return { valid: false };
+      }
+
+      const timestamp = parseInt(timestampStr, 10);
+      if (isNaN(timestamp)) return { valid: false };
+
+      // 10분 유효기간 체크
+      const now = Date.now();
+      if (now - timestamp > 10 * 60 * 1000 || timestamp > now + 60 * 1000) {
+        return { valid: false };
+      }
+
+      const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+      const payload = `link.${provider}.${userId}.${timestampStr}.${nonce}`;
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(payload)
+        .digest('hex');
+
+      const sigBuffer = Buffer.from(signature, 'hex');
+      const expectedBuffer = Buffer.from(expectedSignature, 'hex');
+
+      if (sigBuffer.length !== expectedBuffer.length) {
+        return { valid: false };
+      }
+
+      if (!crypto.timingSafeEqual(sigBuffer, expectedBuffer)) {
+        return { valid: false };
+      }
+
+      return { valid: true, userId, provider: provider };
+    } catch {
+      return { valid: false };
+    }
   }
 
   /**
@@ -289,6 +371,7 @@ export class SocialAuthService {
         email?: string;
         name?: string;
         nickname?: string;
+        profile_image?: string;
       };
     }
 
@@ -304,6 +387,7 @@ export class SocialAuthService {
       providerId: data.response.id,
       email: data.response.email,
       name: data.response.name || data.response.nickname || '네이버 사용자',
+      profileImage: data.response.profile_image,
     };
   }
 
@@ -347,11 +431,38 @@ export class SocialAuthService {
         currentIds.push(targetProviderKey);
       }
 
+      // 플랫폼별 원본 정보 보존 및 우선순위에 따른 프로필 업데이트
+      const updateData: Record<string, unknown> = {
+        providerId: currentIds.join('|'),
+      };
+
+      if (profile.provider === 'kakao') {
+        if (profile.name) updateData.kakaoNickname = profile.name;
+        if (profile.profileImage)
+          updateData.kakaoProfileImage = profile.profileImage;
+        if (profile.email) updateData.kakaoEmail = profile.email;
+        if (user.preferredImageProvider === 'kakao' && profile.profileImage) {
+          updateData.profileImage = profile.profileImage;
+        }
+        if (user.preferredNameProvider === 'kakao' && profile.name) {
+          updateData.name = profile.name;
+        }
+      } else if (profile.provider === 'naver') {
+        if (profile.name) updateData.naverNickname = profile.name;
+        if (profile.profileImage)
+          updateData.naverProfileImage = profile.profileImage;
+        if (profile.email) updateData.naverEmail = profile.email;
+        if (user.preferredImageProvider === 'naver' && profile.profileImage) {
+          updateData.profileImage = profile.profileImage;
+        }
+        if (user.preferredNameProvider === 'naver' && profile.name) {
+          updateData.name = profile.name;
+        }
+      }
+
       const updatedUser = await this.prisma.user.update({
         where: { id: BigInt(linkUserId) },
-        data: {
-          providerId: currentIds.join('|'),
-        },
+        data: updateData,
       });
 
       const tokens = this.authService.generateTokens({
@@ -365,6 +476,9 @@ export class SocialAuthService {
           email: updatedUser.email,
           name: updatedUser.name,
           provider: updatedUser.provider,
+          profileImage: updatedUser.profileImage,
+          preferredImageProvider: updatedUser.preferredImageProvider,
+          preferredNameProvider: updatedUser.preferredNameProvider,
           isPassVerified: updatedUser.isPassVerified,
         },
         tokens,
@@ -395,11 +509,36 @@ export class SocialAuthService {
         if (!currentIds.includes(targetProviderKey)) {
           currentIds.push(targetProviderKey);
         }
+        const autoLinkData: Record<string, unknown> = {
+          providerId: currentIds.join('|'),
+        };
+        if (profile.provider === 'kakao') {
+          if (profile.name) autoLinkData.kakaoNickname = profile.name;
+          if (profile.profileImage)
+            autoLinkData.kakaoProfileImage = profile.profileImage;
+          if (profile.email) autoLinkData.kakaoEmail = profile.email;
+          if (
+            existingEmailUser.preferredImageProvider === 'kakao' &&
+            profile.profileImage
+          ) {
+            autoLinkData.profileImage = profile.profileImage;
+          }
+        } else if (profile.provider === 'naver') {
+          if (profile.name) autoLinkData.naverNickname = profile.name;
+          if (profile.profileImage)
+            autoLinkData.naverProfileImage = profile.profileImage;
+          if (profile.email) autoLinkData.naverEmail = profile.email;
+          if (
+            existingEmailUser.preferredImageProvider === 'naver' &&
+            profile.profileImage
+          ) {
+            autoLinkData.profileImage = profile.profileImage;
+          }
+        }
+
         user = await this.prisma.user.update({
           where: { id: existingEmailUser.id },
-          data: {
-            providerId: currentIds.join('|'),
-          },
+          data: autoLinkData,
         });
       }
     }
@@ -412,17 +551,68 @@ export class SocialAuthService {
         profile.email ||
         `${profile.provider}_${profile.providerId}@social.boim.internal`;
 
+      const createData: Record<string, unknown> = {
+        email: emailToUse,
+        name:
+          profile.name ||
+          (profile.provider === 'kakao' ? '카카오 사용자' : '네이버 사용자'),
+        profileImage: profile.profileImage || null,
+        provider: profile.provider,
+        providerId: targetProviderKey,
+        preferredImageProvider: profile.provider,
+        preferredNameProvider: profile.provider,
+        isPassVerified: false,
+      };
+
+      if (profile.provider === 'kakao') {
+        createData.kakaoNickname = profile.name || null;
+        createData.kakaoProfileImage = profile.profileImage || null;
+        createData.kakaoEmail = profile.email || null;
+      } else {
+        createData.naverNickname = profile.name || null;
+        createData.naverProfileImage = profile.profileImage || null;
+        createData.naverEmail = profile.email || null;
+      }
+
       user = await this.prisma.user.create({
-        data: {
-          email: emailToUse,
-          name:
-            profile.name ||
-            (profile.provider === 'kakao' ? '카카오 사용자' : '네이버 사용자'),
-          provider: profile.provider,
-          providerId: targetProviderKey,
-          isPassVerified: false,
-        },
+        data: createData as any,
       });
+    } else {
+      // 기존 유저 로그인 시 해당 플랫폼의 원본 정보 최신화 & 우선순위에 따른 반영
+      const syncData: Record<string, unknown> = {};
+      if (profile.provider === 'kakao') {
+        if (profile.name) syncData.kakaoNickname = profile.name;
+        if (profile.profileImage)
+          syncData.kakaoProfileImage = profile.profileImage;
+        if (profile.email) syncData.kakaoEmail = profile.email;
+        if (user.preferredImageProvider === 'kakao' && profile.profileImage) {
+          syncData.profileImage = profile.profileImage;
+        }
+        if (user.preferredNameProvider === 'kakao' && profile.name) {
+          syncData.name = profile.name;
+        }
+      } else if (profile.provider === 'naver') {
+        if (profile.name) syncData.naverNickname = profile.name;
+        if (profile.profileImage)
+          syncData.naverProfileImage = profile.profileImage;
+        if (profile.email) syncData.naverEmail = profile.email;
+        if (user.preferredImageProvider === 'naver' && profile.profileImage) {
+          syncData.profileImage = profile.profileImage;
+        }
+        if (user.preferredNameProvider === 'naver' && profile.name) {
+          syncData.name = profile.name;
+        }
+      }
+
+      if (Object.keys(syncData).length > 0) {
+        const updated = await this.prisma.user.update({
+          where: { id: user.id },
+          data: syncData,
+        });
+        if (updated) {
+          user = updated;
+        }
+      }
     }
 
     const tokens = this.authService.generateTokens({
@@ -436,6 +626,9 @@ export class SocialAuthService {
         email: user.email,
         name: user.name,
         provider: user.provider,
+        profileImage: user.profileImage,
+        preferredImageProvider: user.preferredImageProvider,
+        preferredNameProvider: user.preferredNameProvider,
         isPassVerified: user.isPassVerified,
       },
       tokens,
@@ -457,17 +650,38 @@ export class SocialAuthService {
     const prefix = `${provider}:`;
     let currentIds = (user.providerId || '').split('|').filter(Boolean);
     currentIds = currentIds.filter(
-      (id) => !id.startsWith(prefix) && id !== user.providerId,
+      (id) => !id.startsWith(prefix) && id !== `${provider}:${user.id}`,
     );
 
     const newProvider = user.provider === provider ? 'local' : user.provider;
 
+    const updateData: Record<string, unknown> = {
+      provider: newProvider,
+      providerId: currentIds.length > 0 ? currentIds.join('|') : null,
+    };
+
+    if (provider === 'kakao') {
+      updateData.kakaoNickname = null;
+      updateData.kakaoProfileImage = null;
+      updateData.kakaoEmail = null;
+    } else if (provider === 'naver') {
+      updateData.naverNickname = null;
+      updateData.naverProfileImage = null;
+      updateData.naverEmail = null;
+    }
+
+    // 만약 현재 대표 본계정이 해제되는 provider였다면 local로 복구
+    if (user.primaryAccountProvider === provider) {
+      updateData.primaryAccountProvider = 'local';
+      updateData.name = user.localNickname || user.name;
+      updateData.profileImage = null;
+      updateData.preferredImageProvider = 'default';
+      updateData.preferredNameProvider = 'custom';
+    }
+
     await this.prisma.user.update({
       where: { id: BigInt(userId) },
-      data: {
-        provider: newProvider,
-        providerId: currentIds.length > 0 ? currentIds.join('|') : null,
-      },
+      data: updateData as any,
     });
 
     const providerName = provider === 'kakao' ? '카카오' : '네이버';
@@ -475,6 +689,112 @@ export class SocialAuthService {
       message: `${providerName} 계정 연동이 성공적으로 해제되었습니다.`,
       provider,
       linked: false,
+    };
+  }
+
+  /**
+   * 멀티 소셜 연동 시 대표 프로필 사진 및 이름 우선순위를 설정합니다.
+   */
+  async updateProfilePriority(userId: string, dto: UpdateSocialPriorityDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(userId) },
+    });
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    const updateData: Record<string, unknown> = {};
+
+    if (dto.preferredImageProvider) {
+      updateData.preferredImageProvider = dto.preferredImageProvider;
+      if (dto.preferredImageProvider === 'kakao') {
+        updateData.profileImage = user.kakaoProfileImage || null;
+      } else if (dto.preferredImageProvider === 'naver') {
+        updateData.profileImage = user.naverProfileImage || null;
+      } else if (dto.preferredImageProvider === 'default') {
+        updateData.profileImage = null;
+      }
+    }
+
+    if (dto.preferredNameProvider) {
+      updateData.preferredNameProvider = dto.preferredNameProvider;
+      if (dto.preferredNameProvider === 'kakao' && user.kakaoNickname) {
+        updateData.name = user.kakaoNickname;
+      } else if (dto.preferredNameProvider === 'naver' && user.naverNickname) {
+        updateData.name = user.naverNickname;
+      }
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: BigInt(userId) },
+      data: updateData,
+    });
+
+    return {
+      id: updatedUser.id.toString(),
+      email: updatedUser.email,
+      name: updatedUser.name,
+      profileImage: updatedUser.profileImage,
+      preferredImageProvider: updatedUser.preferredImageProvider,
+      preferredNameProvider: updatedUser.preferredNameProvider,
+    };
+  }
+
+  /**
+   * 본계정(대표 계정: Primary Identity)을 직접 전환합니다.
+   * (기본 가입 계정 'local', 'kakao', 'naver' 중 선택)
+   */
+  async setPrimaryAccount(
+    userId: string,
+    provider: 'local' | 'kakao' | 'naver',
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: BigInt(userId) },
+    });
+    if (!user) {
+      throw new UnauthorizedException('사용자를 찾을 수 없습니다.');
+    }
+
+    const updateData: Record<string, unknown> = {
+      primaryAccountProvider: provider,
+    };
+
+    if (provider === 'local') {
+      updateData.name = user.localNickname || user.name || '사용자';
+      updateData.profileImage = null; // 기본 이니셜 아바타
+      updateData.preferredImageProvider = 'default';
+      updateData.preferredNameProvider = 'custom';
+    } else if (provider === 'kakao') {
+      if (!user.kakaoNickname && !user.kakaoEmail) {
+        throw new BadRequestException('연동된 카카오 계정 정보가 없습니다.');
+      }
+      updateData.name = user.kakaoNickname || user.name;
+      updateData.profileImage = user.kakaoProfileImage || null;
+      updateData.preferredImageProvider = 'kakao';
+      updateData.preferredNameProvider = 'kakao';
+    } else if (provider === 'naver') {
+      if (!user.naverNickname && !user.naverEmail) {
+        throw new BadRequestException('연동된 네이버 계정 정보가 없습니다.');
+      }
+      updateData.name = user.naverNickname || user.name;
+      updateData.profileImage = user.naverProfileImage || null;
+      updateData.preferredImageProvider = 'naver';
+      updateData.preferredNameProvider = 'naver';
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: BigInt(userId) },
+      data: updateData,
+    });
+
+    return {
+      id: updatedUser.id.toString(),
+      email: updatedUser.email,
+      name: updatedUser.name,
+      profileImage: updatedUser.profileImage,
+      primaryAccountProvider: updatedUser.primaryAccountProvider,
+      preferredImageProvider: updatedUser.preferredImageProvider,
+      preferredNameProvider: updatedUser.preferredNameProvider,
     };
   }
 }

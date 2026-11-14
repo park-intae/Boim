@@ -109,9 +109,18 @@ export function Header() {
             aria-haspopup="menu"
             aria-expanded={isProfileMenuOpen}
           >
-            <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-[13px] select-none">
-              {initial}
-            </div>
+            {user?.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt={displayName}
+                className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-[13px] select-none">
+                {initial}
+              </div>
+            )}
             <span className="hidden lg:inline text-[14px] font-bold text-gray-700 max-w-[120px] truncate">
               {displayName}
             </span>
@@ -127,20 +136,36 @@ export function Header() {
             >
               {/* Profile Header */}
               <div className="px-4 py-3 border-b border-gray-100">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-gray-900 truncate">
-                    {displayName}
-                  </span>
-                  {user?.isPassVerified && (
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      인증완료
-                    </span>
+                <div className="flex items-center gap-2.5 mb-1.5">
+                  {user?.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt={displayName}
+                      className="w-9 h-9 rounded-full object-cover border border-gray-200"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-sm select-none">
+                      {initial}
+                    </div>
                   )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-gray-900 truncate">
+                        {displayName}
+                      </span>
+                      {user?.isPassVerified && (
+                        <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                          <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                          인증완료
+                        </span>
+                      )}
+                    </div>
+                    {user?.email && (
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    )}
+                  </div>
                 </div>
-                {user?.email && (
-                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                )}
               </div>
 
               {/* Menu Actions */}

@@ -31,6 +31,26 @@ describe('Header component', () => {
     expect(screen.getByText('홍')).toBeInTheDocument();
   });
 
+  it('renders profile image when user has profileImage', () => {
+    useAuthStore.setState({
+      user: {
+        id: '1',
+        email: 'test@boim.com',
+        name: '카카오유저',
+        profileImage: 'https://k.kakaocdn.net/dn/profile.jpg',
+        isPassVerified: false,
+      },
+      accessToken: 'token123',
+      isAuthenticated: true,
+      rememberMe: false,
+    });
+
+    render(<Header />);
+    const images = screen.getAllByRole('img', { name: '카카오유저' });
+    expect(images.length).toBeGreaterThan(0);
+    expect(images[0]).toHaveAttribute('src', 'https://k.kakaocdn.net/dn/profile.jpg');
+  });
+
   it('opens profile dropdown menu on click', () => {
     render(<Header />);
     const profileBtn = screen.getByLabelText('사용자 메뉴');

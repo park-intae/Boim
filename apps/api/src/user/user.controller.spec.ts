@@ -51,6 +51,14 @@ describe('UserController', () => {
     expect(res.data.id).toBe(1);
   });
 
+  it('getProfile should use authenticated user ID when token is provided', async () => {
+    const res = await controller.getProfile({
+      user: { userId: '99', email: 'kakao_user@boim.internal' },
+    } as any);
+    expect(service.getUserById).toHaveBeenCalledWith(99n);
+    expect(res.success).toBe(true);
+  });
+
   it('updateProfile should return updated user', async () => {
     const res = await controller.updateProfile({} as any, { name: 'newName' });
     expect(res.success).toBe(true);

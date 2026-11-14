@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { useAuthStore } from '../features/auth/store/authStore';
 import { apiClient } from '../api/client';
-import type { ApiResponse, UserDto } from '@boim/shared-types';
 
 export const OAuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,16 +26,20 @@ export const OAuthCallbackPage: React.FC = () => {
         try {
           // 토큰 임시 설정 후 내 프로필 정보 조회
           localStorage.setItem('temp_token', token);
-          const response = await apiClient.get<ApiResponse<UserDto>>('/users/me', {
+          const response = (await apiClient.get('/users/me', {
             headers: { Authorization: `Bearer ${token}` },
-          });
+          })) as Record<string, unknown>;
 
-          const userData = response.data?.data;
+          const dataLevel1 = response?.data as Record<string, unknown> | undefined;
+          const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
+          const rawUser = dataLevel2?.id ? dataLevel2 : (dataLevel1?.id ? dataLevel1 : response);
+
           const user = {
-            id: userData?.id ? String(userData.id) : 'social_user',
-            email: userData?.email || 'social@boim.internal',
-            name: userData?.name || '소셜 사용자',
-            isPassVerified: userData?.isPassVerified ?? false,
+            id: rawUser?.id ? String(rawUser.id) : 'social_user',
+            email: (rawUser?.email as string) || 'social@boim.internal',
+            name: (rawUser?.name as string) || '소셜 사용자',
+            profileImage: (rawUser?.profileImage as string) || null,
+            isPassVerified: Boolean(rawUser?.isPassVerified),
           };
 
           login(user, token);
@@ -64,19 +67,22 @@ export const OAuthCallbackPage: React.FC = () => {
           const payload = provider === 'naver' ? { code, state: state || 'mock_state' } : { code };
 
           interface SocialLoginResponse {
-            user?: { id: string; email?: string; name?: string; isPassVerified?: boolean };
+            user?: { id: string; email?: string; name?: string; profileImage?: string | null; isPassVerified?: boolean };
             tokens?: { accessToken: string; refreshToken?: string };
           }
 
-          const res = await apiClient.post<ApiResponse<SocialLoginResponse>>(endpoint, payload);
-          const authData = res.data?.data;
+          const resObj = (await apiClient.post(endpoint, payload)) as Record<string, unknown>;
+          const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
+          const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
+          const authData = (dataLevel2?.tokens ? dataLevel2 : (dataLevel1?.tokens ? dataLevel1 : resObj)) as unknown as SocialLoginResponse;
 
           if (authData?.tokens?.accessToken && authData.user) {
             login(
               {
                 id: String(authData.user.id),
                 email: authData.user.email || 'social@boim.internal',
-                name: authData.user.name,
+                name: authData.user.name || '소셜 사용자',
+                profileImage: authData.user.profileImage || null,
                 isPassVerified: !!authData.user.isPassVerified,
               },
               authData.tokens.accessToken,

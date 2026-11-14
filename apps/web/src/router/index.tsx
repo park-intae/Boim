@@ -4,6 +4,7 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { HomePage } from '../pages/HomePage';
 import { ProtectedRoute } from '../features/auth/components/ProtectedRoute';
 import { useAuthStore } from '../features/auth/store/authStore';
+import { RouteErrorBoundary } from '../components/common/RouteErrorBoundary';
 
 // 🚀 라우트 단위 코드 스플리팅 (Dynamic Import)
 const Login = lazy(() =>
@@ -56,6 +57,11 @@ export const router = createBrowserRouter(
     {
       path: '/',
       element: <RootRoute />,
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
+      ),
     },
     {
       path: '/dashboard',
@@ -66,53 +72,100 @@ export const router = createBrowserRouter(
           </AppLayout>
         </ProtectedRoute>
       ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
+      ),
     },
     {
       path: '/login',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <Login />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <Login />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
     {
       path: '/signup',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <SignUp />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <SignUp />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
     {
       path: '/onboarding',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <Onboarding onComplete={() => (window.location.href = `${import.meta.env.BASE_URL}login`)} />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <Onboarding onComplete={() => (window.location.href = `${import.meta.env.BASE_URL}login`)} />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
     {
       path: '/pass-verify',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <PassVerification onVerifySuccess={() => (window.location.href = `${import.meta.env.BASE_URL}`)} />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <PassVerification onVerifySuccess={() => (window.location.href = `${import.meta.env.BASE_URL}`)} />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
     {
       path: '/auth/callback',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <OAuthCallbackPage />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <OAuthCallbackPage />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
     {
       path: '/landing',
       element: (
-        <Suspense fallback={<PageFallback />}>
-          <LandingPage />
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<PageFallback />}>
+            <LandingPage />
+          </Suspense>
+        </RouteErrorBoundary>
+      ),
+      errorElement: (
+        <RouteErrorBoundary>
+          <div />
+        </RouteErrorBoundary>
       ),
     },
   ],

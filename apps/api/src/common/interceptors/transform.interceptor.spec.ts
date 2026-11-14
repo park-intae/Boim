@@ -1,7 +1,6 @@
 import { TransformInterceptor } from './transform.interceptor';
 import { ExecutionContext, CallHandler } from '@nestjs/common';
 import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 describe('TransformInterceptor', () => {
   let interceptor: TransformInterceptor<any>;
