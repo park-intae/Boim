@@ -144,4 +144,12 @@
 - **오류 내용:** 최근 모바일 UX 트렌드에 어긋나게 이메일 입력창에 `ex: user@example.com`과 같은 낡은 예시 문구를 붙이고, 테스트 편의를 위해 테스트 계정 ID/PW를 기본값으로 자동 입력해둠.
 - **해결 및 예방:** 플레이스홀더는 `이메일을 입력해주세요`, `비밀번호를 입력해주세요`처럼 정갈하고 직관적인 표준 문구만 사용하고, 개발 편의를 위한 임의의 기본값 하드코딩은 배포 코드에 절대 남기지 말 것.
 
+## 22. Expo/React Native 생태계와 맞지 않는 `@babel/runtime` 8.x 설치로 인한 exports 서브패스 경고
+- **발생 상황:** Phase 19 모바일 앱 실행 및 Metro 번들러 구동 시.
+- **오류 내용:** Metro 번들러가 `Attempted to import the module "@babel/runtime/regenerator" which is not listed in the "exports" of "@babel/runtime" under the requested subpath "./regenerator". Falling back to file-based resolution.` 경고를 지속적으로 출력함.
+- **원인:** React Native 및 Expo(SDK 52/58) 생태계는 Babel 7(`7.29.x`)을 표준으로 사용하고 내부 패키지(`metro-runtime` 등)가 `@babel/runtime/regenerator` 경로를 직접 참조함. 그러나 `apps/mobile/package.json`에 버전을 지정하지 않고 설치하여 최신 Babel 8(`8.1.2`)이 직접 의존성으로 등록됨. Babel 8의 엄격해진 `exports` 맵에는 `./regenerator`가 빠져 있어 번들러가 파일 시스템 폴백을 거쳐야만 했음.
+- **해결 및 예방:**
+  1. `apps/mobile/package.json`의 `@babel/runtime` 버전을 모노레포 타 패키지(Expo, Testing Library)와 동일한 **`^7.29.7`**로 명시하여 버전을 통일함.
+  2. Expo/React Native 프로젝트 세팅 시 코어 번들러/컴파일러 관련 패키지(`@babel/*`, `react-native`, `typescript`)는 임의로 최신 major 버전을 올리지 않고, Expo 프레임워크가 요구하는 peer/권장 버전을 철저히 사전 점검하여 동기화할 것.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

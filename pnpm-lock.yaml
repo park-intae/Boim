@@ -181,8 +181,8 @@ importers:
   apps/mobile:
     dependencies:
       '@babel/runtime':
-        specifier: ^8.1.2
-        version: 8.1.2
+        specifier: ^7.29.7
+        version: 7.29.7
       '@boim/shared-types':
         specifier: workspace:^
         version: link:../../packages/shared-types
@@ -826,9 +826,6 @@ packages:
   '@babel/runtime@7.29.7':
     resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
-
-  '@babel/runtime@8.1.2':
-    resolution: {integrity: sha512-Ay6HdEKZJAeGs6KKJ/ezCK5ssjFmkvUiR0TEGv/B1abyjLWrQ2RU+M507Ppk0NikhvVFhlEFC1/rHfCiYqSUcw==}
 
   '@babel/template@7.29.7':
     resolution: {integrity: sha512-puq+Gf35oI24FeN11LkoUQFqv9uwNeWpxXZi/Ji3rRIoKAzKnxRaZ+Gkj0vKS9ZCiTESfng1N9LyOyXvo+m+Gg==}
@@ -7656,8 +7653,6 @@ snapshots:
       - supports-color
 
   '@babel/runtime@7.29.7': {}
-
-  '@babel/runtime@8.1.2': {}
 
   '@babel/template@7.29.7':
     dependencies:

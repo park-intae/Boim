@@ -5,9 +5,12 @@
 
 ---
 
-## [Phase 19] - 2026-11-13
+## [Phase 19] - 2026-11-14
 
 ### 📱 Expo(React Native) 모바일 앱 구축 및 세션 인증 (Mobile Application)
+- **모바일 의존성 정합성 교정 (`@babel/runtime` 7.29.7 통일):**
+  - Expo SDK 58 및 Metro 번들러 환경에 맞게 `apps/mobile`의 `@babel/runtime` 버전을 8.x(`8.1.2`)에서 생태계 표준인 **`^7.29.7`**로 다운그레이드 및 통일.
+  - Metro 번들러 구동 시 발생하던 `./regenerator` exports 서브패스 불일치 경고를 완벽히 제거하고, 모노레포 전체(Expo, Testing Library) 패키지와 동일한 런타임을 공유하도록 최적화.
 - **`apps/mobile` 프로젝트 세팅 및 Expo SDK 58 전면 업그레이드 (`Phase 19-01`):**
   - 스마트폰 최신 `Expo Go` 환경에 완벽 대응하는 최신 **Expo SDK 58.0.25**, **React 19 (`react@19.3.0`)**, **React Native 0.88.1** 기반 모바일 패키지 구축.
   - `@boim/shared-types` 공통 패키지 100% 참조 및 Metro 번들러 모노레포 심볼릭 링크 호환(`metro.config.js`).
