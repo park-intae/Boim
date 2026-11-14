@@ -64,12 +64,12 @@
   - [x] **Phase 19-05:** 스마트폰 카메라 증권 촬영 OCR 스캔 및 폼 자동완성 연동
   - [x] **Phase 19-06:** 모바일 풀스택 기능 실연동 (CRUD, 동적 캘린더, AI 진단, PASS 본인인증)
   - [x] **Phase 19-07:** 실시간 인앱 뷰파인더 & 제로 클릭 무수동 오토 스캐너 및 10대 카테고리 확장
-- [ ] **Phase 20: 상용 외부 API 실연동 (Google Gemini AI & 카카오/네이버 상용 OAuth2)**
-  - [ ] **Phase 20-01:** Google Gemini AI 실시간 종합 보장 진단 API 연동 & 장애 폴백 검증
-  - [ ] **Phase 20-02:** 카카오 Developers 상용 OAuth2 실연동 & 계정 연동/해제 파이프라인
+- [x] **Phase 20: 상용 외부 API 실연동 (Google Gemini AI & 카카오/네이버 상용 OAuth2) (완료)**
+  - [x] **Phase 20-01:** Google Gemini AI 실시간 종합 보장 진단 API 연동 & 장애 폴백 검증
+  - [x] **Phase 20-02:** 카카오 Developers 상용 OAuth2 실연동 & 계정 연동/해제 파이프라인
   - [x] **Phase 20-03:** 네이버 Developers 상용 OAuth2 실연동 & 본계정 기본값/SNS 대표계정 전환
   - [x] **Phase 20-04:** 실제 소셜 계정(카카오/네이버) 실시간 OAuth 연동 및 해제(Link/Unlink) 실 파이프라인 구축 (완료)
-  - [ ] **Phase 20-05:** 전사 단위/통합 테스트, Docker 컨테이너 배포 및 최종 무결성 검증
+- [ ] **Phase 21: 프론트엔드 전수 Mock/더미 데이터 정리 및 실데이터 연동 무결성 검증**
 
 ---
 

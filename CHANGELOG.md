@@ -8,6 +8,9 @@
 ## [Phase 20] - 2026-11-14
 
 ### 🌐 상용 외부 API 실연동 & 대표 본계정 및 OAuth 연동 파이프라인 (External Integration)
+- **Phase 20 완료 및 Phase 21(프론트엔드 Mock/더미 데이터 정리 및 실데이터 연동 무결성) 로드맵 등록:**
+  - Gemini AI 진단, 카카오/네이버 상용 OAuth 로그인 및 계정 연동/해제(Link/Unlink) 파이프라인 정식 가동 완료.
+  - 프론트엔드 잔여 Mock/더미 데이터 전수 조사 및 실데이터 무결성 검증을 위한 Phase 21 하네스 로드맵 수립.
 - **실제 소셜 계정(카카오/네이버) 실시간 OAuth 연동 및 해제(Link/Unlink) 파이프라인 구축 (`Phase 20-04`):**
   - **임시 Mock 연동 완전 제거:** `SocialAccountsSettings.tsx`에 남아있던 `mock-link`, `mock-unlink` 및 `(테스트 모드)` 문구를 전면 제거하고 실제 카카오 및 네이버 실계정 OAuth 연동/해제 파이프라인 구축.
   - **백엔드 소셜 인가 리다이렉트 엔드포인트 신설:** `GET /api/auth/social/link/:provider?token=...` 엔드포인트를 통해 로그인 유저 JWT 검증 후 HMAC-SHA256 10분 만료 서명 State(`link.{provider}.{userId}...`)를 탑재하여 카카오/네이버 공식 인가 페이지로 302 리다이렉트.

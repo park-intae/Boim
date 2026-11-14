@@ -31,7 +31,7 @@
   - 백엔드 `state` 기반 유저 세션 바인딩(HMAC 서명 state)을 통한 안전한 소셜 계정 연동 콜백 구현
   - 소셜 계정 연동 해제 시 원본 데이터 정리 및 대표 본계정(`local`) 자동 복구
   - 전사 단위/통합 테스트 통과 및 도커 무중단 배포 검증 완료
-- [ ] **Phase 20-05: 전사 단위/통합 테스트, Docker 컨테이너 배포 및 최종 무결성 검증**
-  - 백엔드(Jest) 및 프론트엔드(Vitest) 전사 400개 이상 테스트 100% Pass 무결성 유지
-  - Docker Compose 환경 변수 템플릿(`.env.production.example`) 및 컨테이너 반영 검증
-  - `CHANGELOG.md` 및 포트폴리오 문서 최신화 완료
+- [x] **Phase 20-05: 전사 단위/통합 테스트, Docker 컨테이너 배포 및 최종 무결성 검증 (완료)**
+  - 백엔드(Jest 205개) 및 프론트엔드(Vitest 210개) 전사 415개 테스트 100% Pass 무결성 유지
+  - Docker Compose 컨테이너(`boim-api`, `boim-web`, `boim-postgres`) 갱신 및 무중단 서빙 검증 완료
+  - `CHANGELOG.md` 최신화 및 마스터 브랜치 커밋/푸시 완료
