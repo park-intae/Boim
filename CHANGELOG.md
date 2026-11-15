@@ -7,6 +7,11 @@
 
 ## [Phase 21] - 2026-11-15
 
+### 📄 문서 구조 개편 및 불필요 파일 정리 (Documentation)
+- **`docs/` 디렉토리 내부 정리:**
+  - 중복 및 미사용 문서 정리 (`Boim_Portfolio.md`, `DoorFrame.md`, `PROJECT_OVERVIEW.md` 제거).
+  - 공식 배포 가이드(`DEPLOYMENT.md`) 및 스키마/디자인 에셋 중심의 간결한 디렉토리 구조 확립.
+
 ### 📄 프로젝트 포트폴리오 최신화 (Documentation)
 - **`docs/Boim_Portfolio.md` 최신 마일스톤 전면 반영:**
   - **테스트 및 품질 지표 최신화:** 전사 416개 테스트 전수 통과(웹 211개 Vitest + 백엔드 205개 Jest 100% Pass) 및 프론트엔드 커버리지(56.87% ➔ 83.15%) 도약 반영.
