@@ -2,6 +2,16 @@ import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import type { UserDto, UpdateUserDto, ApiResponse } from '@boim/shared-types';
 
 import { apiClient as api } from './client';
+import {
+  isDemoSession,
+  getDemoProfile,
+  updateDemoProfile,
+  getDemoNotificationSettings,
+  updateDemoNotificationSettings,
+  getDemoLoginHistories,
+  getDemoInsurances,
+  resetDemoFallbackState,
+} from '../features/auth/utils/demoFallback';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -12,6 +22,9 @@ export const useGetProfile = () => {
   return useSuspenseQuery({
     queryKey: userKeys.me(),
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoProfile();
+      }
       const { data } = await api.get<ApiResponse<UserDto>>('/users/me');
       if (!data.success || !data.data) {
         throw new Error(data.error?.message || 'Failed to fetch profile');
@@ -26,6 +39,9 @@ export const useUpdateProfile = () => {
   
   return useMutation({
     mutationFn: async (updateData: UpdateUserDto) => {
+      if (isDemoSession()) {
+        return updateDemoProfile(updateData);
+      }
       const { data } = await api.patch<ApiResponse<UserDto>>('/users/me', updateData);
       if (!data.success || !data.data) {
         throw new Error(data.error?.message || 'Failed to update profile');
@@ -41,6 +57,9 @@ export const useUpdateProfile = () => {
 export const useUpdatePassword = () => {
   return useMutation({
     mutationFn: async (data: import('@boim/shared-types').UpdatePasswordDto) => {
+      if (isDemoSession()) {
+        return true;
+      }
       const response = await api.patch<ApiResponse<null>>('/users/me/password', data);
       if (!response.data.success) {
         throw new Error(response.data.error?.message || '비밀번호 변경에 실패했습니다');
@@ -54,6 +73,9 @@ export const useGetNotificationSettings = () => {
   return useSuspenseQuery({
     queryKey: [...userKeys.me(), 'notificationSettings'],
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoNotificationSettings();
+      }
       const { data } = await api.get<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings');
       if (!data.success || !data.data) {
         throw new Error(data.error?.message || 'Failed to fetch settings');
@@ -67,6 +89,9 @@ export const useUpdateNotificationSettings = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (dto: import('@boim/shared-types').UpdateNotificationSettingsDto) => {
+      if (isDemoSession()) {
+        return updateDemoNotificationSettings(dto);
+      }
       const { data } = await api.patch<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings', dto);
       if (!data.success || !data.data) {
         throw new Error(data.error?.message || 'Failed to update settings');
@@ -76,7 +101,13 @@ export const useUpdateNotificationSettings = () => {
     onMutate: async (newSettings) => {
       await queryClient.cancelQueries({ queryKey: [...userKeys.me(), 'notificationSettings'] });
       const previous = queryClient.getQueryData([...userKeys.me(), 'notificationSettings']);
-      queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], (old: any) => ({ ...old, ...newSettings }));
+      queryClient.setQueryData(
+        [...userKeys.me(), 'notificationSettings'],
+        (old: import('@boim/shared-types').NotificationSettingsDto | undefined) => ({
+          ...(old ?? getDemoNotificationSettings()),
+          ...newSettings,
+        }),
+      );
       return { previous };
     },
     onError: (_err, _newSettings, context) => {
@@ -93,7 +124,14 @@ export const useUpdateNotificationSettings = () => {
 export const useExportData = () => {
   return useMutation({
     mutationFn: async () => {
-      const { data } = await api.get<ApiResponse<any>>('/users/me/export');
+      if (isDemoSession()) {
+        return {
+          exportedAt: new Date().toISOString(),
+          user: getDemoProfile(),
+          insurances: getDemoInsurances(),
+        };
+      }
+      const { data } = await api.get<ApiResponse<Record<string, unknown>>>('/users/me/export');
       if (!data.success) throw new Error(data.error?.message || 'Export failed');
       return data.data;
     },
@@ -102,7 +140,10 @@ export const useExportData = () => {
 
 export const useImportData = () => {
   return useMutation({
-    mutationFn: async (importData: any) => {
+    mutationFn: async (importData: unknown) => {
+      if (isDemoSession()) {
+        return true;
+      }
       const { data } = await api.post<ApiResponse<null>>('/users/me/import', importData);
       if (!data.success) throw new Error(data.error?.message || 'Import failed');
       return true;
@@ -113,6 +154,10 @@ export const useImportData = () => {
 export const useDeleteAccount = () => {
   return useMutation({
     mutationFn: async () => {
+      if (isDemoSession()) {
+        resetDemoFallbackState();
+        return true;
+      }
       const { data } = await api.delete<ApiResponse<null>>('/users/me');
       if (!data.success) throw new Error(data.error?.message || 'Delete account failed');
       return true;
@@ -124,6 +169,9 @@ export const useGetLoginHistory = () => {
   return useSuspenseQuery({
     queryKey: [...userKeys.me(), 'loginHistory'],
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoLoginHistories();
+      }
       const { data } = await api.get<ApiResponse<import('@boim/shared-types').LoginHistoryDto[]>>('/users/me/login-history');
       if (!data.success || !data.data) {
         throw new Error(data.error?.message || 'Failed to fetch login history');

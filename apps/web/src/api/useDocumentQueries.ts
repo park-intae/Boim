@@ -6,6 +6,11 @@ import type {
   DocumentParseResponse,
   ParsedInsuranceData,
 } from '@boim/shared-types';
+import {
+  isDemoSession,
+  getDemoSamplePreset,
+  parseDemoSampleDocument,
+} from '../features/auth/utils/demoFallback';
 
 function unwrapResponse<T>(res: unknown): T {
   if (res && typeof res === 'object') {
@@ -51,6 +56,9 @@ export function useParseDocument() {
 export function useParseSampleDocument() {
   return useMutation<DocumentParseResponse, ApiResponse, void>({
     mutationFn: async () => {
+      if (isDemoSession()) {
+        return parseDemoSampleDocument();
+      }
       const res = await apiClient.post<unknown, ApiResponse<DocumentParseResponse>>(
         '/documents/sample/parse',
       );
@@ -63,6 +71,9 @@ export function useGetSamplePreset() {
   return useQuery({
     queryKey: ['documents', 'sample-preset'],
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoSamplePreset();
+      }
       const res = await apiClient.get<unknown, ApiResponse<{
         sampleName: string;
         fileName: string;

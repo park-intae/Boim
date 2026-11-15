@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
+import { isDemoSession, getDemoDiagnosis } from '../features/auth/utils/demoFallback';
 
 export const diagnosisKeys = {
   all: ['diagnosis'] as const,
@@ -11,9 +12,13 @@ export function useGetDiagnosis() {
   return useQuery({
     queryKey: diagnosisKeys.current(),
     queryFn: async () => {
-      const response = await apiClient.get<any>('/analysis/ai-diagnosis');
-      const data = (response as any)?.data || response;
-      return data as InsuranceDiagnosisDto;
+      if (isDemoSession()) {
+        return getDemoDiagnosis();
+      }
+      const response = await apiClient.get<Record<string, unknown>>('/analysis/ai-diagnosis');
+      const resObj = response as unknown as Record<string, unknown>;
+      const data = resObj?.data || resObj;
+      return data as unknown as InsuranceDiagnosisDto;
     },
     staleTime: 1000 * 60 * 5, // 5분 캐싱
   });
@@ -24,9 +29,13 @@ export function useGenerateDiagnosis() {
 
   return useMutation({
     mutationFn: async () => {
-      const response = await apiClient.post<any>('/analysis/ai-diagnosis', {});
-      const data = (response as any)?.data || response;
-      return data as InsuranceDiagnosisDto;
+      if (isDemoSession()) {
+        return getDemoDiagnosis();
+      }
+      const response = await apiClient.post<Record<string, unknown>>('/analysis/ai-diagnosis', {});
+      const resObj = response as unknown as Record<string, unknown>;
+      const data = resObj?.data || resObj;
+      return data as unknown as InsuranceDiagnosisDto;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(diagnosisKeys.current(), data);

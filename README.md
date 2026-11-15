@@ -196,11 +196,13 @@ Boim 프로젝트는 기능 추가 및 리팩토링 시 **단 하나의 회귀 �
 
 ---
 
-## 🧪 테스트 계정 정보 (로컬 개발용)
+## 🧪 테스트 및 웹 데모 계정 정보
 
-개발 및 Docker 환경에서 로그인할 수 있는 기본 시드 계정입니다 (`apps/api/prisma/seed.ts` 자동 생성):
-- **이메일**: `test@boim.com`
-- **비밀번호**: `password123`
+- **🌐 웹 데모 체험 계정 (GitHub Pages 등 백엔드 미구동 환경 지원)**:
+  - **이메일**: `demo@boim.com` (비밀번호 무관, 샘플 보험 7건 및 AI 진단/알림 프리셋 자동 로드)
+- **🐳 로컬 개발/Docker DB 시드 계정 (`apps/api/prisma/seed.ts`)**:
+  - **이메일**: `test@boim.com`
+  - **비밀번호**: `password123`
 
 ---
 

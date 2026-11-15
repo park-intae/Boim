@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import type { InsuranceProductDto, CreateInsuranceProductDto, UpdateInsuranceProductDto, ApiResponse } from '@boim/shared-types';
+import {
+  isDemoSession,
+  getDemoInsurances,
+  getDemoInsuranceById,
+  createDemoInsurance,
+  updateDemoInsurance,
+  deleteDemoInsurance,
+} from '../features/auth/utils/demoFallback';
 
 export const insuranceKeys = {
   all: ['insuranceProducts'] as const,
@@ -12,6 +20,9 @@ export const useGetInsurances = () => {
   return useQuery({
     queryKey: insuranceKeys.all,
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoInsurances();
+      }
       const response = await apiClient.get<never, ApiResponse<InsuranceProductDto[]>>('/insurance-products');
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to fetch insurances');
@@ -26,6 +37,9 @@ export const useGetInsurance = (id: string | number) => {
   return useQuery({
     queryKey: insuranceKeys.detail(id),
     queryFn: async () => {
+      if (isDemoSession()) {
+        return getDemoInsuranceById(id);
+      }
       const response = await apiClient.get<never, ApiResponse<InsuranceProductDto>>(`/insurance-products/${id}`);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to fetch insurance detail');
@@ -40,6 +54,9 @@ export const useCreateInsurance = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newProduct: CreateInsuranceProductDto) => {
+      if (isDemoSession()) {
+        return createDemoInsurance(newProduct);
+      }
       // API expects userId. Hardcode for MVP since no auth.
       const payload = { ...newProduct, userId: 1 };
       const response = await apiClient.post<never, ApiResponse<InsuranceProductDto>>('/insurance-products', payload);
@@ -59,6 +76,9 @@ export const useUpdateInsurance = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data }: { id: string | number, data: UpdateInsuranceProductDto }) => {
+      if (isDemoSession()) {
+        return updateDemoInsurance(id, data);
+      }
       const response = await apiClient.patch<never, ApiResponse<InsuranceProductDto>>(`/insurance-products/${id}`, data);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to update insurance');
@@ -77,6 +97,10 @@ export const useDeleteInsurance = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string | number) => {
+      if (isDemoSession()) {
+        deleteDemoInsurance(id);
+        return;
+      }
       const response = await apiClient.delete<never, ApiResponse<void>>(`/insurance-products/${id}`);
       if (!response.success) {
         throw new Error(response.error?.message || 'Failed to delete insurance');

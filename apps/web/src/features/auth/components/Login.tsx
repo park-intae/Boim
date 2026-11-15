@@ -6,14 +6,31 @@ import { Mail, Lock } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import type { ApiResponse } from '@boim/shared-types';
 import { useAuthStore } from '../store/authStore';
+import {
+  DEMO_ACCESS_TOKEN,
+  getDemoAuthUser,
+  isDemoAccountEmail,
+  resetDemoFallbackState,
+} from '../utils/demoFallback';
 import { apiClient } from '../../../api/client';
 import { BrandLogo } from '../../../components/common/BrandLogo';
 
-const loginSchema = z.object({
-  email: z.string().email({ message: '올바른 이메일 형식을 입력해주세요.' }),
-  password: z.string().min(8, { message: '비밀번호는 최소 8자 이상이어야 합니다.' }),
-  rememberMe: z.boolean().optional(),
-});
+const loginSchema = z
+  .object({
+    email: z.string().email({ message: '올바른 이메일 형식을 입력해주세요.' }),
+    password: z.string(),
+    rememberMe: z.boolean().optional(),
+  })
+  .superRefine((val, ctx) => {
+    // 데모 계정(demo@boim.com)은 비밀번호 길이 제약 없이 로그인 허용, 일반 계정은 최소 8자 검증
+    if (!isDemoAccountEmail(val.email) && val.password.length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['password'],
+        message: '비밀번호는 최소 8자 이상이어야 합니다.',
+      });
+    }
+  });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -36,8 +53,17 @@ export const Login: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
+    setRememberMe(!!data.rememberMe);
+
+    // 웹 데모 전용 계정(demo@boim.com)인 경우 백엔드 연결 없이도 즉시 데모 폴백 세션으로 진입
+    if (isDemoAccountEmail(data.email)) {
+      resetDemoFallbackState();
+      login(getDemoAuthUser(), DEMO_ACCESS_TOKEN);
+      navigate('/', { replace: true });
+      return;
+    }
+
     try {
-      setRememberMe(!!data.rememberMe);
       const response = (await apiClient.post(
         '/auth/login',
         data

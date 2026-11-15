@@ -5,7 +5,14 @@
 
 ---
 
-## [Phase 21] - 2026-11-15
+## [Phase 21] - 2026-11-16
+
+### 🌐 웹 데모 전용 계정(`demo@boim.com`) 폴백 및 보험 데이터 복구 (`Phase 21-05`)
+- **웹 데모 환경 전용 인메모리 폴백 모듈 구축 (`demoFallback.ts`):**
+  - 커밋 히스토리(Phase 03~04, Phase 14, Phase 19)에 존재했던 보험 상품 데이터 7건(삼성화재 실손의료비보험, 한화생명 암보험, 현대해상 다이렉트 자동차보험, 현대해상 굿앤굿어린이종합보험, DB손해보험 운전자보험, KB 암케어종합치료보험, 교보생명 연금저축 종신보험)과 인앱 알림 4건, AI 종합 보장 진단 리포트 데이터를 데모 폴백 스토어로 복구.
+  - `Login.tsx`: `demo@boim.com` 계정으로 로그인 시 백엔드 서버가 없는 정적 웹 데모(GitHub Pages 등) 환경에서도 즉시 데모 세션으로 진입하도록 지원.
+  - `useInsuranceQueries.ts`, `useNotificationQueries.ts`, `useDiagnosisQueries.ts`, `useUserQueries.ts`, `useDocumentQueries.ts`: `demo@boim.com` 세션일 때만 인메모리 데모 데이터 조회 및 등록/수정/삭제(CRUD)가 동작하도록 격리 연동.
+  - `demoFallback.spec.ts` 및 `Login.spec.tsx` 단위 테스트 추가 및 전수 통과.
 
 ### 🔧 CI/CD 및 GitHub Pages 배포 수정 (Fixed)
 - **GitHub Actions `pnpm/action-setup@v4` 중복 버전 충돌 해결:**

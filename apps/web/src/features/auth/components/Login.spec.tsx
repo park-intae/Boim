@@ -54,4 +54,19 @@ describe('Login Component', () => {
       });
     });
   });
+
+  it('logs in immediately via demo fallback when email is demo@boim.com without calling backend api', async () => {
+    render(<BrowserRouter><Login /></BrowserRouter>);
+    const emailInput = screen.getByPlaceholderText('example@boim.com') as HTMLInputElement;
+    fireEvent.change(emailInput, { target: { value: 'demo@boim.com' } });
+    const pwInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
+    fireEvent.change(pwInput, { target: { value: 'demo' } });
+
+    const submitBtn = screen.getByRole('button', { name: '로그인' });
+    fireEvent.submit(submitBtn.closest('form')!);
+
+    await waitFor(() => {
+      expect(apiClient.post).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -37,3 +37,9 @@
 - 프론트엔드/백엔드 전사 빌드(`turbo run build`) 100% 통과 (번들 청크 500kB 이하 유지)
 - `oxlint` 린트 0 에러 유지
 - Phase 21 하위 하네스 단일화(2-File Rule 준수: `Phase21_harness.md`, `Phase21_sub_harness.md`)
+
+### [x] Phase 21-05: 웹 데모 전용 계정(`demo@boim.com`) 폴백 및 히스토리 보험 데이터 복구 연동
+- [x] 커밋 히스토리(Phase 03~04, 14, 19)에서 제거되었던 보험 상품 데이터 세트(7건), 알림, AI 종합 진단 데이터를 `demoFallback.ts`에 복구 및 구성
+- [x] `Login.tsx`에서 `demo@boim.com` 로그인 시 백엔드 미구동(웹 데모) 환경에서도 즉시 데모 세션으로 폴백 로그인 지원
+- [x] `useInsuranceQueries.ts`, `useNotificationQueries.ts`, `useDiagnosisQueries.ts`, `useUserQueries.ts`, `useDocumentQueries.ts`에 데모 계정(`demo@boim.com`) 전용 인메모리 폴백 연동 (조회 및 추가/수정/삭제 인터랙션 지원)
+- [x] 데모 폴백 단위 테스트(`demoFallback.spec.ts`, `Login.spec.tsx`) 작성 및 전체 테스트/린트/빌드 무결성 검증
