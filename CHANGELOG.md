@@ -7,6 +7,10 @@
 
 ## [Phase 21] - 2026-11-15
 
+### 🔧 CI/CD 및 GitHub Pages 배포 수정 (Fixed)
+- **GitHub Actions `pnpm/action-setup@v4` 중복 버전 충돌 해결:**
+  - `.github/workflows/deploy-pages.yml` 및 `.github/workflows/ci.yml`: 루트 `package.json`의 `packageManager`(`pnpm@9.0.0`)와 충돌하던 `version: 9` 옵션을 제거하여 `Install pnpm` 단계 실패 해결.
+
 ### 📄 문서 구조 개편 및 불필요 파일 정리 (Documentation)
 - **`docs/` 디렉토리 내부 정리:**
   - 중복 및 미사용 문서 정리 (`Boim_Portfolio.md`, `DoorFrame.md`, `PROJECT_OVERVIEW.md` 제거).
