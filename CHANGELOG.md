@@ -7,6 +7,15 @@
 
 ## [Phase 21] - 2026-11-15
 
+### 📄 프로젝트 포트폴리오 최신화 (Documentation)
+- **`docs/Boim_Portfolio.md` 최신 마일스톤 전면 반영:**
+  - **테스트 및 품질 지표 최신화:** 전사 416개 테스트 전수 통과(웹 211개 Vitest + 백엔드 205개 Jest 100% Pass) 및 프론트엔드 커버리지(56.87% ➔ 83.15%) 도약 반영.
+  - **1:N 다중 소셜 계정 실연동 및 대표 본계정(Primary Identity) 전환 아키텍처:** 기술 여정(Technical Journey 4) 및 Mermaid 시퀀스 다이어그램 신설, 로컬 본계정 보존 및 해제 시 안전 롤백 메커니즘 수록.
+  - **Google Gemini 3.5 Flash-lite (`@google/genai` 최신 SDK) 실연동:** 최신 모델 사양 및 Structured Outputs/JSON Schema 기반 고가용성 하이브리드 파이프라인 명시.
+  - **Zero-Mock 프로덕션 실데이터 무결성 확립:** 문제 해결 사례(Problem & Solve 4) 신설 (소셜 콜백 임의 로그인 비정상 폴백 완전 제거, 온보딩 샘플 프리셋 분리 및 대시보드 4대 영역 실데이터 감사).
+  - **Multi-stage Docker 컨테이너 극초경량화 및 Non-root 권한 격리:** 문제 해결 사례(Problem & Solve 7) 신설 (Web 26.7MB, API 293MB 최적화 및 GitHub Actions CI).
+  - **순수 도메인 비즈니스 규칙 엔진 분리 및 컴포넌트 경량화:** 문제 해결 사례(Problem & Solve 8)에 `RuleBasedDiagnosisEngine`, `NotificationRuleEvaluator`, 컴포넌트 40~50% 경량화 및 React Query 훅 커버리지 93.68% 기록.
+
 ### 🧹 프론트엔드 전수 Mock/더미 데이터 정리 및 실데이터 연동 무결성 검증 (Frontend Mock & Dummy Cleanup)
 - **소셜 콜백 및 인증 플로우 내 잔여 더미 완전 제거 (`Phase 21-01`):**
   - `OAuthCallbackPage.tsx`: 토큰 임시 잔류 키(`temp_token`) 및 미사용 더미 값(`mock_state`) 완전 제거.

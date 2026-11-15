@@ -26,7 +26,7 @@
 ## Summary
 
 여러 보험사에 흩어져 있는 보험 증권과 매달 빠져나가는 납입일을 매번 확인하기 어렵고, 보장 공백과 중복 지출을 스스로 진단하기 어렵다는 불편함에서 시작된 프로젝트입니다.  
-**"흩어진 내 보험, 한눈에 보임."**이라는 가치 아래, **React 19 기반의 모던 웹 대시보드**와 **React Native(Expo SDK 58) 모바일 앱**을 아우르는 풀스택 크로스 플랫폼으로 구축되었습니다. 인앱 카메라를 비추기만 하면 증권을 분석하는 **무수동(Zero-click) OCR 스캐너**, 동적 월간 납입 캘린더, 자정 크론 알림 배치, 그리고 **Google Gemini AI & 룰 엔진 하이브리드 보장 진단**을 결합한 올인원 핀테크 풀스택 플랫폼입니다.
+**"흩어진 내 보험, 한눈에 보임."**이라는 가치 아래, **React 19 기반의 모던 웹 대시보드**와 **React Native(Expo SDK 58) 모바일 앱**을 아우르는 풀스택 크로스 플랫폼으로 구축되었습니다. 인앱 카메라를 비추기만 하면 증권을 분석하는 **무수동(Zero-click) OCR 스캐너**, 동적 월간 납입 캘린더, 자정 크론 알림 배치, 그리고 **Google Gemini 3.5 Flash-lite & 룰 엔진 하이브리드 보장 진단**을 결합한 올인원 핀테크 풀스택 플랫폼입니다.
 
 ---
 
@@ -35,10 +35,12 @@
 - **번들 90.7% 다이어트 및 웹 성능 극대화 (Lighthouse 성능 96점, 접근성·SEO·모범사례 100점 만점 달성)**
 - **CSS 렌더링 차단 0ms 해소 및 100% 벡터 순수 코드 랜딩 페이지 구축 (FCP 0.8s, CLS 0.000)**
 - **실시간 인앱 뷰파인더 & 제로 클릭 무수동 OCR 스캐너**: 셔터 조작 없는 안정화 자동 감지 및 3초 폼 자동완성
-- **Google Gemini AI & 룰 엔진(Rule-based) 2단계 하이브리드 보장 진단**: 외부 AI 장애 시에도 100% 무중단 진단 보장
+- **Google Gemini 3.5 Flash-lite & 룰 엔진(Rule-based) 2단계 하이브리드 보장 진단**: 외부 AI 장애 시에도 100% 무중단 진단 보장
+- **1:N 다중 소셜 계정(Kakao, Naver) 실연동 및 대표 본계정(Primary Identity) 전환 아키텍처**: 원클릭 프로필/아바타 실시간 동기화 및 해제 시 안전 복구(Rollback)
 - **자정 자동 스케줄러 배치 엔진 (`@nestjs/schedule`)**: 납입일(D-7, D-1) 및 만기일(D-30, D-7, D-Day) 멱등성 보장 다중 채널 발송
 - **하이브리드 세션 스토리지(Hybrid Storage) 보안 아키텍처**: '기기 기억하기(Remember Me)' 기반 공용 PC 토큰 노출 원천 차단
-- **전사 400개 테스트 전수 통과(100% PASS)**: 웹 207개(Vitest) + 백엔드 193개(Jest) 회귀 버그 0건 무결성 유지
+- **초경량 컨테이너화 및 CI/CD 배포 자동화**: Web 26.7MB, API 293MB Multi-stage 빌드 및 GitHub Actions 파이프라인
+- **Zero-Mock 프로덕션 실데이터 무결성 & 전사 416개 테스트 전수 통과(100% PASS)**: 웹 211개(Vitest) + 백엔드 205개(Jest) 회귀 버그 0건 유지
 
 ---
 
@@ -47,11 +49,11 @@
 - **Frontend (Web)**: React 19, TypeScript, Vite, Tailwind CSS v4, Lucide React, PWA (Service Worker)
 - **Frontend (Mobile)**: React Native 0.88, Expo SDK 58, Expo Camera, React Navigation v7
 - **State Management**: Zustand (클라이언트 UI 및 하이브리드 인증 세션), TanStack Query (서버 상태 캐싱 및 SWR)
-- **Backend**: NestJS 11, Express, Prisma ORM, Passport.js (JWT, Kakao, Naver OAuth), Multer, `@nestjs/schedule`
+- **Backend**: NestJS 11, Express, Prisma ORM, Passport.js (JWT, Kakao, Naver OAuth2), Multer, `@nestjs/schedule`
 - **Database & Storage**: PostgreSQL 16, Local Masked Document Storage
-- **AI & OCR Engine**: Google Gemini API (Multimodal LLM), Tesseract.js (Offline Neural Net OCR), ExcelJS
-- **Testing**: Vitest, React Testing Library, Jest, Supertest
-- **DevOps & Infra**: Docker, Docker Compose, Nginx 1.27 Alpine (Reverse Proxy & Static Cache), GitHub Actions CI
+- **AI & OCR Engine**: Google Gemini API (`@google/genai` 최신 SDK, `gemini-3.5-flash-lite`), Tesseract.js (Offline Neural Net OCR), ExcelJS
+- **Testing**: Vitest (211 Tests), React Testing Library, Jest (205 Tests), Supertest (총 416개 전수 통과, FE 커버리지 83.15%)
+- **DevOps & Infra**: Docker Multi-stage (Web 26.7MB, API 293MB), Docker Compose, Nginx 1.27 Alpine (Reverse Proxy & Static Cache), GitHub Actions CI
 
 ---
 
@@ -75,10 +77,10 @@ graph LR
 
   subgraph BackendNest["Backend Service Layer (NestJS 11)"]
     Guards["Guards / Filters / Interceptors"]
-    AuthModule["AuthModule (JWT / OAuth2 / PASS)"]
+    AuthModule["AuthModule (JWT / OAuth2 / Primary Identity)"]
     InsurModule["InsuranceModule (CRUD / Calendar)"]
     DocModule["DocumentModule (Tesseract OCR / Parser)"]
-    DiagModule["AnalysisModule (Gemini AI & Rule Engine)"]
+    DiagModule["AnalysisModule (Gemini 3.5 AI & Rule Engine)"]
     NotiModule["NotificationModule (Cron Batch / Multi-channel)"]
     PrismaORM["Prisma Client ORM (Type-safe)"]
   end
@@ -89,8 +91,8 @@ graph LR
   end
 
   subgraph External["External Services"]
-    GeminiAPI["Google Gemini LLM API"]
-    OAuthSvc["Kakao / Naver OAuth"]
+    GeminiAPI["Google Gemini 3.5 Flash-lite API"]
+    OAuthSvc["Kakao / Naver Developers OAuth2"]
     SMTP["SMTP Email Server"]
   end
 
@@ -98,8 +100,8 @@ graph LR
   Mobile -- "Direct API Call" --> Guards
   Nginx -->|리버스 프록시 /api/*| Guards
   Guards --> AuthModule & InsurModule & DocModule & DiagModule & NotiModule
-  AuthModule -- "Social Login" --> OAuthSvc
-  DiagModule -- "1순위 AI 분석" --> GeminiAPI
+  AuthModule -- "Social Login & Link/Unlink" --> OAuthSvc
+  DiagModule -- "1순위 AI 분석 (Gemini)" --> GeminiAPI
   NotiModule -- "이메일 알림 발송" --> SMTP
   DocModule -- "Secure File Save" --> Uploads
   AuthModule & InsurModule & DocModule & DiagModule & NotiModule --> PrismaORM --> Postgres
@@ -108,7 +110,8 @@ graph LR
 - **번들 경량화 및 다층 캐싱 전략**: SPA 메인 번들을 88kB로 슬림화하고, Nginx 1년 정기 자산 캐시와 Service Worker 기반 Stale-While-Revalidate 캐싱을 결합하여 초고속 초기 진입 속도 확보
 - **엔드투엔드(E2E) 타입 안정성**: 모노레포 워크스페이스 내 `@boim/shared-types` 패키지를 통해 웹, 모바일, 백엔드가 동일한 DTO 및 인터페이스를 100% 공유하여 런타임 타입 불일치 원천 차단
 - **격리된 로컬 OCR 처리**: 민감한 금융/보험 증권 문서가 외부 클라우드에 노출되지 않도록 서버 내부에서 Tesseract.js 오프라인 신경망 엔진으로 1차 텍스트화 및 마스킹 처리
-- **외부 AI 장애 대응 (Fallback)**: Google Gemini API의 일시적 장애, 네트워크 지연, 토큰 할당량 소진에 대비하여 백엔드 순수 비즈니스 알고리즘(`RuleBasedDiagnosisEngine`)으로 자동 전환되는 무중단 고가용성 구조 확립
+- **외부 AI 장애 대응 (Graceful Fallback)**: Google Gemini API의 일시적 장애, 네트워크 지연, 토큰 할당량 소진에 대비하여 백엔드 순수 비즈니스 알고리즘(`RuleBasedDiagnosisEngine`)으로 자동 전환되는 무중단 고가용성 구조 확립
+- **대표 본계정(Primary Identity) 전환 파이프라인**: 1:N으로 연동된 소셜 계정 중 사용자가 원하는 프로필을 서비스 대표 신원으로 원클릭 전환하고, 연동 해제 시 기본 로컬 계정으로 자동 롤백되는 안정적 계정 수명주기 보장
 
 ---
 
@@ -156,11 +159,11 @@ flowchart TD
 
 ---
 
-### 3. Google Gemini AI & 정밀 규칙 엔진(Rule-based) 2단계 하이브리드 보장 진단
+### 3. Google Gemini 3.5 Flash-lite AI & 정밀 규칙 엔진(Rule-based) 2단계 하이브리드 보장 진단
 
 ```mermaid
 flowchart TD
-  Req["보장 진단 요청 (연령/10대 카테고리)"] --> TryAI["1순위 엔진 호출<br/>(Google Gemini AI API)"]
+  Req["보장 진단 요청 (연령/10대 카테고리)"] --> TryAI["1순위 엔진 호출<br/>(Google Gemini 3.5 Flash-lite)"]
   TryAI -->|정상 응답| Format["정량 점수(0~100점) / 등급 / 조언 구조화"]
   TryAI -->|타임아웃 / 할당량 소진 / 5xx 에러| Fallback["2순위 백업 엔진 자동 전환<br/>(RuleBasedDiagnosisEngine 순수 알고리즘)"]
   Fallback -->|자체 진단 결과 산출| Format
@@ -172,8 +175,8 @@ flowchart TD
   - 기존 보험 관리 솔루션은 단순 가입 건수나 총액만 합산하여 실질적인 보장 과다/공백을 짚어내지 못함
   - 외부 AI API에 단일 의존할 경우 서버 장애나 네트워크 지연, API 할당량 소진 시 진단 기능 전체가 먹통이 되는 치명적 리스크 존재
 - **After**
-  - 1순위로 Google Gemini LLM을 호출하여 종합 진단 점수, 4단계 등급(최우수/안심/보통/주의), 과다 지출 및 보장 공백 분석, 월 절감액을 구조화된 JSON으로 도출
-  - AI API 장애 또는 지연 발생 시 즉각 사전에 정의된 도메인 알고리즘 엔진(`RuleBasedDiagnosisEngine`)으로 자동 전환되는 **2단계 고가용성 하이브리드 파이프라인** 구축
+  - 최신 `@google/genai` SDK 기반 `gemini-3.5-flash-lite` 모델을 채택하여 종합 진단 점수, 4단계 등급(최우수/안심/보통/주의), 과다 지출 및 보장 공백 분석, 월 절감액을 엄격한 JSON Schema로 구조화하여 도출
+  - AI API 장애 또는 지연 발생 시 즉각 사전에 정의된 도메인 알고리즘 엔진(`RuleBasedDiagnosisEngine`)으로 0ms 자동 전환되는 **2단계 고가용성 하이브리드 파이프라인** 구축
   - 분석 결과를 다중 시트 서식이 적용된 Excel(.xlsx) 리포트(`exceljs`)로 즉시 내보내거나 템플릿 기반으로 일괄 가져오기(Import) 지원
 - **Impact**
   - 외부 서비스 장애 상황에서도 100% 무중단 진단 결과를 제공하는 높은 서비스 신뢰성 확보
@@ -181,7 +184,37 @@ flowchart TD
 
 ---
 
-### 4. 자정 자동 스케줄러 배치 엔진 및 멱등성(Idempotency) 보장
+### 4. 1:N 다중 소셜 계정 실시간 연동/해제 및 대표 본계정(Primary Identity) 전환 아키텍처
+
+```mermaid
+flowchart TD
+  User["로그인 유저 (기본 local 본계정)"] --> LinkReq["소셜 계정 연동 요청<br/>(GET /api/auth/social/link/:provider?token=...)"]
+  LinkReq --> SignState["HMAC-SHA256 10분 만료 State 발급<br/>link.{provider}.{userId}.{nonce}.{sig}"]
+  SignState --> OAuthRedirect["Kakao / Naver 공식 인가 페이지 리다이렉트"]
+  OAuthRedirect --> Callback["OAuth 콜백 수신 & 서명 검증"]
+  Callback --> Bind["소셜 프로필(ID, 닉네임, 아바타, 이메일) 안전 바인딩"]
+  
+  Bind --> Switch["대표 본계정 전환 (Primary Identity)<br/>PATCH /api/auth/social/primary-account"]
+  Switch --> SyncAvatar["헤더 아바타 / 닉네임 / 이메일 실시간 동기화"]
+  
+  Switch --> Unlink["소셜 연동 해제 (POST /api/auth/:provider/unlink)"]
+  Unlink --> FallbackLocal["해제 계정이 대표 계정인 경우<br/>기본 local 본계정으로 자동 롤백"]
+```
+
+- **Before**
+  - 소셜 로그인 연동 시 이메일 충돌이 발생하면 기존 로컬 계정 정보가 소셜 정보로 강제 덮어쓰기되거나, 여러 소셜 계정을 보유한 유저가 어떤 계정의 프로필(닉네임, 프로필 사진)을 대표 신원으로 사용할지 선택할 수 없는 문제 존재
+  - 연동된 소셜 계정을 해제할 때 대표 계정 정보가 공백(Null)이 되어 프로필 표시 오류 및 런타임 예외 발생 위험
+- **After**
+  - 회원가입 시 생성된 로컬 계정을 기본 본계정(`primaryAccountProvider: 'local'`, `localNickname`, `localEmail`)으로 영구 보존하는 스키마 설계
+  - 이미 로그인된 사용자가 카카오나 네이버 계정을 연동할 수 있도록 HMAC-SHA256 10분 만료 서명 State 기반의 안전한 계정 바인딩 파이프라인(`GET /api/auth/social/link/:provider`) 구축
+  - 사용자가 연동된 SNS 중 원하는 계정을 서비스 대표 계정으로 원클릭 지정(`PATCH /api/auth/social/primary-account`)할 수 있는 UI/API 구현 및 헤더 아바타/닉네임 실시간 동기화
+  - 대표 계정으로 지정된 SNS를 해제할 경우, 기본 가입 계정(`local`)으로 자동 복구(Graceful Rollback)되는 안전한 라이프사이클 확립
+- **Impact**
+  - 1:N 멀티 계정 환경에서 유저 신원(Identity)의 선택권을 사용자에게 온전히 제공하고, 계정 연동/해제 전 과정에서 데이터 유실이나 프로필 깨짐 없는 무결성 달성
+
+---
+
+### 5. 자정 자동 스케줄러 배치 엔진 및 멱등성(Idempotency) 보장
 
 ```mermaid
 flowchart TD
@@ -205,7 +238,7 @@ flowchart TD
 
 ---
 
-### 5. 실시간 인앱 뷰파인더 & 제로 클릭 무수동 OCR 스캔 엔진
+### 6. 실시간 인앱 뷰파인더 & 제로 클릭 무수동 OCR 스캔 엔진
 
 ```mermaid
 flowchart TD
@@ -214,7 +247,7 @@ flowchart TD
   ScanAnim --> Detect{"문서 수평/영역<br/>안정화 감지 (1.2s)"}
   Detect -->|미감지| ScanAnim
   Detect -->|감지 완료| Green["가이드 테두리 초록색 전환<br/>+ 햅틱/시각 피드백"]
-  Green --> AutoShot["0.8s 후 셔터 자동 격발<br/>(takePictureAsync)"]
+  Detect --> AutoShot["0.8s 후 셔터 자동 격발<br/>(takePictureAsync)"]
   AutoShot --> Compress["0.6 압축 + Blob 변환"]
   Compress --> Upload["백엔드 OCR 파이프라인 전송"]
   Upload --> Parse["10대 카테고리 & 금액/일자<br/>등록 폼 100% 자동완성"]
@@ -232,7 +265,7 @@ flowchart TD
 
 ---
 
-### 6. 하이브리드 세션 스토리지(Hybrid Storage) 보안 아키텍처
+### 7. 하이브리드 세션 스토리지(Hybrid Storage) 보안 아키텍처
 
 ```mermaid
 flowchart TD
@@ -340,19 +373,22 @@ if (fullProductMatch) {
 
 ---
 
-### 3. 다중 소셜 로그인(Kakao, Naver) 연동 시 CSRF 공격 및 무상태 검증
+### 3. 다중 소셜 로그인(Kakao, Naver) CSRF 방어 및 1:N 계정 바인딩 무결성
 
 - **Problem**
-  - OAuth2 인가 코드 리다이렉트 과정에서 제3자가 인가 코드를 가로채거나 타인의 소셜 계정을 피해자 계정에 강제로 바인딩시키는 CSRF 공격에 노출될 위험 존재
+  - OAuth2 인가 코드 리다이렉트 과정에서 제3자가 인가 코드를 가로채거나 타인의 소셜 계정을 피해자 계정에 강제로 바인딩시키는 CSRF 공격 위험 상존
+  - 이미 로그인한 유저가 다른 SNS 계정을 연동할 때, 서버 세션이 없으면 현재 유저 식별자를 안전하게 콜백까지 전달하기 어려움
 - **Solve**
-  - 서버 세션에 의존하지 않는 **HMAC-SHA256 기반 무상태(Stateless) State 토큰 파이프라인** 구축
-  - 10분 유효기간(TTL)과 64자리 비밀키 서명을 결합하고, 콜백 수신 시 `crypto.timingSafeEqual`을 적용해 타이밍 공격까지 차단
+  - 서버 메모리 세션에 의존하지 않는 **HMAC-SHA256 기반 무상태(Stateless) State 토큰 파이프라인** 구축
+  - 일반 로그인(`login.{provider}...`)과 계정 연동(`link.{provider}.{userId}...`)을 상태 페이로드에서 구분하고, 10분 만료 검증 및 `crypto.timingSafeEqual`을 적용해 타이밍 공격 및 위변조 원천 차단
 
 ```typescript
 // apps/api/src/auth/social-auth.service.ts
-generateOAuthState(provider: string): string {
+generateOAuthState(provider: string, userId?: string, action: 'login' | 'link' = 'login'): string {
   const payload = {
     provider,
+    action,
+    userId: userId || null,
     timestamp: Date.now(),
     nonce: crypto.randomBytes(16).toString('hex'),
   };
@@ -361,13 +397,18 @@ generateOAuthState(provider: string): string {
   return `${data}.${signature}`;
 }
 
-verifyOAuthState(state: string, expectedProvider: string): boolean {
+verifyOAuthState(state: string, expectedProvider: string): { valid: boolean; action?: string; userId?: string } {
   const [data, signature] = state.split('.');
-  if (!data || !signature) return false;
+  if (!data || !signature) return { valid: false };
   const expectedSig = crypto.createHmac('sha256', this.stateSecret).update(data).digest('base64url');
-  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))) return false;
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))) return { valid: false };
   const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
-  return payload.provider === expectedProvider && Date.now() - payload.timestamp < 10 * 60 * 1000;
+  const isFresh = Date.now() - payload.timestamp < 10 * 60 * 1000;
+  return {
+    valid: isFresh && payload.provider === expectedProvider,
+    action: payload.action,
+    userId: payload.userId,
+  };
 }
 ```
 
@@ -376,7 +417,22 @@ verifyOAuthState(state: string, expectedProvider: string): boolean {
 
 ---
 
-### 4. Expo SDK 58 `expo/fetch`의 구형 FormData 객체 비호환 런타임 크래시
+### 4. 프론트엔드 잔여 Mock/더미 데이터 전수 청산 및 Zero-Mock 실데이터 무결성 확립
+
+- **Problem**
+  - 초기 프로토타입 개발 단계에서 작성되었던 잔여 Mock/더미 코드(`temp_token`, `mock_state`, `user_id` 하드코딩)가 남아있어, 프로필 조회(`/users/me`) 실패 시 임의 계정(`social_user`, `social@boim.internal`)으로 자동 로그인되던 비정상 폴백이 발생하여 실제 인증 실패가 가려지는 치명적 결함 상존
+  - 증권 업로더의 모의 프리셋 버튼이 온보딩 샘플 기능임에도 "가상 모의 증권 샘플"이라는 비프로덕션 용어로 노출됨
+- **Solve**
+  - `OAuthCallbackPage.tsx`: 토큰 임시 잔류 키 및 미사용 더미 값을 완전 제거하고, 프로필 조회 실패 시 임의 계정 로그인을 원천 차단하여 사용자 직관적인 실패 알림 화면 및 로그인 복귀 플로우 제공
+  - `PolicyDocumentUploader.tsx`: 온보딩 샘플 증권(`presetData`)과 실제 업로드 OCR 분석 데이터(`actualData`)의 책임을 명확히 분리하고 하위 호환성 보장
+  - 대시보드 4대 핵심 영역(홈 통계 카드, 내 보험 목록/필터, 차트 분석, 인앱 알림 실시간 동기화, AI 리포트)의 실데이터 바인딩 및 빈 상태(Empty State) 전수 감사 통과
+  - 랜딩 페이지의 인터랙티브 쇼케이스 목업 UI와 실제 로그인 유저 데이터 계층의 경계를 분리하고 안내 주석 보강
+- **Result**
+  - 비정상적인 우회 로그인 버그를 100% 차단하고, 실제 프로덕션 API 및 실사용자 데이터와 완벽히 결합된 무결한 사용자 경험 확립
+
+---
+
+### 5. Expo SDK 58 `expo/fetch`의 구형 FormData 객체 비호환 런타임 크래시
 
 - **Problem**
   - React Native에서 백엔드로 증권 촬영 이미지를 전송할 때, 기존 React Native 관례인 `{ uri, name, type }` 형태의 객체를 `formData.append('file', ...)`에 전달하자 Expo SDK 58에 내장된 WinterCG 표준 `expo/fetch`가 이를 거부하며 `[Error: Unsupported FormDataPart implementation]` 에러와 함께 앱이 크래시됨
@@ -408,7 +464,7 @@ export const uploadPolicyImage = async (imageUri: string, filename = 'policy.jpg
 
 ---
 
-### 5. 고해상도 모바일 사진 업로드에 따른 Multer 용량 초과 및 워커 쓰레드 크래시 방어
+### 6. 고해상도 모바일 사진 업로드에 따른 Multer 용량 초과 및 워커 쓰레드 크래시 방어
 
 - **Problem**
   - 스마트폰 카메라 원본 사진(12~18MB) 업로드 시 `Network request failed`가 발생하며 연결이 끊기고, 손상된 스트림을 읽을 때 Tesseract 워커 쓰레드가 Node.js 22 이벤트 루프에서 처리되지 않은 예외를 던져 백엔드 서버 전체가 비정상 종료되는 현상 발생
@@ -420,25 +476,46 @@ export const uploadPolicyImage = async (imageUri: string, filename = 'policy.jpg
 
 ---
 
-### 6. Docker Compose 배포 시 모노레포 심볼릭 링크 및 비루트 볼륨 권한 충돌
+### 7. Multi-stage Docker 컨테이너 극초경량화 및 Non-root 권한 격리 배포
 
 - **Problem**
-  - Docker Compose 환경에서 볼륨을 마운트했을 때 루트 권한(`root:root`)으로 폴더가 생성되어 NestJS 앱이 `USER node` 환경에서 `EACCES: permission denied` 에러를 발생시켰으며, pnpm 심볼릭 링크 구조로 인해 `Cannot find module` 오류 발생
+  - Node.js 및 NestJS 모노레포를 단일 Dockerfile로 빌드하면 개발 의존성, 빌드 도구 및 캐시가 포함되어 이미지 크기가 1.5GB를 초과하고 전송/배포 시간이 과도하게 소요됨
+  - 컨테이너 내부에서 볼륨을 마운트할 때 루트 권한(`root:root`)으로 생성되어 `USER node` 환경에서 `EACCES: permission denied` 에러 및 pnpm 심볼릭 링크 참조 실패 발생
 - **Solve**
-  - Dockerfile 빌드 단계에서 `RUN mkdir -p ... && chown -R node:node /app` 명령어로 `node` 유저에게 온전한 권한을 부여하고, 컴파일된 Prisma Client 및 `node_modules`를 선별 복사하여 `NODE_PATH` 환경변수를 주입
+  - **백엔드 Multi-stage (`apps/api/Dockerfile`):** Node 22 Alpine 기반 빌드 스테이지와 프로덕션 스테이지를 분리하고, 컴파일된 Prisma Client 및 선별된 프로덕션 `node_modules`만 복사하여 **293MB** 초경량화 달성
+  - **프론트엔드 Multi-stage (`apps/web/Dockerfile`):** Vite 빌드 후 Nginx 1.27 Alpine에 정적 자산만 복사하여 **26.7MB** 극초경량화 달성
+  - `RUN mkdir -p ... && chown -R node:node /app` 명령어로 비루트 유저 격리를 완비하고 `NODE_PATH`를 주입하여 pnpm 모노레포 구조 완벽 호환
+
+```dockerfile
+# apps/web/Dockerfile
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# ... Vite 빌드 수행
+
+FROM nginx:1.27-alpine
+COPY apps/web/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
 - **Result**
-  - 컨테이너 보안 베스트 프랙티스(Non-root User)를 준수하면서 단 한 번의 `docker compose up -d` 명령어로 완벽히 구동되는 오케스트레이션 환경 구축
+  - 단 26.7MB(Web) / 293MB(API)의 초경량 컨테이너로 상용 보안 표준(Non-root)을 준수하며 단 한 번의 `docker compose up -d`로 완벽 구동되는 오케스트레이션 환경 구축
 
 ---
 
-### 7. 전사 400개 테스트 스위트 전수 통과를 통한 품질 무결성 확보
+### 8. 순수 도메인 비즈니스 규칙 분리 및 전사 416개 테스트 100% 무결성 확보
 
 - **Problem**
-  - 웹, 모바일, 백엔드가 공존하는 모노레포 특성상 DTO 변경이나 비즈니스 로직 수정 시 다른 도메인이나 화면에서 예상치 못한 회귀 버그(Regression)가 발생할 위험성 상존
+  - UI 컴포넌트에 날짜 계산, 폼 유효성 검증, 진단 점수 산출 등 비즈니스 로직이 강하게 결합되어 코드 라인 수가 300줄을 초과하고 테스트 작성이 극도로 어려웠음
+  - 모노레포 특성상 DTO 변경이나 API 응답 변경 시 크로스 플랫폼 전반에서 예기치 않은 회귀 버그(Regression) 발생 위험 상존 (프론트엔드 초기 커버리지 56.87%)
 - **Solve**
-  - 프론트엔드(Vitest + React Testing Library) 207개 테스트와 백엔드(Jest + Supertest) 193개 테스트 스위트를 구축하여 기능 추가 및 리팩토링 시 상시 검증 수행
+  - **순수 비즈니스 규칙 엔진 분리:** DB 및 외부 I/O와 분리된 `RuleBasedDiagnosisEngine`, `NotificationRuleEvaluator`를 구축하여 100% 결정론적 유닛 테스트 수행
+  - **프론트엔드 비대 컴포넌트 리팩토링:** `RightPanel` ➔ `DailyEventsView`(-40%), `AiDiagnosisReport` ➔ 프레젠테이션 컴포넌트 3분할(-49%), `InsuranceForm` ➔ `useInsuranceForm` 훅 분리(-46%)
+  - **테스트 스위트 전면 보강:** `src/api` React Query 훅 단위 테스트 완비(라인 커버리지 13.15% ➔ 93.68%), 프론트엔드 전체 커버리지 **83.15%** 달성
 - **Result**
-  - **총 400개 테스트 100% PASS** 달성 및 타입 검증 0 에러 유지로 프로덕션 수준의 코드 신뢰성 확보
+  - **웹 211개(Vitest) + 백엔드 205개(Jest) = 전사 총 416개 테스트 100% PASS** 달성 및 회귀 버그 0건의 견고한 엔지니어링 신뢰성 확보
 
 ---
 
@@ -449,5 +526,7 @@ Boim 프로젝트는 복잡하고 난해한 금융·보험 도메인의 정보 �
 웹 환경에서는 **번들 크기를 90.7% 감축(947kB ➔ 88kB)**하고 비동기 CSS 플러그인을 직접 제작하여 **Lighthouse 성능 96점, 접근성·SEO·모범사례 100점 만점**을 달성하며 "성능 최적화가 곧 최상의 사용자 경험"이라는 엔지니어링 원칙을 체감했습니다.  
 동시에 모바일 환경에서는 사용자가 셔터를 누를 필요 없이 가이드라인 안정화를 감지해 3초 만에 폼을 채워주는 **무수동(Zero-click) OCR 엔진**을 완성하여 크로스 플랫폼 전반의 완성도를 끌어올렸습니다.
 
-또한 외부 AI 장애에 대비한 **Rule-based 엔진 안전 폴백 파이프라인**, 자정 크론 기반의 **선제적 알림 스케줄러**, 공용 PC 환경의 보안 위험을 차단하는 **하이브리드 세션 스토리지 아키텍처**, 그리고 **전사 400개 테스트 전수 통과**를 통한 철저한 품질 검증을 거쳤습니다.  
-단순히 보기 좋은 인터페이스를 넘어, 성능, 접근성, 보안, 오프라인 내결함성까지 실제 사용자의 일상에서 마주하는 모든 디테일을 기술적 완성도로 해결하는 풀스택 엔지니어로 성장할 수 있었던 뜻깊은 프로젝트입니다.
+또한 외부 AI 장애에 대비한 **Rule-based 엔진 안전 폴백 파이프라인**, 1:N 멀티 소셜 계정 환경에서 신원 선택권을 보장하는 **대표 본계정(Primary Identity) 전환 아키텍처**, 자정 크론 기반의 **선제적 알림 스케줄러**, 공용 PC 환경의 보안 위험을 차단하는 **하이브리드 세션 스토리지**, 그리고 **Zero-Mock 데이터 무결성 검증과 전사 416개 테스트 전수 통과**를 통한 철저한 품질 검증을 거쳤습니다.
+
+인프라 측면에서도 Multi-stage 빌드를 통해 **Nginx 웹 컨테이너를 26.7MB, 백엔드를 293MB로 극초경량화**하여 단 한 번의 명령어로 배포 가능한 프로덕션 레디 환경을 완성했습니다.  
+단순히 보기 좋은 인터페이스를 넘어, 성능, 접근성, 보안, 오프라인 내결함성, 그리고 배포 효율성까지 실제 서비스 운영에서 마주하는 모든 디테일을 기술적 완성도로 해결하는 풀스택 엔지니어로 성장할 수 있었던 뜻깊은 프로젝트입니다.
