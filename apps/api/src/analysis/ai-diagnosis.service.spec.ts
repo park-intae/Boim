@@ -129,42 +129,47 @@ describe('AiDiagnosisService', () => {
   });
 
   describe('executeGeminiDiagnosis - AI 클라이언트 모의 연동', () => {
-    it('Gemini AI가 유효한 JSON을 반환하면 AI 진단 결과(isFallback: false)를 반환해야 한다.', async () => {
-      const mockProducts = [
+    const sampleProducts = [
+      {
+        id: BigInt(1),
+        userId: BigInt(1),
+        category: '실손',
+        name: '모의실손',
+        institution: '삼성화재',
+        monthlyPayment: 30000,
+        coverageAmount: BigInt(50000000),
+        startDate: new Date('2024-01-01'),
+        maturityDate: new Date('2044-01-01'),
+      },
+    ];
+
+    const aiMockResponse = {
+      score: 92,
+      grade: 'EXCELLENT',
+      summary: 'AI 분석 결과 매우 훌륭합니다.',
+      categoryEvaluations: [
         {
-          id: BigInt(1),
-          userId: BigInt(1),
           category: '실손',
-          name: '모의실손',
-          institution: '삼성화재',
-          monthlyPayment: 30000,
-          coverageAmount: BigInt(50000000),
-          startDate: new Date('2024-01-01'),
-          maturityDate: new Date('2044-01-01'),
+          status: 'ADEQUATE',
+          currentAmount: 50000000,
+          recommendedAmount: 50000000,
+          comment: '실손 완벽',
         },
-      ];
+      ],
+      strengths: ['AI 분석 강점 1'],
+      improvements: ['AI 분석 보완점 1'],
+      costSavingTips: ['AI 분석 절감팁 1'],
+    };
 
+    afterEach(() => {
+      delete process.env.GEMINI_MODEL;
+      delete process.env.GEMINI_FALLBACK_MODELS;
+    });
+
+    it('Gemini AI가 유효한 JSON을 반환하면 AI 진단 결과(isFallback: false)를 반환해야 한다.', async () => {
       mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce(
-        mockProducts,
+        sampleProducts,
       );
-
-      const aiMockResponse = {
-        score: 92,
-        grade: 'EXCELLENT',
-        summary: 'AI 분석 결과 매우 훌륭합니다.',
-        categoryEvaluations: [
-          {
-            category: '실손',
-            status: 'ADEQUATE',
-            currentAmount: 50000000,
-            recommendedAmount: 50000000,
-            comment: '실손 완벽',
-          },
-        ],
-        strengths: ['AI 분석 강점 1'],
-        improvements: ['AI 분석 보완점 1'],
-        costSavingTips: ['AI 분석 절감팁 1'],
-      };
 
       // aiClient 모킹 주입
       (service as any).aiClient = {
@@ -184,30 +189,86 @@ describe('AiDiagnosisService', () => {
       expect(result.strengths).toContain('AI 분석 강점 1');
     });
 
-    it('Gemini AI 호출 중 오류 발생 시 규칙 기반 폴백 엔진으로 안전하게 전환되어야 한다.', async () => {
-      const mockProducts = [
-        {
-          id: BigInt(1),
-          userId: BigInt(1),
-          category: '실손',
-          name: '모의실손',
-          institution: '삼성화재',
-          monthlyPayment: 30000,
-          coverageAmount: BigInt(50000000),
-          startDate: new Date('2024-01-01'),
-          maturityDate: new Date('2044-01-01'),
-        },
-      ];
-
+    it('최신 모델 호출 실패 시 하위 모델로 자동 전환하여 AI 진단을 성공시켜야 한다.', async () => {
       mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce(
-        mockProducts,
+        sampleProducts,
       );
+
+      const generateContentMock = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('404 Model Not Found'))
+        .mockResolvedValueOnce({
+          text: JSON.stringify(aiMockResponse),
+        });
+
+      const listMock = jest.fn().mockResolvedValueOnce({
+        page: [
+          {
+            name: 'models/gemini-2.5-flash',
+            supportedActions: ['generateContent'],
+          },
+          {
+            name: 'models/gemini-4.0-flash',
+            supportedActions: ['generateContent'],
+          },
+        ],
+      });
 
       (service as any).aiClient = {
         models: {
-          generateContent: jest
-            .fn()
-            .mockRejectedValueOnce(new Error('Gemini API Quota Exceeded')),
+          list: listMock,
+          generateContent: generateContentMock,
+        },
+      };
+
+      const result = await service.diagnoseUserInsurances(BigInt(1));
+
+      expect(result.isFallback).toBe(false);
+      expect(result.score).toBe(92);
+      expect(generateContentMock).toHaveBeenCalledTimes(2);
+      expect(generateContentMock.mock.calls[0][0].model).toBe(
+        'gemini-4.0-flash',
+      );
+      expect(generateContentMock.mock.calls[1][0].model).toBe(
+        'gemini-2.5-flash',
+      );
+    });
+
+    it('상위 모델이 비정상 JSON을 반환해도 하위 모델로 전환해 진단을 완료해야 한다.', async () => {
+      mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce(
+        sampleProducts,
+      );
+
+      const generateContentMock = jest
+        .fn()
+        .mockResolvedValueOnce({ text: '{invalid-json' })
+        .mockResolvedValueOnce({ text: JSON.stringify(aiMockResponse) });
+
+      (service as any).aiClient = {
+        models: {
+          generateContent: generateContentMock,
+        },
+      };
+
+      const result = await service.diagnoseUserInsurances(BigInt(1));
+
+      expect(result.isFallback).toBe(false);
+      expect(result.score).toBe(92);
+      expect(generateContentMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('모든 Gemini 후보 모델 호출 실패 시 최대 2개 모델만 시도한 뒤 규칙 기반 폴백 엔진으로 전환되어야 한다.', async () => {
+      mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce(
+        sampleProducts,
+      );
+
+      const generateContentMock = jest
+        .fn()
+        .mockRejectedValue(new Error('Gemini API Quota Exceeded'));
+
+      (service as any).aiClient = {
+        models: {
+          generateContent: generateContentMock,
         },
       };
 
@@ -216,6 +277,57 @@ describe('AiDiagnosisService', () => {
       expect(result).toBeDefined();
       expect(result.isFallback).toBe(true);
       expect(result.score).toBeGreaterThan(0);
+      expect(generateContentMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('filterAndRankModels는 비텍스트 모델을 제외하고 최신 안정판 모델 순으로 정렬해야 한다.', () => {
+      const ranked = service.filterAndRankModels([
+        {
+          name: 'models/text-embedding-004',
+          supportedActions: ['embedContent'],
+        },
+        {
+          name: 'models/gemini-2.0-flash',
+          supportedActions: ['generateContent'],
+        },
+        {
+          name: 'models/gemini-3.5-flash-preview',
+          supportedActions: ['generateContent'],
+        },
+        {
+          name: 'models/gemini-3.5-flash',
+          supportedActions: ['generateContent'],
+        },
+        {
+          name: 'models/gemini-2.5-pro',
+          supportedActions: ['generateContent'],
+        },
+        {
+          name: 'models/gemini-2.5-flash',
+          supportedActions: ['generateContent'],
+        },
+      ]);
+
+      expect(ranked).toEqual([
+        'gemini-3.5-flash',
+        'gemini-3.5-flash-preview',
+        'gemini-2.5-flash',
+        'gemini-2.5-pro',
+        'gemini-2.0-flash',
+      ]);
+    });
+
+    it('GEMINI_MODEL과 GEMINI_FALLBACK_MODELS 환경변수가 지정되면 최우선 후보로 반영되어야 한다.', async () => {
+      process.env.GEMINI_MODEL = 'gemini-custom-latest';
+      process.env.GEMINI_FALLBACK_MODELS =
+        'gemini-custom-lite, gemini-2.5-flash';
+
+      const candidates = await service.resolveCandidateModels();
+
+      expect(candidates[0]).toBe('gemini-custom-latest');
+      expect(candidates[1]).toBe('gemini-custom-lite');
+      expect(candidates[2]).toBe('gemini-2.5-flash');
+      expect(candidates).toContain('gemini-flash-latest');
     });
   });
 });

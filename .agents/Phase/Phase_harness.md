@@ -75,6 +75,10 @@
   - [x] **Phase 21-03:** 프론트엔드 전역 하드코딩/더미 데이터 전수 감사 및 실데이터 바인딩 검증
   - [x] **Phase 21-04:** 전사 테스트, 빌드 무결성 검증 및 하네스 단일화(2-File Rule)
   - [x] **Phase 21-05:** 웹 데모 전용 계정(`demo@boim.com`) 폴백 및 히스토리 보험 데이터 복구 연동
+- [x] **Phase 22: AI 진단 모델 동적 탐색 및 다단계 폴백 구조 개선 (완료)**
+  - [x] **Phase 22-01:** `AiDiagnosisService` 동적 모델 탐색(`models.list()`) + 최신→하위 모델 순차 폴백 + `RuleBasedDiagnosisEngine` 3단계 파이프라인 구축
+  - [x] **Phase 22-02:** `GEMINI_MODEL` / `GEMINI_FALLBACK_MODELS` 환경변수 지원 및 단위 테스트 24개 100% Pass
+  - [x] **Phase 22-03:** 타입체크, 린트 검증 및 `CHANGELOG.md` 동기화
 
 ---
 

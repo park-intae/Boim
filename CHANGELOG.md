@@ -5,6 +5,21 @@
 
 ---
 
+## [Phase 22] - 2026-11-21
+
+### 🤖 AI 진단 모델 동적 탐색 및 다단계 폴백 아키텍처 개선 (Changed)
+- **3단계 AI 진단 파이프라인 고도화 (`apps/api/src/analysis/ai-diagnosis.service.ts`):**
+  - 기존 고정 모델(`gemini-3.5-flash-lite`, `gemini-3.5-flash`) 하드코딩 의존성을 제거하고, **1단계(최신 Gemini 모델 시도) → 2단계(하위/대체 모델 순차 시도) → 3단계(`RuleBasedDiagnosisEngine` 폴백)** 구조로 개편.
+  - `@google/genai` `models.list()` API를 활용한 실시간 사용 가능 모델 동적 조회 및 1시간 TTL 메모리 캐싱 구현 (`filterAndRankModels`: 비텍스트 모델 제외 및 버전·안정판·티어 기반 최신순 정렬).
+  - 동적 조회 실패 시에도 `gemini-flash-latest`, `gemini-flash-lite-latest`, `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-2.0-flash`, `gemini-2.0-flash-lite` 순의 안전망 폴백 체인(`DEFAULT_GEMINI_MODEL_CHAIN`) 작동.
+  - `GEMINI_MODEL` 및 `GEMINI_FALLBACK_MODELS` 선택적 환경변수 오버라이드 지원 (`apps/api/.env.example` 반영).
+  - 모델 응답이 비어 있거나 JSON 파싱이 실패할 경우에도 다음 하위 모델로 자동 전환되도록 루프 내 예외 처리 강화.
+  - 불필요한 응답 지연 및 토큰 낭비를 방지하기 위해 Gemini 모델 시도는 상위 **최대 2개(`MAX_GEMINI_MODEL_ATTEMPTS = 2`, 1순위 최신 모델 + 2순위 하위 모델)**까지만 수행 후 즉시 `RuleBasedDiagnosisEngine`으로 폴백하도록 제한.
+- **테스트 검증 (`apps/api/src/analysis/ai-diagnosis.service.spec.ts`):**
+  - 최신 모델 실패 시 하위 모델 전환, 잘못된 JSON 응답 시 하위 모델 전환, 모델 필터링/정렬, 환경변수 우선순위 등 신규 단위 테스트 추가 (`analysis` 4개 스위트, 24개 테스트 100% Pass).
+
+---
+
 ## [Phase 21] - 2026-11-16
 
 ### 🌐 웹 데모 전용 계정(`demo@boim.com`) 폴백 및 보험 데이터 복구 (`Phase 21-05`)
@@ -17,6 +32,10 @@
 ### 🔧 CI/CD 및 GitHub Pages 배포 수정 (Fixed)
 - **GitHub Actions `pnpm/action-setup@v4` 중복 버전 충돌 해결:**
   - `.github/workflows/deploy-pages.yml` 및 `.github/workflows/ci.yml`: 루트 `package.json`의 `packageManager`(`pnpm@9.0.0`)와 충돌하던 `version: 9` 옵션을 제거하여 `Install pnpm` 단계 실패 해결.
+
+---
+
+## [Phase 21] - 2026-11-15
 
 ### 📄 문서 구조 개편 및 불필요 파일 정리 (Documentation)
 - **`docs/` 디렉토리 내부 정리:**
