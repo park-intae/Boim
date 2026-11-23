@@ -34,6 +34,7 @@ const EXCLUDED_MODEL_PATTERNS = [
 ];
 
 const MODEL_CACHE_TTL_MS = 60 * 60 * 1000; // 1시간
+const DIAGNOSIS_CACHE_TTL_MS = 5 * 60 * 1000; // 5분
 export const MAX_GEMINI_MODEL_ATTEMPTS = 2; // 1순위 최신 모델 + 2순위 하위 모델까지만 시도
 
 interface ParsedDiagnosisPayload {
@@ -53,6 +54,10 @@ export class AiDiagnosisService {
   private readonly engine: RuleBasedDiagnosisEngine;
   private cachedDynamicModels: string[] | null = null;
   private modelsCachedAt = 0;
+  private readonly diagnosisCache = new Map<
+    string,
+    { result: InsuranceDiagnosisDto; expiresAt: number }
+  >();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -84,7 +89,18 @@ export class AiDiagnosisService {
    * 2단계: 실패 시 하위/대체 Gemini 모델 순차 시도
    * 3단계: 모든 AI 모델 실패 시 규칙 기반(Rule-based) 폴백 엔진 구동
    */
-  async diagnoseUserInsurances(userId: bigint): Promise<InsuranceDiagnosisDto> {
+  async diagnoseUserInsurances(
+    userId: bigint,
+    forceRefresh = false,
+  ): Promise<InsuranceDiagnosisDto> {
+    const cacheKey = userId.toString();
+    if (!forceRefresh) {
+      const cached = this.diagnosisCache.get(cacheKey);
+      if (cached && Date.now() < cached.expiresAt) {
+        return cached.result;
+      }
+    }
+
     const products = await this.prisma.insuranceProduct.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -94,12 +110,10 @@ export class AiDiagnosisService {
       return this.generateEmptyDiagnosis();
     }
 
+    let diagnosis: InsuranceDiagnosisDto | null = null;
     if (this.aiClient) {
       try {
-        const aiResult = await this.executeGeminiDiagnosis(products);
-        if (aiResult) {
-          return aiResult;
-        }
+        diagnosis = await this.executeGeminiDiagnosis(products);
       } catch (err: unknown) {
         this.logger.warn(
           'Gemini AI 진단 호출 실패, 규칙 기반 폴백 엔진으로 대체합니다:',
@@ -108,7 +122,12 @@ export class AiDiagnosisService {
       }
     }
 
-    return this.generateRuleBasedDiagnosis(products);
+    const finalResult = diagnosis ?? this.generateRuleBasedDiagnosis(products);
+    this.diagnosisCache.set(cacheKey, {
+      result: finalResult,
+      expiresAt: Date.now() + DIAGNOSIS_CACHE_TTL_MS,
+    });
+    return finalResult;
   }
 
   /**

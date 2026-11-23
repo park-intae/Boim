@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateUserDto } from '@boim/shared-types';
 
@@ -26,9 +31,19 @@ export class UserService {
     });
   }
 
-  async updatePassword(id: bigint, _newPassword: string) {
-    const user = await this.getUserById(id);
-    if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
+  async updatePassword(id: bigint, newPassword: string) {
+    if (!newPassword || newPassword.length < 8) {
+      throw new BadRequestException('비밀번호는 최소 8자 이상이어야 합니다.');
+    }
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user || user.deletedAt) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
     return true;
   }
 
@@ -59,16 +74,86 @@ export class UserService {
   }
 
   async exportData(userId: bigint) {
-    // 실제로는 사용자의 모든 데이터(보험, 캘린더 등)를 쿼리해서 반환해야 함
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { insuranceProducts: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        provider: true,
+        isPassVerified: true,
+        profileImage: true,
+        createdAt: true,
+        insuranceProducts: true,
+      },
     });
     return user;
   }
 
-  async importData(_userId: bigint, _data: any) {
-    // 임시 모의 로직
+  async importData(userId: bigint, data: Record<string, unknown>) {
+    if (!data || typeof data !== 'object') {
+      throw new BadRequestException('올바른 백업 데이터 형식이 아닙니다.');
+    }
+
+    const rawProducts = Array.isArray(data.insuranceProducts)
+      ? data.insuranceProducts
+      : Array.isArray(data.insurances)
+        ? data.insurances
+        : [];
+
+    const validProducts = rawProducts.map((item) => {
+      if (!item || typeof item !== 'object') {
+        throw new BadRequestException(
+          '보험 상품 항목 형식이 올바르지 않습니다.',
+        );
+      }
+      const p = item as Record<string, unknown>;
+      const startDate = new Date(
+        typeof p.startDate === 'string' || typeof p.startDate === 'number'
+          ? p.startDate
+          : '',
+      );
+      const maturityDate = new Date(
+        typeof p.maturityDate === 'string' || typeof p.maturityDate === 'number'
+          ? p.maturityDate
+          : '',
+      );
+      const monthlyPayment = Number(p.monthlyPayment ?? 0);
+      const coverageAmount = Number(p.coverageAmount ?? 0);
+
+      if (
+        typeof p.category !== 'string' ||
+        typeof p.name !== 'string' ||
+        typeof p.institution !== 'string' ||
+        Number.isNaN(startDate.getTime()) ||
+        Number.isNaN(maturityDate.getTime()) ||
+        !Number.isFinite(monthlyPayment) ||
+        monthlyPayment < 0 ||
+        !Number.isFinite(coverageAmount) ||
+        coverageAmount < 0
+      ) {
+        throw new BadRequestException(
+          '백업 데이터 내 보험 상품 필드가 유효하지 않습니다.',
+        );
+      }
+
+      return {
+        userId,
+        category: p.category.trim(),
+        name: p.name.trim(),
+        institution: p.institution.trim(),
+        startDate,
+        maturityDate,
+        monthlyPayment,
+        coverageAmount: BigInt(Math.trunc(coverageAmount)),
+      };
+    });
+
+    if (validProducts.length > 0) {
+      await this.prisma.insuranceProduct.createMany({
+        data: validProducts,
+      });
+    }
     return true;
   }
 

@@ -66,7 +66,7 @@ describe('AnalysisController', () => {
       expect(result).toEqual(mockDiagnosisResult);
       expect(
         mockAiDiagnosisService.diagnoseUserInsurances,
-      ).toHaveBeenCalledWith(BigInt(10));
+      ).toHaveBeenCalledWith(BigInt(10), true);
     });
 
     it('인증 정보가 없을 경우 UnauthorizedException을 발생시켜야 한다.', async () => {
@@ -92,7 +92,7 @@ describe('AnalysisController', () => {
       expect(result).toEqual(mockDiagnosisResult);
       expect(
         mockAiDiagnosisService.diagnoseUserInsurances,
-      ).toHaveBeenCalledWith(BigInt(5));
+      ).toHaveBeenCalledWith(BigInt(5), false);
     });
   });
 

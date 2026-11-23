@@ -49,21 +49,21 @@
 - [x] **인증 보안 테스트 작성 및 검증**
 
 ### 3. Phase 23-03: 백엔드 데이터 무결성·스텁 구현·입력 검증 보강 (High)
-- [ ] **전역 `ValidationPipe` 및 DTO 유효성 검증 도입** (`apps/api/src/main.ts`, 각 DTO)
-  - [ ] `app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))` 활성화
-  - [ ] `CreateInsuranceProductDto`, `UpdateInsuranceProductDto`, 로그인/회원가입/비밀번호 변경 DTO에 `class-validator` 데코레이터 적용
-  - [ ] `HttpExceptionFilter`에서 `ValidationPipe` 배열 에러 메시지 포맷팅 지원 및 프로덕션 스택/예외 원문 로깅 마스킹
-  - [ ] `BigInt` 직렬화 시 `MAX_SAFE_INTEGER` 초과 값은 문자열로 안전 직렬화 검토
-- [ ] **미구현 스텁 API 실제 구현** (`apps/api/src/user/user.service.ts`)
-  - [ ] `updatePassword`: 현재 비밀번호 확인 또는 재인증 검증 후 `bcrypt.hash`로 실제 DB `password` 업데이트
-  - [ ] `importData`: `Zod` 스키마로 업로드 JSON 검증 후 트랜잭션 내 사용자 보험 데이터 안전 복원 (또는 미지원 시 명확히 `NotImplementedException` 처리)
-  - [ ] `exportData`: `select`를 명시하여 `password`, `refreshToken`, `passCi` 등 민감 컬럼 완전 제외
-- [ ] **문서 업로드·파싱·엑셀 보안 및 정확도 개선**
-  - [ ] `DocumentService.uploadDocument`: 확장자 화이트리스트 검증 및 `productId` 소유권 검증 추가
-  - [ ] `DocumentParserService`: OCR/텍스트 추출 실패 시 가짜 샘플 데이터를 `confidence: 0.99`로 반환하지 않고 명확한 파싱 실패 에러 또는 `isFallback: true` + `confidence: 0` 반환
-  - [ ] `ExportService`: 엑셀 셀 문자열(`=`, `+`, `-`, `@` 시작) Formula Injection 이스케이프 처리
-- [ ] **AI 진단 비용/Rate Limit 보호** (`apps/api/src/analysis/`)
-  - [ ] `GET /analysis/ai-diagnosis`에 사용자별 단기 캐시(예: 5분~1시간 TTL 또는 보험 변경 시 무효화) 적용하여 불필요한 Gemini API 중복 호출 방지
+- [x] **전역 `ValidationPipe` 및 DTO 유효성 검증 도입** (`apps/api/src/main.ts`, 각 DTO)
+  - [x] `app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))` 활성화
+  - [x] `CreateInsuranceProductDto`, `UpdateInsuranceProductDto`, 로그인/회원가입/비밀번호 변경 DTO에 `class-validator` 데코레이터 적용
+  - [x] `HttpExceptionFilter`에서 `ValidationPipe` 배열 에러 메시지 포맷팅 지원 및 프로덕션 스택/예외 원문 로깅 마스킹
+  - [x] `BigInt` 직렬화 시 `MAX_SAFE_INTEGER` 초과 값은 문자열로 안전 직렬화 검토
+- [x] **미구현 스텁 API 실제 구현** (`apps/api/src/user/user.service.ts`)
+  - [x] `updatePassword`: 현재 비밀번호 확인 또는 재인증 검증 후 `bcrypt.hash`로 실제 DB `password` 업데이트
+  - [x] `importData`: `Zod` 스키마로 업로드 JSON 검증 후 트랜잭션 내 사용자 보험 데이터 안전 복원 (또는 미지원 시 명확히 `NotImplementedException` 처리)
+  - [x] `exportData`: `select`를 명시하여 `password`, `refreshToken`, `passCi` 등 민감 컬럼 완전 제외
+- [x] **문서 업로드·파싱·엑셀 보안 및 정확도 개선**
+  - [x] `DocumentService.uploadDocument`: 확장자 화이트리스트 검증 및 `productId` 소유권 검증 추가
+  - [x] `DocumentParserService`: OCR/텍스트 추출 실패 시 가짜 샘플 데이터를 `confidence: 0.99`로 반환하지 않고 명확한 파싱 실패 에러 또는 `isFallback: true` + `confidence: 0` 반환
+  - [x] `ExportService`: 엑셀 셀 문자열(`=`, `+`, `-`, `@` 시작) Formula Injection 이스케이프 처리
+- [x] **AI 진단 비용/Rate Limit 보호** (`apps/api/src/analysis/`)
+  - [x] `GET /analysis/ai-diagnosis`에 사용자별 단기 캐시(예: 5분~1시간 TTL 또는 보험 변경 시 무효화) 적용하여 불필요한 Gemini API 중복 호출 방지
 
 ### 4. Phase 23-04: 알림 스케줄러 KST 자정 불일치 버그 수정 (High)
 - [ ] **`NotificationSchedulerService.runBatch` 날짜 경계 수정** (`apps/api/src/notification/notification-scheduler.service.ts`)

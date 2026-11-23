@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInsuranceProductDto } from './dto/create-insurance-product.dto';
@@ -11,15 +12,59 @@ import { UpdateInsuranceProductDto } from './dto/update-insurance-product.dto';
 export class InsuranceProductService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private parseValidDate(value: string, fieldName: string): Date {
+    const parsed = new Date(value);
+    if (!value || Number.isNaN(parsed.getTime())) {
+      throw new BadRequestException(
+        `${fieldName}의 날짜 형식이 올바르지 않습니다.`,
+      );
+    }
+    return parsed;
+  }
+
+  private validateAmounts(
+    monthlyPayment?: number,
+    coverageAmount?: number,
+  ): void {
+    if (
+      monthlyPayment !== undefined &&
+      (!Number.isFinite(monthlyPayment) || monthlyPayment < 0)
+    ) {
+      throw new BadRequestException('월 납입액은 0 이상의 숫자여야 합니다.');
+    }
+    if (
+      coverageAmount !== undefined &&
+      (!Number.isFinite(coverageAmount) || coverageAmount < 0)
+    ) {
+      throw new BadRequestException('보장 총액은 0 이상의 숫자여야 합니다.');
+    }
+  }
+
   async create(userId: bigint, dto: CreateInsuranceProductDto) {
+    if (
+      !dto.category?.trim() ||
+      !dto.name?.trim() ||
+      !dto.institution?.trim()
+    ) {
+      throw new BadRequestException(
+        '카테고리, 상품명, 보험사명은 필수 입력 항목입니다.',
+      );
+    }
+    const startDate = this.parseValidDate(dto.startDate, '가입 시작일');
+    const maturityDate = this.parseValidDate(dto.maturityDate, '만기일');
+    if (maturityDate < startDate) {
+      throw new BadRequestException('만기일은 가입 시작일 이후여야 합니다.');
+    }
+    this.validateAmounts(dto.monthlyPayment, dto.coverageAmount);
+
     return this.prisma.insuranceProduct.create({
       data: {
         userId,
-        category: dto.category,
-        name: dto.name,
-        institution: dto.institution,
-        startDate: new Date(dto.startDate),
-        maturityDate: new Date(dto.maturityDate),
+        category: dto.category.trim(),
+        name: dto.name.trim(),
+        institution: dto.institution.trim(),
+        startDate,
+        maturityDate,
         monthlyPayment: dto.monthlyPayment,
         coverageAmount: dto.coverageAmount,
       },
@@ -51,16 +96,28 @@ export class InsuranceProductService {
   }
 
   async update(userId: bigint, id: number, dto: UpdateInsuranceProductDto) {
-    await this.findOne(userId, id);
+    const existing = await this.findOne(userId, id);
     const { userId: _ignoredUserId, ...safeDto } =
       dto as UpdateInsuranceProductDto & {
         userId?: unknown;
       };
+    this.validateAmounts(dto.monthlyPayment, dto.coverageAmount);
+
     const data: import('@prisma/client').Prisma.InsuranceProductUpdateInput = {
       ...safeDto,
     };
-    if (dto.startDate) data.startDate = new Date(dto.startDate);
-    if (dto.maturityDate) data.maturityDate = new Date(dto.maturityDate);
+    const nextStart = dto.startDate
+      ? this.parseValidDate(dto.startDate, '가입 시작일')
+      : new Date(existing.startDate);
+    const nextMaturity = dto.maturityDate
+      ? this.parseValidDate(dto.maturityDate, '만기일')
+      : new Date(existing.maturityDate);
+    if (nextMaturity < nextStart) {
+      throw new BadRequestException('만기일은 가입 시작일 이후여야 합니다.');
+    }
+
+    if (dto.startDate) data.startDate = nextStart;
+    if (dto.maturityDate) data.maturityDate = nextMaturity;
 
     return this.prisma.insuranceProduct.update({
       where: { id },

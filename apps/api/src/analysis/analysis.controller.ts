@@ -52,7 +52,7 @@ export class AnalysisController {
     @Req() req: RequestWithJwtUser,
   ): Promise<InsuranceDiagnosisDto> {
     const userId = this.extractUserId(req);
-    return this.aiDiagnosisService.diagnoseUserInsurances(userId);
+    return this.aiDiagnosisService.diagnoseUserInsurances(userId, true);
   }
 
   @Get('ai-diagnosis')
@@ -65,7 +65,7 @@ export class AnalysisController {
     @Req() req: RequestWithJwtUser,
   ): Promise<InsuranceDiagnosisDto> {
     const userId = this.extractUserId(req);
-    return this.aiDiagnosisService.diagnoseUserInsurances(userId);
+    return this.aiDiagnosisService.diagnoseUserInsurances(userId, false);
   }
 
   @Get('export/excel')

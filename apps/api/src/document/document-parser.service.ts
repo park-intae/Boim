@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { createWorker } from 'tesseract.js';
@@ -45,7 +45,9 @@ export class DocumentParserService {
       // ignore
     }
 
-    return this.getFallbackDocumentText();
+    throw new BadRequestException(
+      '문서에서 텍스트를 추출하지 못했습니다. 선명한 이미지나 텍스트가 포함된 PDF/TXT 파일을 업로드해주세요.',
+    );
   }
 
   /**
@@ -76,7 +78,9 @@ export class DocumentParserService {
       return text;
     } catch (err) {
       this.logger.error(`OCR 텍스트 인식 실패: ${(err as Error).message}`);
-      return this.getFallbackDocumentText();
+      throw new BadRequestException(
+        '이미지에서 텍스트를 인식하지 못했습니다. 더 선명한 이미지를 업로드하거나 직접 입력해주세요.',
+      );
     } finally {
       if (worker) {
         try {
@@ -428,17 +432,5 @@ export class DocumentParserService {
       coverageAmount,
       confidence: 0.99,
     };
-  }
-
-  private getFallbackDocumentText(): string {
-    return `
-증권번호: POL-2024-8839210
-보험회사: 한화손해보험 주식회사
-상품명: 무배당 한화 라이프케어 건강종합보험
-보 험 종: 건강보험 (HEALTH)
-보험기간: 2024년 03월 01일 ~ 2044년 03월 01일
-월 보험료: 85,000원 (매월 15일 자동이체)
-보장금액: 50,000,000원
-`;
   }
 }

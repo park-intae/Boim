@@ -13,6 +13,22 @@ export class ExportService {
   ) {}
 
   /**
+   * 엑셀 수식 인젝션(Formula Injection) 방지용 셀 문자열 이스케이프
+   */
+  private sanitizeExcelCell(value: unknown): string {
+    const str =
+      typeof value === 'string'
+        ? value
+        : typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : '';
+    if (/^[=+\-@\t\r]/.test(str)) {
+      return `'${str}`;
+    }
+    return str;
+  }
+
+  /**
    * 사용자의 가입 보험 상세, 카테고리별 통계, AI 종합 진단 결과가 포함된 엑셀(.xlsx) 버퍼 생성
    * @param userId 사용자 ID
    */
@@ -106,9 +122,9 @@ export class ExportService {
     products.forEach((p, idx) => {
       const row = sheet.addRow({
         no: idx + 1,
-        institution: p.institution,
-        name: p.name,
-        category: p.category,
+        institution: this.sanitizeExcelCell(p.institution),
+        name: this.sanitizeExcelCell(p.name),
+        category: this.sanitizeExcelCell(p.category),
         monthlyPayment: p.monthlyPayment,
         coverageAmount: Number(p.coverageAmount),
         startDate: p.startDate

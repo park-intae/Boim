@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InsuranceProductService } from './insurance-product.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 
 describe('InsuranceProductService', () => {
   let service: InsuranceProductService;
@@ -56,5 +60,33 @@ describe('InsuranceProductService', () => {
       ForbiddenException,
     );
     await expect(service.remove(1n, 1)).rejects.toThrow(ForbiddenException);
+  });
+
+  it('should throw BadRequestException on invalid date or negative amount', async () => {
+    await expect(
+      service.create(1n, {
+        userId: 1,
+        category: '건강보험',
+        name: '테스트',
+        institution: '삼성화재',
+        startDate: 'invalid-date',
+        maturityDate: '2030-01-01',
+        monthlyPayment: 50000,
+        coverageAmount: 10000000,
+      }),
+    ).rejects.toThrow(BadRequestException);
+
+    await expect(
+      service.create(1n, {
+        userId: 1,
+        category: '건강보험',
+        name: '테스트',
+        institution: '삼성화재',
+        startDate: '2024-01-01',
+        maturityDate: '2030-01-01',
+        monthlyPayment: -100,
+        coverageAmount: 10000000,
+      }),
+    ).rejects.toThrow(BadRequestException);
   });
 });

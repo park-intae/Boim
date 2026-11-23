@@ -18,15 +18,36 @@ export class HttpExceptionFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    const message =
-      exception instanceof HttpException
-        ? exception.message
-        : 'Internal Server Error';
 
-    console.error(
-      `[HttpExceptionFilter] Status ${status} - Error: ${message}`,
-      exception,
-    );
+    let message = 'Internal Server Error';
+    if (exception instanceof HttpException) {
+      const res = exception.getResponse();
+      if (typeof res === 'string') {
+        message = res;
+      } else if (typeof res === 'object' && res !== null && 'message' in res) {
+        const rawMsg = (res as { message?: unknown }).message;
+        if (Array.isArray(rawMsg)) {
+          message = rawMsg.map((m) => String(m)).join(', ');
+        } else if (typeof rawMsg === 'string') {
+          message = rawMsg;
+        } else {
+          message = exception.message;
+        }
+      } else {
+        message = exception.message;
+      }
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      console.error(
+        `[HttpExceptionFilter] Status ${status} - Error: ${message}`,
+      );
+    } else {
+      console.error(
+        `[HttpExceptionFilter] Status ${status} - Error: ${message}`,
+        exception,
+      );
+    }
 
     const errorResponse: ApiResponse = {
       success: false,

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('UserService', () => {
   let service: UserService;
@@ -67,16 +67,28 @@ describe('UserService', () => {
     expect(user.name).toBe('newName');
   });
 
-  it('updatePassword should return true if user exists', async () => {
+  it('updatePassword should hash and persist password if user exists', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({ id: 1n } as any);
-    const result = await service.updatePassword(1n, 'newPass');
+    jest.spyOn(prisma.user, 'update').mockResolvedValue({ id: 1n } as any);
+    const result = await service.updatePassword(1n, 'newPass1234');
     expect(result).toBe(true);
+    expect(prisma.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 1n },
+        data: expect.objectContaining({ password: expect.any(String) }),
+      }),
+    );
+  });
+
+  it('updatePassword should throw BadRequestException if password is too short', async () => {
+    await expect(service.updatePassword(1n, 'short')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('updatePassword should throw NotFoundException if user not exists', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
-    jest.spyOn(prisma.user, 'create').mockResolvedValue(null);
-    await expect(service.updatePassword(1n, 'newPass')).rejects.toThrow(
+    await expect(service.updatePassword(1n, 'newPass1234')).rejects.toThrow(
       NotFoundException,
     );
   });

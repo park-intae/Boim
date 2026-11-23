@@ -5,9 +5,11 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { validateRequiredEnv } from './common/config/env.validation';
 
-(BigInt.prototype as any).toJSON = function () {
-  return Number(this);
-};
+(BigInt.prototype as unknown as { toJSON: () => number | string }).toJSON =
+  function (this: bigint) {
+    const num = Number(this);
+    return Number.isSafeInteger(num) ? num : this.toString();
+  };
 
 async function bootstrap() {
   validateRequiredEnv();

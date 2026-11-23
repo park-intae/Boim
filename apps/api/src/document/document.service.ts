@@ -61,7 +61,28 @@ export class DocumentService {
       );
     }
 
-    const ext = path.extname(file.originalname) || '.pdf';
+    const ext = path.extname(file.originalname).toLowerCase() || '.pdf';
+    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.txt'];
+    if (!allowedExtensions.includes(ext)) {
+      throw new BadRequestException(
+        '지원하지 않는 파일 확장자입니다. (지원: pdf, png, jpg, jpeg, txt)',
+      );
+    }
+
+    if (productId !== undefined) {
+      const product = await this.prisma.insuranceProduct.findUnique({
+        where: { id: productId },
+      });
+      if (!product) {
+        throw new NotFoundException('연결할 보험 상품을 찾을 수 없습니다.');
+      }
+      if (BigInt(product.userId) !== userId) {
+        throw new ForbiddenException(
+          '타인의 보험 상품에 문서를 연결할 수 없습니다.',
+        );
+      }
+    }
+
     const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
     const safeFileName = `${uniqueSuffix}${ext}`;
     const filePath = path.join(this.uploadDir, safeFileName);

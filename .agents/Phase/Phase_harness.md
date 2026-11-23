@@ -82,7 +82,7 @@
 - [ ] **Phase 23: 전사 보안·인증 무결성 강화 및 치명적 결함 수정 (진행 중)**
   - [x] **Phase 23-01:** 백엔드 인증/인가 가드 및 Row-level 소유권 검증 (`InsuranceProduct`, `OptionalJwtAuthGuard` 제거)
   - [x] **Phase 23-02:** 로그인·OAuth·PASS 인증 취약점 및 시크릿 관리 수정
-  - [ ] **Phase 23-03:** 백엔드 데이터 무결성·스텁 구현·입력 검증(`ValidationPipe`) 보강
+  - [x] **Phase 23-03:** 백엔드 데이터 무결성·스텁 구현·입력 검증(`ValidationPipe`) 보강
   - [ ] **Phase 23-04:** 알림 스케줄러 KST 자정 불일치 버그 수정
   - [ ] **Phase 23-05:** 프론트엔드 API 연동 규격 통일 및 401/엑셀 버그 수정
   - [ ] **Phase 23-06:** 인프라·운영 보안 설정 및 전체 품질 무결성 검증

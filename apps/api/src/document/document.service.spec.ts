@@ -34,6 +34,9 @@ describe('DocumentService', () => {
       delete: jest.fn(),
       update: jest.fn(),
     },
+    insuranceProduct: {
+      findUnique: jest.fn().mockResolvedValue({ id: 5n, userId: 1n }),
+    },
   };
 
   const mockParserService = {
