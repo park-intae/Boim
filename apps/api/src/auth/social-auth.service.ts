@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { UpdateSocialPriorityDto } from '@boim/shared-types';
+import { getJwtSecret } from '../common/config/env.validation';
 
 export interface SocialProfile {
   provider: 'kakao' | 'naver';
@@ -39,11 +40,52 @@ export interface SocialAuthResult {
 
 @Injectable()
 export class SocialAuthService {
+  private readonly oauthExchangeCodes = new Map<
+    string,
+    { result: SocialAuthResult; expiresAt: number }
+  >();
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
+
+  /**
+   * OAuth 콜백 URL에 JWT를 직접 노출하지 않기 위한 일회용 단기 교환 코드(60초 TTL) 발급
+   */
+  issueOAuthExchangeCode(result: SocialAuthResult): string {
+    const now = Date.now();
+    for (const [key, entry] of this.oauthExchangeCodes.entries()) {
+      if (now > entry.expiresAt) {
+        this.oauthExchangeCodes.delete(key);
+      }
+    }
+    const code = crypto.randomBytes(24).toString('hex');
+    this.oauthExchangeCodes.set(code, {
+      result,
+      expiresAt: now + 60 * 1000,
+    });
+    return code;
+  }
+
+  /**
+   * 일회용 OAuth 교환 코드를 검증하고 로그인 결과(토큰 포함)를 반환 후 즉시 파기합니다.
+   */
+  consumeOAuthExchangeCode(code: string): SocialAuthResult {
+    if (!code) {
+      throw new UnauthorizedException('유효하지 않은 OAuth 교환 코드입니다.');
+    }
+    const entry = this.oauthExchangeCodes.get(code);
+    this.oauthExchangeCodes.delete(code);
+
+    if (!entry || Date.now() > entry.expiresAt) {
+      throw new UnauthorizedException(
+        '만료되었거나 이미 사용된 OAuth 인증 코드입니다.',
+      );
+    }
+    return entry.result;
+  }
 
   /**
    * 카카오 인가 코드를 카카오 Access Token으로 교환합니다.
@@ -57,6 +99,11 @@ export class SocialAuthService {
       'http://localhost:3000/api/auth/kakao/callback';
 
     if (!clientId || clientId.startsWith('mock-')) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new UnauthorizedException(
+          '카카오 OAuth 클라이언트 설정이 누락되었습니다.',
+        );
+      }
       return `mock_kakao_token_for_${code}`;
     }
 
@@ -158,7 +205,7 @@ export class SocialAuthService {
   generateLinkState(userId: string, provider: 'kakao' | 'naver'): string {
     const timestamp = Date.now().toString();
     const nonce = crypto.randomBytes(8).toString('hex');
-    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+    const secret = getJwtSecret();
     const payload = `link.${provider}.${userId}.${timestamp}.${nonce}`;
     const signature = crypto
       .createHmac('sha256', secret)
@@ -198,7 +245,7 @@ export class SocialAuthService {
         return { valid: false };
       }
 
-      const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+      const secret = getJwtSecret();
       const payload = `link.${provider}.${userId}.${timestampStr}.${nonce}`;
       const expectedSignature = crypto
         .createHmac('sha256', secret)
@@ -228,7 +275,7 @@ export class SocialAuthService {
   generateOAuthState(): string {
     const timestamp = Date.now().toString();
     const nonce = crypto.randomBytes(8).toString('hex');
-    const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+    const secret = getJwtSecret();
     const signature = crypto
       .createHmac('sha256', secret)
       .update(`${timestamp}:${nonce}`)
@@ -242,11 +289,12 @@ export class SocialAuthService {
    */
   verifyOAuthState(state?: string): boolean {
     if (!state) return false;
-    // mock 테스트 토큰 허용
+    // 비프로덕션(테스트/개발) 환경에서만 mock 테스트 토큰 허용
     if (
-      state.startsWith('test_') ||
-      state.startsWith('random_') ||
-      state === 'mock_state'
+      process.env.NODE_ENV !== 'production' &&
+      (state.startsWith('test_') ||
+        state.startsWith('random_') ||
+        state === 'mock_state')
     ) {
       return true;
     }
@@ -270,7 +318,7 @@ export class SocialAuthService {
         return false;
       }
 
-      const secret = process.env.JWT_SECRET || 'boim_oauth_state_secret_key';
+      const secret = getJwtSecret();
       const expectedSignature = crypto
         .createHmac('sha256', secret)
         .update(`${timestampStr}:${nonce}`)
@@ -303,6 +351,11 @@ export class SocialAuthService {
     const clientSecret = process.env.NAVER_CLIENT_SECRET;
 
     if (!clientId || clientId.startsWith('mock-')) {
+      if (process.env.NODE_ENV === 'production') {
+        throw new UnauthorizedException(
+          '네이버 OAuth 클라이언트 설정이 누락되었습니다.',
+        );
+      }
       return `mock_naver_token_for_${code}`;
     }
 
@@ -503,6 +556,17 @@ export class SocialAuthService {
       });
 
       if (existingEmailUser) {
+        if (existingEmailUser.deletedAt) {
+          throw new UnauthorizedException('탈퇴 처리된 계정입니다.');
+        }
+        if (
+          existingEmailUser.provider === 'local' &&
+          existingEmailUser.password
+        ) {
+          throw new ConflictException(
+            '이미 일반 회원으로 가입된 이메일입니다. 로그인 후 설정에서 소셜 계정을 연동해주세요.',
+          );
+        }
         const currentIds = (existingEmailUser.providerId || '')
           .split('|')
           .filter(Boolean);

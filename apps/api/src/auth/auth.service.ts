@@ -91,23 +91,27 @@ export class AuthService {
   }
 
   async login(email: string, password?: string, rememberMe?: boolean) {
+    if (!email || !password || password.trim() === '') {
+      throw new UnauthorizedException('이메일과 비밀번호를 모두 입력해주세요.');
+    }
+
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) {
+    if (!user || user.deletedAt) {
       throw new UnauthorizedException(
         '이메일 또는 비밀번호가 올바르지 않습니다.',
       );
     }
 
-    if (user.password && password) {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        throw new UnauthorizedException(
-          '이메일 또는 비밀번호가 올바르지 않습니다.',
-        );
-      }
-    } else if (!user.password && password) {
+    if (!user.password) {
       throw new UnauthorizedException(
         '비밀번호가 설정되지 않은 계정입니다. 소셜 로그인을 이용해주세요.',
+      );
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new UnauthorizedException(
+        '이메일 또는 비밀번호가 올바르지 않습니다.',
       );
     }
 

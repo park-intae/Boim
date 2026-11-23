@@ -30,23 +30,23 @@
   - [x] 타인 리소스(보험 상품, 문서, 알림) 접근 시 `403 Forbidden` 또는 `404 Not Found` 반환 검증
 
 ### 2. Phase 23-02: 로그인·OAuth·PASS 인증 취약점 및 시크릿 관리 수정 (Critical)
-- [ ] **`AuthService.login` 비밀번호 검증 우회 차단** (`apps/api/src/auth/auth.service.ts`)
-  - [ ] `password` 필수 입력 검증 (`!password`일 경우 즉시 `UnauthorizedException` 발생)
-  - [ ] 소셜 전용 계정(`!user.password`)은 일반 로그인 차단
-  - [ ] 탈퇴 회원(`user.deletedAt !== null`) 로그인 차단
-- [ ] **OAuth2 / Mock 인증 프로덕션 격리** (`apps/api/src/auth/`)
-  - [ ] `SocialAuthService.verifyOAuthState`: `test_`, `random_`, `mock_state` 허용 로직을 `NODE_ENV !== 'production'` 조건으로 엄격 제한
-  - [ ] `exchangeKakaoCode` / `exchangeNaverCode`: 프로덕션 환경에서 `CLIENT_ID` 미설정 시 모의 토큰 발급 대신 `InternalServerErrorException` 또는 `UnauthorizedException` 발생
-  - [ ] `AuthController`: `social/mock-link`, `social/mock-unlink` 엔드포인트를 비프로덕션 환경으로 제한
-  - [ ] 이메일 자동 소셜 연동 시 소셜 제공자의 이메일 검증 여부 확인 및 충돌 정책 강화
-  - [ ] OAuth 콜백 리다이렉트 시 URL 쿼리 평문 토큰 전달 대신 일회용 인가 코드(Authorization Code) 교환 방식 또는 단기 교환 토큰으로 전환 검토·적용
-- [ ] **JWT 시크릿 및 환경변수 부트스트랩 검증**
-  - [ ] `JwtStrategy`, `AuthModule`, `SocialAuthService`의 하드코딩된 시크릿 폴백을 제거하고, 프로덕션 환경에서 `JWT_SECRET` 미설정 시 서버 부트스트랩 실패 처리 (`Zod` 기반 환경변수 스키마 검증 도입)
-- [ ] **PASS 인증 보안 및 로깅 마스킹** (`apps/api/src/auth/pass.service.ts`)
-  - [ ] 로그에 평문 휴대폰 번호 및 6자리 인증번호(`authCode`) 출력 제거/마스킹
-  - [ ] `lastRequestByPhone` 맵 만료 항목 자동 정리(`cleanupExpiredSessions`에 포함)로 메모리 누수 방지
-  - [ ] `passCi` 생성 시 동일 번호에 대해 일관된 해시 기반 식별자 생성(중복 가입 방지 가능하도록 개선)
-- [ ] **인증 보안 테스트 작성 및 검증**
+- [x] **`AuthService.login` 비밀번호 검증 우회 차단** (`apps/api/src/auth/auth.service.ts`)
+  - [x] `password` 필수 입력 검증 (`!password`일 경우 즉시 `UnauthorizedException` 발생)
+  - [x] 소셜 전용 계정(`!user.password`)은 일반 로그인 차단
+  - [x] 탈퇴 회원(`user.deletedAt !== null`) 로그인 차단
+- [x] **OAuth2 / Mock 인증 프로덕션 격리** (`apps/api/src/auth/`)
+  - [x] `SocialAuthService.verifyOAuthState`: `test_`, `random_`, `mock_state` 허용 로직을 `NODE_ENV !== 'production'` 조건으로 엄격 제한
+  - [x] `exchangeKakaoCode` / `exchangeNaverCode`: 프로덕션 환경에서 `CLIENT_ID` 미설정 시 모의 토큰 발급 대신 `InternalServerErrorException` 또는 `UnauthorizedException` 발생
+  - [x] `AuthController`: `social/mock-link`, `social/mock-unlink` 엔드포인트를 비프로덕션 환경으로 제한
+  - [x] 이메일 자동 소셜 연동 시 소셜 제공자의 이메일 검증 여부 확인 및 충돌 정책 강화
+  - [x] OAuth 콜백 리다이렉트 시 URL 쿼리 평문 토큰 전달 대신 일회용 인가 코드(Authorization Code) 교환 방식 또는 단기 교환 토큰으로 전환 검토·적용
+- [x] **JWT 시크릿 및 환경변수 부트스트랩 검증**
+  - [x] `JwtStrategy`, `AuthModule`, `SocialAuthService`의 하드코딩된 시크릿 폴백을 제거하고, 프로덕션 환경에서 `JWT_SECRET` 미설정 시 서버 부트스트랩 실패 처리 (`Zod` 기반 환경변수 스키마 검증 도입)
+- [x] **PASS 인증 보안 및 로깅 마스킹** (`apps/api/src/auth/pass.service.ts`)
+  - [x] 로그에 평문 휴대폰 번호 및 6자리 인증번호(`authCode`) 출력 제거/마스킹
+  - [x] `lastRequestByPhone` 맵 만료 항목 자동 정리(`cleanupExpiredSessions`에 포함)로 메모리 누수 방지
+  - [x] `passCi` 생성 시 동일 번호에 대해 일관된 해시 기반 식별자 생성(중복 가입 방지 가능하도록 개선)
+- [x] **인증 보안 테스트 작성 및 검증**
 
 ### 3. Phase 23-03: 백엔드 데이터 무결성·스텁 구현·입력 검증 보강 (High)
 - [ ] **전역 `ValidationPipe` 및 DTO 유효성 검증 도입** (`apps/api/src/main.ts`, 각 DTO)

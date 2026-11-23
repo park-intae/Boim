@@ -97,6 +97,15 @@ describe('AuthController', () => {
         provider: 'kakao',
         linked: false,
       }),
+      issueOAuthExchangeCode: jest.fn().mockReturnValue('mock_exchange_code'),
+      consumeOAuthExchangeCode: jest.fn().mockReturnValue({
+        user: { id: '1', email: 'test@kakao.com' },
+        tokens: {
+          accessToken: 'mock_jwt_access',
+          refreshToken: 'mock_jwt_refresh',
+        },
+        isNew: false,
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -186,8 +195,11 @@ describe('AuthController', () => {
 
       controller.kakaoAuthCallback(req, res);
 
+      expect(socialAuthService.issueOAuthExchangeCode).toHaveBeenCalledWith(
+        req.user,
+      );
       expect(res.redirect).toHaveBeenCalledWith(
-        'http://localhost:5173/auth/callback?token=token_access&refreshToken=token_refresh',
+        'http://localhost:5173/auth/callback?oauth_code=mock_exchange_code',
       );
     });
   });
@@ -254,8 +266,11 @@ describe('AuthController', () => {
 
       controller.naverAuthCallback(req, res);
 
+      expect(socialAuthService.issueOAuthExchangeCode).toHaveBeenCalledWith(
+        req.user,
+      );
       expect(res.redirect).toHaveBeenCalledWith(
-        'http://localhost:5173/auth/callback?token=naver_token_access&refreshToken=naver_token_refresh',
+        'http://localhost:5173/auth/callback?oauth_code=mock_exchange_code',
       );
     });
   });

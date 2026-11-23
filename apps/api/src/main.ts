@@ -3,12 +3,14 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { validateRequiredEnv } from './common/config/env.validation';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
 
 async function bootstrap() {
+  validateRequiredEnv();
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');

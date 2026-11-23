@@ -11,6 +11,7 @@ import {
   UseGuards,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
@@ -117,6 +118,11 @@ export class AuthController {
     @Req() req: RequestWithJwtUser,
     @Body('provider') provider: 'kakao' | 'naver',
   ) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException(
+        '프로덕션 환경에서는 지원하지 않는 기능입니다.',
+      );
+    }
     return this.authService.mockLinkSocial(req.user.userId, provider);
   }
 
@@ -126,7 +132,17 @@ export class AuthController {
     @Req() req: RequestWithJwtUser,
     @Body('provider') provider: 'kakao' | 'naver',
   ) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException(
+        '프로덕션 환경에서는 지원하지 않는 기능입니다.',
+      );
+    }
     return this.authService.mockUnlinkSocial(req.user.userId, provider);
+  }
+
+  @Post('oauth/exchange')
+  exchangeOAuthCode(@Body('code') code: string) {
+    return this.socialAuthService.consumeOAuthExchangeCode(code);
   }
 
   /**
@@ -195,9 +211,8 @@ export class AuthController {
       );
     }
 
-    res.redirect(
-      `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
-    );
+    const exchangeCode = this.socialAuthService.issueOAuthExchangeCode(result);
+    res.redirect(`${frontendUrl}/auth/callback?oauth_code=${exchangeCode}`);
   }
 
   @Post('kakao/login')
@@ -257,9 +272,8 @@ export class AuthController {
       );
     }
 
-    res.redirect(
-      `${frontendUrl}/auth/callback?token=${result.tokens.accessToken}&refreshToken=${result.tokens.refreshToken}`,
-    );
+    const exchangeCode = this.socialAuthService.issueOAuthExchangeCode(result);
+    res.redirect(`${frontendUrl}/auth/callback?oauth_code=${exchangeCode}`);
   }
 
   @Post('naver/login')

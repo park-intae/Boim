@@ -166,6 +166,27 @@ describe('AuthService', () => {
         UnauthorizedException,
       );
     });
+
+    it('should throw UnauthorizedException when password is omitted or empty', async () => {
+      await expect(service.login('test@test.com')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(service.login('test@test.com', '')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException for soft-deleted user', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
+        id: BigInt(1),
+        email: 'deleted@test.com',
+        password: 'hashed_password',
+        deletedAt: new Date(),
+      });
+      await expect(
+        service.login('deleted@test.com', 'password'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
   });
 
   describe('reauthenticate', () => {

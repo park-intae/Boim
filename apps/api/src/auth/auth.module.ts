@@ -10,16 +10,18 @@ import { NaverStrategy } from './naver.strategy';
 import { PassController } from './pass.controller';
 import { PassService } from './pass.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { getJwtSecret } from '../common/config/env.validation';
 
 @Module({
   imports: [
     PrismaModule,
     PassportModule,
-    JwtModule.register({
-      // TODO: 환경변수(ConfigService) 연동
-      secret: process.env.JWT_SECRET || 'fallback_secret_for_dev_only',
-      // 요구사항: 토큰 유효기간 30일 적용
-      signOptions: { expiresIn: '30d' },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: getJwtSecret(),
+        // 요구사항: 토큰 유효기간 30일 적용
+        signOptions: { expiresIn: '30d' },
+      }),
     }),
   ],
   controllers: [AuthController, PassController],

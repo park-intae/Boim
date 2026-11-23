@@ -40,6 +40,45 @@ describe('OAuthCallbackPage', () => {
     expect(screen.getByText('소셜 로그인 확인 중')).toBeInTheDocument();
   });
 
+  it('handles oauth_code exchange and logs in successfully', async () => {
+    mockSearchParams = new URLSearchParams('oauth_code=one_time_code');
+
+    (apiClient.post as any).mockResolvedValueOnce({
+      success: true,
+      data: {
+        user: {
+          id: '1',
+          email: 'kakao@boim.com',
+          name: '카카오사용자',
+          isPassVerified: true,
+        },
+        tokens: {
+          accessToken: 'exchanged_jwt_token',
+          refreshToken: 'exchanged_refresh_token',
+        },
+      },
+    });
+
+    render(<OAuthCallbackPage />);
+
+    await waitFor(() => {
+      expect(apiClient.post).toHaveBeenCalledWith('/auth/oauth/exchange', {
+        code: 'one_time_code',
+      });
+      expect(mockLogin).toHaveBeenCalledWith(
+        {
+          id: '1',
+          email: 'kakao@boim.com',
+          name: '카카오사용자',
+          profileImage: null,
+          isPassVerified: true,
+        },
+        'exchanged_jwt_token',
+      );
+      expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
+    });
+  });
+
   it('handles token in URL parameters and logs in successfully', async () => {
     mockSearchParams = new URLSearchParams('token=sample_jwt_token');
 

@@ -1,4 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface PassVerificationSession {
@@ -42,7 +43,7 @@ export class PassService {
   }
 
   /**
-   * 만료된 세션 자동 정리
+   * 만료된 세션 및 쿨다운 기록 자동 정리
    */
   private cleanupExpiredSessions(): void {
     const now = Date.now();
@@ -51,6 +52,16 @@ export class PassService {
         this.sessions.delete(txId);
       }
     }
+    for (const [phone, lastReqAt] of this.lastRequestByPhone.entries()) {
+      if (now - lastReqAt >= PASS_COOLDOWN_MS) {
+        this.lastRequestByPhone.delete(phone);
+      }
+    }
+  }
+
+  private maskPhoneNumber(phone: string): string {
+    if (phone.length < 7) return '***';
+    return `${phone.slice(0, 3)}****${phone.slice(-4)}`;
   }
 
   /**
@@ -95,15 +106,16 @@ export class PassService {
     });
     this.lastRequestByPhone.set(cleanedPhone, now);
 
-    this.logger.log(
-      `\n=========================================\n` +
-        `[PASS 실감형 본인인증 발송 안내]\n` +
-        `• 휴대폰 번호: ${cleanedPhone}\n` +
-        `• 발급 인증번호: ${authCode}\n` +
-        `• 유효시간: 3분 (180초)\n` +
-        `• 트랜잭션 ID: ${transactionId}\n` +
-        `=========================================`,
-    );
+    const maskedPhone = this.maskPhoneNumber(cleanedPhone);
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.log(
+        `[PASS 본인인증 요청] 번호: ${maskedPhone} | 인증번호: ${authCode} | 트랜잭션: ${transactionId}`,
+      );
+    } else {
+      this.logger.log(
+        `[PASS 본인인증 요청] 번호: ${maskedPhone} | 트랜잭션: ${transactionId}`,
+      );
+    }
 
     return transactionId;
   }
@@ -148,14 +160,19 @@ export class PassService {
     // 4. 보안 원칙: 검증 성공 즉시 세션 파기 (일회용 보장)
     this.sessions.delete(transactionId);
 
-    // 5. 로그인 유저인 경우 PASS 인증 상태 업데이트
+    // 5. 로그인 유저인 경우 PASS 인증 상태 업데이트 (일관된 해시 기반 CI 생성)
     if (userId) {
+      const ciHash = crypto
+        .createHash('sha256')
+        .update(session.phoneNumber)
+        .digest('hex')
+        .slice(0, 32);
       try {
         await this.prisma.user.update({
           where: { id: BigInt(userId) },
           data: {
             isPassVerified: true,
-            passCi: `mock_ci_${now}_${session.phoneNumber}`,
+            passCi: `mock_ci_${ciHash}`,
           },
         });
       } catch (e) {

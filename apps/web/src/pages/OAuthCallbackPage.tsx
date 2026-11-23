@@ -20,7 +20,48 @@ export const OAuthCallbackPage: React.FC = () => {
         return;
       }
 
-      // 2. 백엔드 리다이렉트로부터 토큰이 직접 전달된 경우
+      // 2. 백엔드 리다이렉트로부터 단기 일회용 교환 코드(oauth_code)가 전달된 경우
+      const oauthCode = searchParams.get('oauth_code');
+      if (oauthCode) {
+        try {
+          interface SocialExchangeResponse {
+            user?: { id: string; email?: string; name?: string; profileImage?: string | null; isPassVerified?: boolean };
+            tokens?: { accessToken: string; refreshToken?: string };
+          }
+
+          const resObj = (await apiClient.post('/auth/oauth/exchange', { code: oauthCode })) as Record<string, unknown>;
+          const dataLevel1 = resObj?.data as Record<string, unknown> | undefined;
+          const dataLevel2 = dataLevel1?.data as Record<string, unknown> | undefined;
+          const authData = (dataLevel2?.tokens ? dataLevel2 : (dataLevel1?.tokens ? dataLevel1 : resObj)) as unknown as SocialExchangeResponse;
+
+          if (authData?.tokens?.accessToken && authData.user?.id && authData.user?.email) {
+            login(
+              {
+                id: String(authData.user.id),
+                email: authData.user.email,
+                name: authData.user.name,
+                profileImage: authData.user.profileImage || null,
+                isPassVerified: !!authData.user.isPassVerified,
+              },
+              authData.tokens.accessToken,
+            );
+            navigate('/', { replace: true });
+            return;
+          } else {
+            throw new Error('유효한 인증 토큰을 수신하지 못했습니다.');
+          }
+        } catch (err: unknown) {
+          const apiErr = err as { error?: { message?: string }; message?: string };
+          setErrorMessage(
+            apiErr?.error?.message ||
+            apiErr?.message ||
+            '소셜 인증 코드 교환에 실패했습니다. 다시 로그인해 주세요.',
+          );
+          return;
+        }
+      }
+
+      // 2-1. (하위 호환) URL 파라미터로 토큰이 직접 전달된 경우
       const token = searchParams.get('token');
       if (token) {
         try {

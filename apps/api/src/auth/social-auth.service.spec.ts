@@ -106,6 +106,26 @@ describe('SocialAuthService', () => {
       const expiredState = `${expiredTimestamp}.random.mocksignature`;
       expect(service.verifyOAuthState(expiredState)).toBe(false);
     });
+
+    it('should reject mock_state in production mode', () => {
+      process.env.NODE_ENV = 'production';
+      process.env.JWT_SECRET = 'super_secure_production_jwt_secret_123456';
+      expect(service.verifyOAuthState('mock_state')).toBe(false);
+      expect(service.verifyOAuthState('test_state')).toBe(false);
+    });
+
+    it('should issue and consume one-time oauth exchange code', () => {
+      const mockResult = {
+        user: { id: '1', email: 'test@kakao.com', isPassVerified: false },
+        tokens: { accessToken: 'a', refreshToken: 'r' },
+        isNew: false,
+      };
+      const code = service.issueOAuthExchangeCode(mockResult);
+      expect(service.consumeOAuthExchangeCode(code)).toEqual(mockResult);
+      expect(() => service.consumeOAuthExchangeCode(code)).toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 
   describe('exchangeNaverCode', () => {
