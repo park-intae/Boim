@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 import { AnalysisController } from './analysis.controller';
 import { AiDiagnosisService } from './ai-diagnosis.service';
 import { ExportService } from './export.service';
@@ -68,15 +69,15 @@ describe('AnalysisController', () => {
       ).toHaveBeenCalledWith(BigInt(10));
     });
 
-    it('인증 정보가 없을 경우 데모 사용자(userId 1)로 기본 처리되어야 한다.', async () => {
+    it('인증 정보가 없을 경우 UnauthorizedException을 발생시켜야 한다.', async () => {
       const mockReq = {} as any;
 
-      const result = await controller.generateDiagnosis(mockReq);
-
-      expect(result).toEqual(mockDiagnosisResult);
+      await expect(controller.generateDiagnosis(mockReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
       expect(
         mockAiDiagnosisService.diagnoseUserInsurances,
-      ).toHaveBeenCalledWith(BigInt(1));
+      ).not.toHaveBeenCalled();
     });
   });
 

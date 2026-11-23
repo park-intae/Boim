@@ -7,8 +7,9 @@ import {
   Body,
   Req,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 import { UserService } from './user.service';
 import type {
@@ -18,12 +19,15 @@ import type {
 } from '@boim/shared-types';
 
 @Controller('users')
-@UseGuards(OptionalJwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   private extractUserId(req?: RequestWithJwtUser): bigint {
-    return BigInt(req?.user?.userId || '1');
+    if (!req?.user?.userId) {
+      throw new UnauthorizedException('인증 정보가 필요합니다.');
+    }
+    return BigInt(req.user.userId);
   }
 
   @Get('me')

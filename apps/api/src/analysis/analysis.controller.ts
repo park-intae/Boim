@@ -1,25 +1,42 @@
-import { Controller, Post, Get, UseGuards, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse as SwaggerResponse,
   ApiProduces,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { AiDiagnosisService } from './ai-diagnosis.service';
 import { ExportService } from './export.service';
-import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 
 @ApiTags('Analysis (보험 분석 & AI 종합 진단)')
+@ApiBearerAuth()
 @Controller('analysis')
-@UseGuards(OptionalJwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class AnalysisController {
   constructor(
     private readonly aiDiagnosisService: AiDiagnosisService,
     private readonly exportService: ExportService,
   ) {}
+
+  private extractUserId(req?: RequestWithJwtUser): bigint {
+    if (!req?.user?.userId) {
+      throw new UnauthorizedException('인증 정보가 필요합니다.');
+    }
+    return BigInt(req.user.userId);
+  }
 
   @Post('ai-diagnosis')
   @ApiOperation({
@@ -34,7 +51,7 @@ export class AnalysisController {
   async generateDiagnosis(
     @Req() req: RequestWithJwtUser,
   ): Promise<InsuranceDiagnosisDto> {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.aiDiagnosisService.diagnoseUserInsurances(userId);
   }
 
@@ -47,7 +64,7 @@ export class AnalysisController {
   async getDiagnosis(
     @Req() req: RequestWithJwtUser,
   ): Promise<InsuranceDiagnosisDto> {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.aiDiagnosisService.diagnoseUserInsurances(userId);
   }
 
@@ -64,7 +81,7 @@ export class AnalysisController {
     @Req() req: RequestWithJwtUser,
     @Res() res: Response,
   ): Promise<void> {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     const buffer = await this.exportService.generateExcelReport(userId);
 
     const now = new Date();

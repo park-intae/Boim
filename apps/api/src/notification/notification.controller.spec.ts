@@ -109,17 +109,20 @@ describe('NotificationController', () => {
   });
 
   describe('createNotification', () => {
-    it('새 알림을 생성한다', async () => {
+    it('타인 userId를 전달하더라도 인증된 본인 userId로 알림을 생성한다', async () => {
       mockNotificationService.createNotification.mockResolvedValue(
         mockNotification,
       );
 
       const result = await controller.createNotification(mockReq, {
+        userId: 999n,
         title: '새 알림',
         message: '내용',
       });
 
-      expect(mockNotificationService.createNotification).toHaveBeenCalled();
+      expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: 1n }),
+      );
       expect(result).toEqual(mockNotification);
     });
   });

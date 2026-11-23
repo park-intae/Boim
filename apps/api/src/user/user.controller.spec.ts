@@ -1,10 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import type { RequestWithJwtUser } from '../auth/auth.controller';
 
 describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
+
+  const mockReq = {
+    user: { userId: '1', email: 'test@example.com' },
+  } as RequestWithJwtUser;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -45,8 +51,14 @@ describe('UserController', () => {
     expect(controller).toBeDefined();
   });
 
+  it('should throw UnauthorizedException when user is missing', async () => {
+    await expect(
+      controller.getProfile({} as RequestWithJwtUser),
+    ).rejects.toThrow(UnauthorizedException);
+  });
+
   it('getProfile should return user data', async () => {
-    const res = await controller.getProfile({} as any);
+    const res = await controller.getProfile(mockReq);
     expect(res.success).toBe(true);
     expect(res.data.id).toBe(1);
   });
@@ -60,13 +72,13 @@ describe('UserController', () => {
   });
 
   it('updateProfile should return updated user', async () => {
-    const res = await controller.updateProfile({} as any, { name: 'newName' });
+    const res = await controller.updateProfile(mockReq, { name: 'newName' });
     expect(res.success).toBe(true);
     expect(res.data.name).toBe('newName');
   });
 
   it('updatePassword should return success message', async () => {
-    const res = await controller.updatePassword({} as any, {
+    const res = await controller.updatePassword(mockReq, {
       oldPassword: 'old',
       newPassword: 'new',
     });
@@ -74,34 +86,34 @@ describe('UserController', () => {
   });
 
   it('getNotificationSettings should return settings', async () => {
-    const res = await controller.getNotificationSettings({} as any);
+    const res = await controller.getNotificationSettings(mockReq);
     expect(res.success).toBe(true);
   });
 
   it('updateNotificationSettings should return updated settings', async () => {
-    const res = await controller.updateNotificationSettings({} as any, {
+    const res = await controller.updateNotificationSettings(mockReq, {
       marketingPush: true,
     });
     expect(res.success).toBe(true);
   });
 
   it('exportData should return user data', async () => {
-    const res = await controller.exportData();
+    const res = await controller.exportData(mockReq);
     expect(res.success).toBe(true);
   });
 
   it('importData should return success', async () => {
-    const res = await controller.importData({});
+    const res = await controller.importData(mockReq, {});
     expect(res.success).toBe(true);
   });
 
   it('deleteAccount should return success', async () => {
-    const res = await controller.deleteAccount();
+    const res = await controller.deleteAccount(mockReq);
     expect(res.success).toBe(true);
   });
 
   it('getLoginHistory should return history array', async () => {
-    const res = await controller.getLoginHistory();
+    const res = await controller.getLoginHistory(mockReq);
     expect(res.success).toBe(true);
     expect(Array.isArray(res.data)).toBe(true);
   });

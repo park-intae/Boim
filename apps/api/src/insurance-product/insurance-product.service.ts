@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInsuranceProductDto } from './dto/create-insurance-product.dto';
 import { UpdateInsuranceProductDto } from './dto/update-insurance-product.dto';
@@ -7,10 +11,10 @@ import { UpdateInsuranceProductDto } from './dto/update-insurance-product.dto';
 export class InsuranceProductService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateInsuranceProductDto) {
+  async create(userId: bigint, dto: CreateInsuranceProductDto) {
     return this.prisma.insuranceProduct.create({
       data: {
-        userId: dto.userId,
+        userId,
         category: dto.category,
         name: dto.name,
         institution: dto.institution,
@@ -22,13 +26,14 @@ export class InsuranceProductService {
     });
   }
 
-  async findAll() {
+  async findAll(userId: bigint) {
     return this.prisma.insuranceProduct.findMany({
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(userId: bigint, id: number) {
     const product = await this.prisma.insuranceProduct.findUnique({
       where: { id },
     });
@@ -37,13 +42,22 @@ export class InsuranceProductService {
         `해당 보험 상품(ID: ${id})을 찾을 수 없습니다.`,
       );
     }
+    if (BigInt(product.userId) !== userId) {
+      throw new ForbiddenException(
+        '해당 보험 상품에 대한 접근 권한이 없습니다.',
+      );
+    }
     return product;
   }
 
-  async update(id: number, dto: UpdateInsuranceProductDto) {
-    await this.findOne(id);
+  async update(userId: bigint, id: number, dto: UpdateInsuranceProductDto) {
+    await this.findOne(userId, id);
+    const { userId: _ignoredUserId, ...safeDto } =
+      dto as UpdateInsuranceProductDto & {
+        userId?: unknown;
+      };
     const data: import('@prisma/client').Prisma.InsuranceProductUpdateInput = {
-      ...dto,
+      ...safeDto,
     };
     if (dto.startDate) data.startDate = new Date(dto.startDate);
     if (dto.maturityDate) data.maturityDate = new Date(dto.maturityDate);
@@ -54,8 +68,8 @@ export class InsuranceProductService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(userId: bigint, id: number) {
+    await this.findOne(userId, id);
     return this.prisma.insuranceProduct.delete({
       where: { id },
     });

@@ -9,17 +9,24 @@ import {
   UploadedFile,
   Req,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentService } from './document.service';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
 import * as multer from 'multer';
 
 @Controller('documents')
-@UseGuards(OptionalJwtAuthGuard)
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
+
+  private extractUserId(req?: RequestWithJwtUser): bigint {
+    if (!req?.user?.userId) {
+      throw new UnauthorizedException('인증 정보가 필요합니다.');
+    }
+    return BigInt(req.user.userId);
+  }
 
   @Get('sample/preset')
   getSamplePreset() {
@@ -32,6 +39,7 @@ export class DocumentController {
   }
 
   @Post('upload')
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multer.memoryStorage(),
@@ -43,7 +51,7 @@ export class DocumentController {
     @Req() req: RequestWithJwtUser,
     @Query('productId') productId?: string,
   ) {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.documentService.uploadDocument(
       userId,
       file,
@@ -52,29 +60,33 @@ export class DocumentController {
   }
 
   @Post(':id/parse')
+  @UseGuards(AuthGuard('jwt'))
   async parseDocument(@Param('id') id: string, @Req() req: RequestWithJwtUser) {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.documentService.parseDocument(userId, BigInt(id));
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   async getUserDocuments(@Req() req: RequestWithJwtUser) {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.documentService.getUserDocuments(userId);
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
   async getDocument(@Param('id') id: string, @Req() req: RequestWithJwtUser) {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.documentService.getDocument(userId, BigInt(id));
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   async deleteDocument(
     @Param('id') id: string,
     @Req() req: RequestWithJwtUser,
   ) {
-    const userId = BigInt(req.user?.userId || '1');
+    const userId = this.extractUserId(req);
     return this.documentService.deleteDocument(userId, BigInt(id));
   }
 }
