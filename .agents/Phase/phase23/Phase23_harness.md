@@ -66,13 +66,13 @@
   - [x] `GET /analysis/ai-diagnosis`에 사용자별 단기 캐시(예: 5분~1시간 TTL 또는 보험 변경 시 무효화) 적용하여 불필요한 Gemini API 중복 호출 방지
 
 ### 4. Phase 23-04: 알림 스케줄러 KST 자정 불일치 버그 수정 (High)
-- [ ] **`NotificationSchedulerService.runBatch` 날짜 경계 수정** (`apps/api/src/notification/notification-scheduler.service.ts`)
-  - [ ] `startOfDay` / `endOfDay`를 UTC 자정이 아닌 **실제 KST 자정(`Date.UTC(year, month - 1, day, 0, 0, 0) - 9 * 60 * 60 * 1000`)** 기준으로 계산하여 크론(KST 00:00)과 낮 수동 실행 간 중복 방지 조건 일치
-  - [ ] 조회 대상에서 탈퇴 회원(`user: { deletedAt: null }`) 필터링
-  - [ ] 대용량 대비 배치 커서/청크(`take`/`skip`) 조회 도입
-- [ ] **`NotificationRuleEvaluator` 월말 일수 계산 보정** (`apps/api/src/notification/notification-rule.evaluator.ts`)
-  - [ ] `new Date(currentYear, currentMonth, 0)` 대신 `new Date(Date.UTC(currentYear, currentMonth, 0)).getUTCDate()` 사용하여 서버 로컬 타임존 의존성 제거
-- [ ] **크론 자정 + 낮 재실행 시나리오 단위 테스트 작성 및 검증**
+- [x] **`NotificationSchedulerService.runBatch` 날짜 경계 수정** (`apps/api/src/notification/notification-scheduler.service.ts`)
+  - [x] `startOfDay` / `endOfDay`를 UTC 자정이 아닌 **실제 KST 자정(`Date.UTC(year, month - 1, day, 0, 0, 0) - 9 * 60 * 60 * 1000`)** 기준으로 계산하여 크론(KST 00:00)과 낮 수동 실행 간 중복 방지 조건 일치
+  - [x] 조회 대상에서 탈퇴 회원(`user: { deletedAt: null }`) 필터링
+  - [x] 대용량 대비 배치 커서/청크(`take`/`skip`) 조회 도입
+- [x] **`NotificationRuleEvaluator` 월말 일수 계산 보정** (`apps/api/src/notification/notification-rule.evaluator.ts`)
+  - [x] `new Date(currentYear, currentMonth, 0)` 대신 `new Date(Date.UTC(currentYear, currentMonth, 0)).getUTCDate()` 사용하여 서버 로컬 타임존 의존성 제거
+- [x] **크론 자정 + 낮 재실행 시나리오 단위 테스트 작성 및 검증**
 
 ### 5. Phase 23-05: 프론트엔드 API 연동 규격 통일 및 401/엑셀 버그 수정 (High)
 - [ ] **API 응답 포맷 단일화**

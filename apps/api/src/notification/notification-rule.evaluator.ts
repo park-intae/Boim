@@ -74,8 +74,10 @@ export class NotificationRuleEvaluator {
 
     const originalDueDay = sD;
 
-    // 당월 납입일 계산 (월말 일수 보정)
-    const daysInCurrentMonth = new Date(currentYear, currentMonth, 0).getDate();
+    // 당월 납입일 계산 (월말 일수 보정, UTC 기준)
+    const daysInCurrentMonth = new Date(
+      Date.UTC(currentYear, currentMonth, 0),
+    ).getUTCDate();
     const effectiveCurrentDueDay = Math.min(originalDueDay, daysInCurrentMonth);
     const currentMonthDueDate = new Date(
       Date.UTC(
@@ -89,10 +91,12 @@ export class NotificationRuleEvaluator {
       ),
     );
 
-    // 익월 납입일 계산 (당월 납입일이 이미 지났을 때)
+    // 익월 납입일 계산 (당월 납입일이 이미 지났을 때, UTC 기준)
     const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
     const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-    const daysInNextMonth = new Date(nextYear, nextMonth, 0).getDate();
+    const daysInNextMonth = new Date(
+      Date.UTC(nextYear, nextMonth, 0),
+    ).getUTCDate();
     const effectiveNextDueDay = Math.min(originalDueDay, daysInNextMonth);
     const nextMonthDueDate = new Date(
       Date.UTC(nextYear, nextMonth - 1, effectiveNextDueDay, 0, 0, 0, 0),

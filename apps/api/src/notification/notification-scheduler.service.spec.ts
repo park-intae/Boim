@@ -375,6 +375,18 @@ describe('NotificationSchedulerService', () => {
       expect(result.skippedCount).toBe(1);
       expect(result.details[0].action).toBe('skipped');
       expect(mockPrisma.notification.create).not.toHaveBeenCalled();
+
+      // KST 2026-11-04 00:00:00 ~ 23:59:59.999 (UTC 전날 15:00 ~ 당일 14:59:59.999) 범위로 중복 조회 확인
+      expect(mockPrisma.notification.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            createdAt: {
+              gte: new Date('2026-11-03T15:00:00.000Z'),
+              lte: new Date('2026-11-04T14:59:59.999Z'),
+            },
+          }),
+        }),
+      );
     });
   });
 });

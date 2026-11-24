@@ -76,21 +76,45 @@ export class NotificationSchedulerService {
       .map(Number);
     const targetDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-    // KST 자정 기준 시각
+    // KST 자정 기준 시각 (날짜 비교용) 및 실제 UTC 타임스탬프 범위 (KST 00:00:00 ~ 23:59:59.999)
+    const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
     const todayKst = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-    const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-    const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+    const startOfDay = new Date(todayKst.getTime() - KST_OFFSET_MS);
+    const endOfDay = new Date(
+      Date.UTC(year, month - 1, day, 23, 59, 59, 999) - KST_OFFSET_MS,
+    );
 
-    // 전체 활성 보험 상품 조회
-    const products = await this.prisma.insuranceProduct.findMany({
-      include: {
+    // 전체 활성 보험 상품 청크 조회 (탈퇴 회원 제외)
+    const BATCH_SIZE = 500;
+    const products: Awaited<
+      ReturnType<typeof this.prisma.insuranceProduct.findMany>
+    > &
+      Array<{
         user: {
-          include: {
-            notificationSettings: true,
+          email: string | null;
+          notificationSettings: EvaluatorNotificationSettings | null;
+        };
+      }> = [];
+    let skip = 0;
+    while (true) {
+      const chunk = (await this.prisma.insuranceProduct.findMany({
+        where: { user: { deletedAt: null } },
+        include: {
+          user: {
+            include: {
+              notificationSettings: true,
+            },
           },
         },
-      },
-    });
+        take: BATCH_SIZE,
+        skip,
+      })) as typeof products;
+      products.push(...chunk);
+      if (chunk.length < BATCH_SIZE) {
+        break;
+      }
+      skip += BATCH_SIZE;
+    }
 
     const result: BatchExecutionResult = {
       success: true,
