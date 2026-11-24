@@ -35,11 +35,8 @@ export class UserController {
     const userId = this.extractUserId(req);
     const user = await this.userService.getUserById(userId);
     return {
-      success: true,
-      data: {
-        ...user,
-        id: Number(user.id),
-      },
+      ...user,
+      id: Number(user.id),
     };
   }
 
@@ -51,11 +48,8 @@ export class UserController {
     const userId = this.extractUserId(req);
     const user = await this.userService.updateUser(userId, updateUserDto);
     return {
-      success: true,
-      data: {
-        ...user,
-        id: Number(user.id),
-      },
+      ...user,
+      id: Number(user.id),
     };
   }
 
@@ -70,7 +64,6 @@ export class UserController {
       updatePasswordDto.newPassword,
     );
     return {
-      success: true,
       message: '비밀번호가 성공적으로 변경되었습니다.',
     };
   }
@@ -80,12 +73,9 @@ export class UserController {
     const userId = this.extractUserId(req);
     const settings = await this.userService.getNotificationSettings(userId);
     return {
-      success: true,
-      data: {
-        ...settings,
-        id: Number(settings.id),
-        userId: Number(settings.userId),
-      },
+      ...settings,
+      id: Number(settings.id),
+      userId: Number(settings.userId),
     };
   }
 
@@ -100,12 +90,9 @@ export class UserController {
       dto,
     );
     return {
-      success: true,
-      data: {
-        ...settings,
-        id: Number(settings.id),
-        userId: Number(settings.userId),
-      },
+      ...settings,
+      id: Number(settings.id),
+      userId: Number(settings.userId),
     };
   }
 
@@ -114,11 +101,8 @@ export class UserController {
     const userId = this.extractUserId(req);
     const data = await this.userService.exportData(userId);
     return {
-      success: true,
-      data: {
-        ...data,
-        id: Number(data?.id),
-      },
+      ...data,
+      id: Number(data?.id),
     };
   }
 
@@ -129,27 +113,24 @@ export class UserController {
   ) {
     const userId = this.extractUserId(req);
     await this.userService.importData(userId, data);
-    return { success: true, message: '데이터 가져오기가 완료되었습니다.' };
+    return { message: '데이터 가져오기가 완료되었습니다.' };
   }
 
   @Delete('me')
   async deleteAccount(@Req() req?: RequestWithJwtUser) {
     const userId = this.extractUserId(req);
     await this.userService.softDeleteUser(userId);
-    return { success: true, message: '계정이 안전하게 탈퇴 처리되었습니다.' };
+    return { message: '계정이 안전하게 탈퇴 처리되었습니다.' };
   }
 
   @Get('me/login-history')
   async getLoginHistory(@Req() req?: RequestWithJwtUser) {
     const userId = this.extractUserId(req);
     const history = await this.userService.getLoginHistory(userId);
-    return {
-      success: true,
-      data: history.map((h) => ({
-        ...h,
-        id: Number(h.id),
-        userId: Number(h.userId),
-      })),
-    };
+    return history.map((h) => ({
+      ...h,
+      id: Number(h.id),
+      userId: Number(h.userId),
+    }));
   }
 }

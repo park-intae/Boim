@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
 import type { InsuranceDiagnosisDto } from '@boim/shared-types';
 import { isDemoSession, getDemoDiagnosis } from '../features/auth/utils/demoFallback';
+import { useAuthStore } from '../features/auth/store/authStore';
 
 export const diagnosisKeys = {
   all: ['diagnosis'] as const,
@@ -46,9 +47,9 @@ export function useGenerateDiagnosis() {
 export function useExportExcel() {
   return useMutation({
     mutationFn: async () => {
-      // 바이너리 blob 수신을 위해 responseType: 'blob' 지정
+      // 바이너리 blob 수신을 위해 authStore의 실제 accessToken 사용
       const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-      const token = localStorage.getItem('boim_access_token') || sessionStorage.getItem('boim_access_token');
+      const token = useAuthStore.getState().accessToken;
 
       const headers: Record<string, string> = {};
       if (token) {

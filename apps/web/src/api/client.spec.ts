@@ -77,4 +77,33 @@ describe('apiClient interceptors', () => {
       error: { code: 'NETWORK_ERROR', message: '서버와 통신할 수 없습니다.' },
     });
   });
+
+  it('logs out automatically when server responds with 401 for non-demo session', async () => {
+    useAuthStore.getState().login(
+      { id: '1', email: 'user@boim.com', isPassVerified: true },
+      'expired-token',
+    );
+    expect(useAuthStore.getState().isAuthenticated).toBe(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const errorHandler = (apiClient.interceptors.response as any).handlers[0].rejected;
+
+    await expect(
+      errorHandler({
+        response: {
+          status: 401,
+          data: {
+            success: false,
+            error: { code: '401', message: 'Unauthorized' },
+          },
+        },
+      }),
+    ).rejects.toEqual({
+      success: false,
+      error: { code: '401', message: 'Unauthorized' },
+    });
+
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    expect(useAuthStore.getState().accessToken).toBeNull();
+  });
 });

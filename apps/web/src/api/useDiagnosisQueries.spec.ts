@@ -8,6 +8,7 @@ import {
 import { apiClient } from './client';
 import { createTestQueryClient, createQueryWrapper } from '../test/utils/testQueryClient';
 import { mockDiagnosisData } from '../test/fixtures';
+import { useAuthStore } from '../features/auth/store/authStore';
 
 vi.mock('./client', () => ({
   apiClient: {
@@ -59,7 +60,11 @@ describe('useDiagnosisQueries', () => {
   });
 
   describe('useExportExcel', () => {
-    it('downloads excel report as blob on success', async () => {
+    it('downloads excel report as blob with authStore Bearer token on success', async () => {
+      useAuthStore.getState().login(
+        { id: '1', email: 'user@boim.com', isPassVerified: true },
+        'valid-jwt-token',
+      );
       const mockBlob = new Blob(['mock excel'], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const createObjectURLSpy = vi.spyOn(window.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
       const revokeObjectURLSpy = vi.spyOn(window.URL, 'revokeObjectURL').mockImplementation(() => {});
@@ -78,9 +83,12 @@ describe('useDiagnosisQueries', () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(global.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/analysis/export/excel'),
-        expect.any(Object)
+        expect.objectContaining({
+          headers: { Authorization: 'Bearer valid-jwt-token' },
+        }),
       );
 
+      useAuthStore.getState().logout();
       createObjectURLSpy.mockRestore();
       revokeObjectURLSpy.mockRestore();
     });

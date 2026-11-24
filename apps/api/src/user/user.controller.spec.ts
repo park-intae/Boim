@@ -59,8 +59,7 @@ describe('UserController', () => {
 
   it('getProfile should return user data', async () => {
     const res = await controller.getProfile(mockReq);
-    expect(res.success).toBe(true);
-    expect(res.data.id).toBe(1);
+    expect(res.id).toBe(1);
   });
 
   it('getProfile should use authenticated user ID when token is provided', async () => {
@@ -68,13 +67,12 @@ describe('UserController', () => {
       user: { userId: '99', email: 'kakao_user@boim.internal' },
     } as any);
     expect(service.getUserById).toHaveBeenCalledWith(99n);
-    expect(res.success).toBe(true);
+    expect(res.id).toBe(1);
   });
 
   it('updateProfile should return updated user', async () => {
     const res = await controller.updateProfile(mockReq, { name: 'newName' });
-    expect(res.success).toBe(true);
-    expect(res.data.name).toBe('newName');
+    expect(res.name).toBe('newName');
   });
 
   it('updatePassword should return success message', async () => {
@@ -82,39 +80,38 @@ describe('UserController', () => {
       oldPassword: 'old',
       newPassword: 'new',
     });
-    expect(res.success).toBe(true);
+    expect(res.message).toContain('변경');
   });
 
   it('getNotificationSettings should return settings', async () => {
     const res = await controller.getNotificationSettings(mockReq);
-    expect(res.success).toBe(true);
+    expect(res.id).toBe(1);
   });
 
   it('updateNotificationSettings should return updated settings', async () => {
     const res = await controller.updateNotificationSettings(mockReq, {
       marketingPush: true,
     });
-    expect(res.success).toBe(true);
+    expect(res.id).toBe(1);
   });
 
   it('exportData should return user data', async () => {
     const res = await controller.exportData(mockReq);
-    expect(res.success).toBe(true);
+    expect(res.id).toBe(1);
   });
 
   it('importData should return success', async () => {
     const res = await controller.importData(mockReq, {});
-    expect(res.success).toBe(true);
+    expect(res.message).toContain('완료');
   });
 
   it('deleteAccount should return success', async () => {
     const res = await controller.deleteAccount(mockReq);
-    expect(res.success).toBe(true);
+    expect(res.message).toContain('탈퇴');
   });
 
   it('getLoginHistory should return history array', async () => {
     const res = await controller.getLoginHistory(mockReq);
-    expect(res.success).toBe(true);
-    expect(Array.isArray(res.data)).toBe(true);
+    expect(Array.isArray(res)).toBe(true);
   });
 });

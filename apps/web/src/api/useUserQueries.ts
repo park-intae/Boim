@@ -25,11 +25,11 @@ export const useGetProfile = () => {
       if (isDemoSession()) {
         return getDemoProfile();
       }
-      const { data } = await api.get<ApiResponse<UserDto>>('/users/me');
-      if (!data.success || !data.data) {
-        throw new Error(data.error?.message || 'Failed to fetch profile');
+      const response = await api.get<never, ApiResponse<UserDto>>('/users/me');
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message || 'Failed to fetch profile');
       }
-      return data.data;
+      return response.data;
     },
   });
 };
@@ -42,11 +42,11 @@ export const useUpdateProfile = () => {
       if (isDemoSession()) {
         return updateDemoProfile(updateData);
       }
-      const { data } = await api.patch<ApiResponse<UserDto>>('/users/me', updateData);
-      if (!data.success || !data.data) {
-        throw new Error(data.error?.message || 'Failed to update profile');
+      const response = await api.patch<never, ApiResponse<UserDto>>('/users/me', updateData);
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message || 'Failed to update profile');
       }
-      return data.data;
+      return response.data;
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(userKeys.me(), updatedUser);
@@ -60,9 +60,9 @@ export const useUpdatePassword = () => {
       if (isDemoSession()) {
         return true;
       }
-      const response = await api.patch<ApiResponse<null>>('/users/me/password', data);
-      if (!response.data.success) {
-        throw new Error(response.data.error?.message || '비밀번호 변경에 실패했습니다');
+      const response = await api.patch<never, ApiResponse<null>>('/users/me/password', data);
+      if (!response.success) {
+        throw new Error(response.error?.message || '비밀번호 변경에 실패했습니다');
       }
       return true;
     },
@@ -76,11 +76,11 @@ export const useGetNotificationSettings = () => {
       if (isDemoSession()) {
         return getDemoNotificationSettings();
       }
-      const { data } = await api.get<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings');
-      if (!data.success || !data.data) {
-        throw new Error(data.error?.message || 'Failed to fetch settings');
+      const response = await api.get<never, ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings');
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message || 'Failed to fetch settings');
       }
-      return data.data;
+      return response.data;
     },
   });
 };
@@ -92,11 +92,11 @@ export const useUpdateNotificationSettings = () => {
       if (isDemoSession()) {
         return updateDemoNotificationSettings(dto);
       }
-      const { data } = await api.patch<ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings', dto);
-      if (!data.success || !data.data) {
-        throw new Error(data.error?.message || 'Failed to update settings');
+      const response = await api.patch<never, ApiResponse<import('@boim/shared-types').NotificationSettingsDto>>('/users/me/notifications/settings', dto);
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message || 'Failed to update settings');
       }
-      return data.data;
+      return response.data;
     },
     onMutate: async (newSettings) => {
       await queryClient.cancelQueries({ queryKey: [...userKeys.me(), 'notificationSettings'] });
@@ -131,9 +131,9 @@ export const useExportData = () => {
           insurances: getDemoInsurances(),
         };
       }
-      const { data } = await api.get<ApiResponse<Record<string, unknown>>>('/users/me/export');
-      if (!data.success) throw new Error(data.error?.message || 'Export failed');
-      return data.data;
+      const response = await api.get<never, ApiResponse<Record<string, unknown>>>('/users/me/export');
+      if (!response.success) throw new Error(response.error?.message || 'Export failed');
+      return response.data;
     },
   });
 };
@@ -144,8 +144,8 @@ export const useImportData = () => {
       if (isDemoSession()) {
         return true;
       }
-      const { data } = await api.post<ApiResponse<null>>('/users/me/import', importData);
-      if (!data.success) throw new Error(data.error?.message || 'Import failed');
+      const response = await api.post<never, ApiResponse<null>>('/users/me/import', importData);
+      if (!response.success) throw new Error(response.error?.message || 'Import failed');
       return true;
     },
   });
@@ -158,8 +158,8 @@ export const useDeleteAccount = () => {
         resetDemoFallbackState();
         return true;
       }
-      const { data } = await api.delete<ApiResponse<null>>('/users/me');
-      if (!data.success) throw new Error(data.error?.message || 'Delete account failed');
+      const response = await api.delete<never, ApiResponse<null>>('/users/me');
+      if (!response.success) throw new Error(response.error?.message || 'Delete account failed');
       return true;
     },
   });
@@ -172,11 +172,11 @@ export const useGetLoginHistory = () => {
       if (isDemoSession()) {
         return getDemoLoginHistories();
       }
-      const { data } = await api.get<ApiResponse<import('@boim/shared-types').LoginHistoryDto[]>>('/users/me/login-history');
-      if (!data.success || !data.data) {
-        throw new Error(data.error?.message || 'Failed to fetch login history');
+      const response = await api.get<never, ApiResponse<import('@boim/shared-types').LoginHistoryDto[]>>('/users/me/login-history');
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message || 'Failed to fetch login history');
       }
-      return data.data;
+      return response.data;
     },
   });
 };

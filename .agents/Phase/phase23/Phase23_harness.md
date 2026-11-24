@@ -75,15 +75,15 @@
 - [x] **크론 자정 + 낮 재실행 시나리오 단위 테스트 작성 및 검증**
 
 ### 5. Phase 23-05: 프론트엔드 API 연동 규격 통일 및 401/엑셀 버그 수정 (High)
-- [ ] **API 응답 포맷 단일화**
-  - [ ] `UserController`의 이중 래핑(`{ success: true, data: ... }`) 제거하여 `TransformInterceptor` 단일 포맷으로 통일
-  - [ ] 프론트엔드 훅(`useUserQueries.ts`, `useNotificationQueries.ts`, `useDocumentQueries.ts`, `useDiagnosisQueries.ts`, `OAuthCallbackPage.tsx`)의 응답 파싱을 일관된 단일 규격으로 정리
-- [ ] **엑셀 다운로드 인증 토큰 버그 수정** (`apps/web/src/api/useDiagnosisQueries.ts`)
-  - [ ] 존재하지 않는 `boim_access_token` 키 조회를 제거하고 `useAuthStore.getState().accessToken`을 사용하도록 수정 (또는 `apiClient` `responseType: 'blob'` 활용)
-- [ ] **`useCreateInsurance` 하드코딩 `userId: 1` 제거** (`apps/web/src/api/useInsuranceQueries.ts`)
-- [ ] **`apiClient` 전역 401 응답 인터셉터 추가** (`apps/web/src/api/client.ts`)
-  - [ ] 서버에서 `401 Unauthorized` 반환 시 `useAuthStore.getState().logout()` 호출 및 로그인 페이지 유도
-- [ ] **프론트엔드 관련 단위/통합 테스트 업데이트 및 검증**
+- [x] **API 응답 포맷 단일화**
+  - [x] `UserController`의 이중 래핑(`{ success: true, data: ... }`) 제거하여 `TransformInterceptor` 단일 포맷으로 통일
+  - [x] 프론트엔드 훅(`useUserQueries.ts`, `useNotificationQueries.ts`, `useDocumentQueries.ts`, `useDiagnosisQueries.ts`, `OAuthCallbackPage.tsx`)의 응답 파싱을 일관된 단일 규격으로 정리
+- [x] **엑셀 다운로드 인증 토큰 버그 수정** (`apps/web/src/api/useDiagnosisQueries.ts`)
+  - [x] 존재하지 않는 `boim_access_token` 키 조회를 제거하고 `useAuthStore.getState().accessToken`을 사용하도록 수정 (또는 `apiClient` `responseType: 'blob'` 활용)
+- [x] **`useCreateInsurance` 하드코딩 `userId: 1` 제거** (`apps/web/src/api/useInsuranceQueries.ts`)
+- [x] **`apiClient` 전역 401 응답 인터셉터 추가** (`apps/web/src/api/client.ts`)
+  - [x] 서버에서 `401 Unauthorized` 반환 시 `useAuthStore.getState().logout()` 호출 및 로그인 페이지 유도
+- [x] **프론트엔드 관련 단위/통합 테스트 업데이트 및 검증**
 
 ### 6. Phase 23-06: 인프라·운영 보안 설정 및 전체 품질 무결성 검증 (Medium)
 - [ ] **Docker & CORS 운영 보안 강화**

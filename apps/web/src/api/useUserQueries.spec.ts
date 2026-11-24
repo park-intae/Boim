@@ -36,7 +36,8 @@ describe('useUserQueries', () => {
   describe('useGetProfile', () => {
     it('fetches profile successfully', async () => {
       vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: { success: true, data: mockUser },
+        success: true,
+        data: mockUser,
       });
 
       const { result } = renderHook(() => useGetProfile(), {
@@ -52,7 +53,8 @@ describe('useUserQueries', () => {
     it('updates user profile and returns updated user', async () => {
       const updatedUser = { ...mockUser, name: '이순신' };
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
-        data: { success: true, data: updatedUser },
+        success: true,
+        data: updatedUser,
       });
 
       const { result } = renderHook(() => useUpdateProfile(), {
@@ -70,7 +72,7 @@ describe('useUserQueries', () => {
   describe('useUpdatePassword', () => {
     it('calls patch password and returns true on success', async () => {
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
-        data: { success: true },
+        success: true,
       });
 
       const { result } = renderHook(() => useUpdatePassword(), {
@@ -93,7 +95,8 @@ describe('useUserQueries', () => {
   describe('useGetNotificationSettings & useUpdateNotificationSettings', () => {
     it('fetches notification settings', async () => {
       vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: { success: true, data: mockNotificationSettings },
+        success: true,
+        data: mockNotificationSettings,
       });
 
       const { result } = renderHook(() => useGetNotificationSettings(), {
@@ -108,7 +111,8 @@ describe('useUserQueries', () => {
       const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
       const nextSettings = { ...mockNotificationSettings, pushEnabled: false };
       vi.mocked(apiClient.patch).mockResolvedValueOnce({
-        data: { success: true, data: nextSettings },
+        success: true,
+        data: nextSettings,
       });
 
       const { result } = renderHook(() => useUpdateNotificationSettings(), {
@@ -128,7 +132,8 @@ describe('useUserQueries', () => {
   describe('useExportData, useImportData, useDeleteAccount', () => {
     it('exports user data', async () => {
       vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: { success: true, data: { insurances: [] } },
+        success: true,
+        data: { insurances: [] },
       });
 
       const { result } = renderHook(() => useExportData(), {
@@ -144,7 +149,7 @@ describe('useUserQueries', () => {
 
     it('imports user data', async () => {
       vi.mocked(apiClient.post).mockResolvedValueOnce({
-        data: { success: true },
+        success: true,
       });
 
       const { result } = renderHook(() => useImportData(), {
@@ -159,7 +164,7 @@ describe('useUserQueries', () => {
 
     it('deletes user account', async () => {
       vi.mocked(apiClient.delete).mockResolvedValueOnce({
-        data: { success: true },
+        success: true,
       });
 
       const { result } = renderHook(() => useDeleteAccount(), {
@@ -176,7 +181,8 @@ describe('useUserQueries', () => {
   describe('useGetLoginHistory', () => {
     it('fetches login history list', async () => {
       vi.mocked(apiClient.get).mockResolvedValueOnce({
-        data: { success: true, data: mockLoginHistories },
+        success: true,
+        data: mockLoginHistories,
       });
 
       const { result } = renderHook(() => useGetLoginHistory(), {

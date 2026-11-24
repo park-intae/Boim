@@ -57,9 +57,7 @@ export const useCreateInsurance = () => {
       if (isDemoSession()) {
         return createDemoInsurance(newProduct);
       }
-      // API expects userId. Hardcode for MVP since no auth.
-      const payload = { ...newProduct, userId: 1 };
-      const response = await apiClient.post<never, ApiResponse<InsuranceProductDto>>('/insurance-products', payload);
+      const response = await apiClient.post<never, ApiResponse<InsuranceProductDto>>('/insurance-products', newProduct);
       if (!response.success || !response.data) {
         throw new Error(response.error?.message || 'Failed to create insurance');
       }
