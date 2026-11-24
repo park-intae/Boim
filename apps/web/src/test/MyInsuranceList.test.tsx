@@ -77,4 +77,11 @@ describe('MyInsuranceList Component', () => {
     expect(useAppStore.getState().editingProductId).toBe(1);
     expect(useAppStore.getState().panelMode).toBe('form');
   });
+
+  it('데이터가 undefined일 때도 빈 상태 문구를 안전하게 렌더링해야 한다.', () => {
+    vi.mocked(useGetInsurances).mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useGetInsurances>);
+    render(<MyInsuranceList />);
+
+    expect(screen.getByText('등록된 보험이 없습니다')).toBeInTheDocument();
+  });
 });

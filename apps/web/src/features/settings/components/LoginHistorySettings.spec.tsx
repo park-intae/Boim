@@ -49,4 +49,32 @@ describe('LoginHistorySettings Component', () => {
     fireEvent.click(backBtn);
     expect(mockOnBack).toHaveBeenCalledTimes(1);
   });
+
+  it('location이 null인 기록은 알 수 없는 위치로 폴백 표시되어야 한다.', async () => {
+    const { useGetLoginHistory } = await import('../../../api/useUserQueries');
+    vi.mocked(useGetLoginHistory).mockReturnValue({
+      data: [
+        {
+          id: 99,
+          device: 'Windows PC',
+          location: null,
+          ipAddress: '10.0.0.1',
+          loginAt: '2026-04-01T10:00:00.000Z',
+        },
+      ],
+    } as never);
+
+    render(<LoginHistorySettings onBack={vi.fn()} />);
+    expect(screen.getByText(/알 수 없는 위치 • 10\.0\.0\.1/)).toBeInTheDocument();
+  });
+
+  it('로그인 기록이 비어있을 때 빈 상태 안내 문구를 표시해야 한다.', async () => {
+    const { useGetLoginHistory } = await import('../../../api/useUserQueries');
+    vi.mocked(useGetLoginHistory).mockReturnValue({
+      data: [],
+    } as never);
+
+    render(<LoginHistorySettings onBack={vi.fn()} />);
+    expect(screen.getByText('로그인 기록이 없습니다.')).toBeInTheDocument();
+  });
 });

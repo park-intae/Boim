@@ -212,4 +212,30 @@ describe('NotificationList Component', () => {
     expect(screen.getByText('3시간 전')).toBeInTheDocument();
     expect(screen.getByText('2일 전')).toBeInTheDocument();
   });
+
+  it('알림 새로고침 배치 트리거가 실패하면 에러 피드백 배너를 표시해야 한다.', () => {
+    const mockTriggerBatch = vi.fn((_arg, options?: { onError?: (err: unknown) => void }) => {
+      options?.onError?.({ error: { message: '배치 스캔에 실패했습니다.' } });
+    });
+
+    vi.mocked(useNotificationQueries.useGetNotifications).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as never);
+    vi.mocked(useNotificationQueries.useMarkNotificationRead).mockReturnValue({
+      mutate: vi.fn(),
+    } as never);
+    vi.mocked(useNotificationQueries.useDeleteNotification).mockReturnValue({
+      mutate: vi.fn(),
+    } as never);
+    vi.mocked(useNotificationQueries.useTriggerBatch).mockReturnValue({
+      mutate: mockTriggerBatch,
+      isPending: false,
+    } as never);
+
+    render(<NotificationList />);
+    fireEvent.click(screen.getByRole('button', { name: '알림 새로고침' }));
+
+    expect(screen.getByText('배치 스캔에 실패했습니다.')).toBeInTheDocument();
+  });
 });

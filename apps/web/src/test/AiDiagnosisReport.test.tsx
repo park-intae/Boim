@@ -168,4 +168,45 @@ describe('AiDiagnosisReport Component', () => {
     expect(printSpy).toHaveBeenCalled();
     printSpy.mockRestore();
   });
+
+  it('로딩 중일 때 로딩 안내 문구가 표시되어야 한다.', () => {
+    (useGetDiagnosis as Mock).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    render(<AiDiagnosisReport />);
+    expect(screen.getByText('AI 종합 진단 리포트를 생성하는 중...')).toBeInTheDocument();
+  });
+
+  it('에러 발생 시 에러 안내 문구와 다시 시도 버튼이 노출되고 클릭 시 refetch가 호출되어야 한다.', () => {
+    const mockRefetch = vi.fn();
+    (useGetDiagnosis as Mock).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      refetch: mockRefetch,
+    });
+
+    render(<AiDiagnosisReport />);
+    expect(screen.getByText('진단 리포트를 불러오지 못했습니다')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
+    expect(mockRefetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('진단 데이터가 비어있을 때 빈 상태 문구가 표시되어야 한다.', () => {
+    (useGetDiagnosis as Mock).mockReturnValue({
+      data: null,
+      isLoading: false,
+      isError: false,
+      refetch: vi.fn(),
+    });
+
+    render(<AiDiagnosisReport />);
+    expect(screen.getByText('등록된 보험이 없습니다')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '새 보험 등록하기' })).toBeInTheDocument();
+  });
 });

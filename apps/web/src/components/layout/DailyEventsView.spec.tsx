@@ -116,4 +116,28 @@ describe('DailyEventsView Component', () => {
 
     expect(useAppStore.getState().panelMode).toBe('form');
   });
+
+  it('does not call deleteInsurance when confirm dialog is cancelled', () => {
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    vi.mocked(insuranceQueries.useGetInsurances).mockReturnValue({
+      data: mockInsuranceProducts,
+    } as unknown as ReturnType<typeof insuranceQueries.useGetInsurances>);
+
+    render(<DailyEventsView />);
+
+    const deleteBtn = screen.getByRole('button', { name: '삭제' });
+    fireEvent.click(deleteBtn);
+
+    expect(mockDeleteInsurance).not.toHaveBeenCalled();
+  });
+
+  it('renders empty state safely when insurances data is undefined', () => {
+    vi.mocked(insuranceQueries.useGetInsurances).mockReturnValue({
+      data: undefined,
+    } as unknown as ReturnType<typeof insuranceQueries.useGetInsurances>);
+
+    render(<DailyEventsView />);
+
+    expect(screen.getByText('예정된 일정이 없습니다')).toBeInTheDocument();
+  });
 });

@@ -69,4 +69,56 @@ describe('Login Component', () => {
       expect(apiClient.post).not.toHaveBeenCalled();
     });
   });
+
+  it('잘못된 이메일 형식과 8자 미만 비밀번호 제출 시 유효성 에러를 표시하고 API를 호출하지 않는다', async () => {
+    render(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('example@boim.com'), {
+      target: { value: 'invalid-email' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('••••••••'), {
+      target: { value: '1234' },
+    });
+
+    const submitBtn = screen.getByRole('button', { name: '로그인' });
+    fireEvent.submit(submitBtn.closest('form')!);
+
+    await waitFor(() => {
+      expect(screen.getByText('올바른 이메일 형식을 입력해주세요.')).toBeInTheDocument();
+      expect(screen.getByText('비밀번호는 최소 8자 이상이어야 합니다.')).toBeInTheDocument();
+    });
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
+
+  it('로그인 API 요청이 실패하면 에러 메시지를 alert로 표시한다', async () => {
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.mocked(apiClient.post).mockRejectedValueOnce({
+      error: { message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+    });
+
+    render(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>,
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('example@boim.com'), {
+      target: { value: 'user@boim.com' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('••••••••'), {
+      target: { value: 'password123' },
+    });
+
+    const submitBtn = screen.getByRole('button', { name: '로그인' });
+    fireEvent.submit(submitBtn.closest('form')!);
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith('이메일 또는 비밀번호가 올바르지 않습니다.');
+    });
+    alertSpy.mockRestore();
+  });
 });

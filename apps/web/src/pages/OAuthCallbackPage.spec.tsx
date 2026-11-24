@@ -193,4 +193,19 @@ describe('OAuthCallbackPage', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('displays error notice when oauth_code exchange fails', async () => {
+    mockSearchParams = new URLSearchParams('oauth_code=expired_code');
+    (apiClient.post as any).mockRejectedValueOnce({
+      error: { message: '만료된 일회용 인증 코드입니다.' },
+    });
+
+    render(<OAuthCallbackPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText('소셜 로그인 실패')).toBeInTheDocument();
+      expect(screen.getByText('만료된 일회용 인증 코드입니다.')).toBeInTheDocument();
+    });
+    expect(mockLogin).not.toHaveBeenCalled();
+  });
 });

@@ -126,4 +126,51 @@ describe('PolicyDocumentUploader Component', () => {
       expect(mockOnParsed).toHaveBeenCalledWith(mockParsedData);
     });
   });
+
+  it('파일 업로드가 실패하면 에러 메시지를 화면에 표시하고 parse를 호출하지 않아야 한다.', async () => {
+    mockUploadMutate.mockRejectedValueOnce(new Error('파일 크기가 제한을 초과했습니다.'));
+
+    const { container } = render(<PolicyDocumentUploader onParsed={mockOnParsed} />);
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const mockFile = new File(['content'], 'large.pdf', { type: 'application/pdf' });
+
+    fireEvent.change(fileInput, { target: { files: [mockFile] } });
+
+    await waitFor(() => {
+      expect(screen.getByText('파일 크기가 제한을 초과했습니다.')).toBeInTheDocument();
+    });
+    expect(mockParseMutate).not.toHaveBeenCalled();
+    expect(mockOnParsed).not.toHaveBeenCalled();
+  });
+
+  it('문서 파싱이 실패하면 에러 메시지를 화면에 표시해야 한다.', async () => {
+    mockUploadMutate.mockResolvedValueOnce({ documentId: 99 });
+    mockParseMutate.mockRejectedValueOnce(new Error('텍스트 추출에 실패했습니다.'));
+
+    const { container } = render(<PolicyDocumentUploader onParsed={mockOnParsed} />);
+    const fileInput = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const mockFile = new File(['content'], 'corrupted.pdf', { type: 'application/pdf' });
+
+    fireEvent.change(fileInput, { target: { files: [mockFile] } });
+
+    await waitFor(() => {
+      expect(screen.getByText('텍스트 추출에 실패했습니다.')).toBeInTheDocument();
+    });
+    expect(mockOnParsed).not.toHaveBeenCalled();
+  });
+
+  it('샘플 증권 분석이 실패하면 에러 메시지를 화면에 표시해야 한다.', async () => {
+    const { useParseSampleDocument } = await import('../api/useDocumentQueries');
+    vi.mocked(useParseSampleDocument).mockReturnValue({
+      mutateAsync: vi.fn().mockRejectedValueOnce(new Error('샘플 데이터를 불러올 수 없습니다.')),
+    } as never);
+
+    render(<PolicyDocumentUploader onParsed={mockOnParsed} />);
+    fireEvent.click(screen.getByText('📄 온보딩 샘플 증권으로 원클릭 분석해보기'));
+
+    await waitFor(() => {
+      expect(screen.getByText('샘플 데이터를 불러올 수 없습니다.')).toBeInTheDocument();
+    });
+    expect(mockOnParsed).not.toHaveBeenCalled();
+  });
 });

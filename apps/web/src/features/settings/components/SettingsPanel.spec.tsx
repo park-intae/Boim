@@ -193,4 +193,35 @@ describe('SettingsPanel Component', () => {
       expect(mockLogout).toHaveBeenCalled();
     });
   });
+
+  it('alerts failure message when data export fails', async () => {
+    mockExportData.mockRejectedValueOnce(new Error('export failed'));
+    render(<SettingsPanel />);
+
+    fireEvent.click(screen.getByText('데이터 내보내기'));
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('데이터 내보내기에 실패했습니다.');
+    });
+  });
+
+  it('alerts failure message and does not logout when account deletion fails', async () => {
+    mockDeleteAccount.mockRejectedValueOnce(new Error('delete failed'));
+    render(<SettingsPanel />);
+
+    fireEvent.click(screen.getByText('계정 탈퇴'));
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('계정 탈퇴에 실패했습니다.');
+    });
+    expect(mockLogout).not.toHaveBeenCalled();
+  });
+
+  it('does not delete account when confirm is cancelled', () => {
+    vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    render(<SettingsPanel />);
+
+    fireEvent.click(screen.getByText('계정 탈퇴'));
+    expect(mockDeleteAccount).not.toHaveBeenCalled();
+  });
 });

@@ -138,4 +138,24 @@ describe('useInsuranceForm Hook', () => {
       }),
     });
   });
+
+  it('does not call create or update when required fields are missing', async () => {
+    useAppStore.setState({ editingProductId: null });
+    const { result } = renderHook(() => useInsuranceForm());
+
+    await act(async () => {
+      await result.current.submitHandler();
+    });
+
+    expect(mockCreate).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it('handles non-existent editingProductId gracefully without crashing', () => {
+    useAppStore.setState({ editingProductId: 99999 });
+    const { result } = renderHook(() => useInsuranceForm());
+
+    expect(result.current.editingProductId).toBe(99999);
+    expect(result.current.isPending).toBe(false);
+  });
 });

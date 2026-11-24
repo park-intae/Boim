@@ -79,4 +79,65 @@ describe('SignUp Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/pass-verify', { replace: true });
     });
   });
+
+  it('displays validation errors for short name, invalid email, short password, and mismatched confirmPassword', async () => {
+    render(
+      <BrowserRouter>
+        <SignUp />
+      </BrowserRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('홍길동'), {
+      target: { value: '홍' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('example@boim.com'), {
+      target: { value: 'not-an-email' },
+    });
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    fireEvent.change(passwordInputs[0], { target: { value: 'short' } });
+    fireEvent.change(passwordInputs[1], { target: { value: 'different' } });
+
+    const submitBtn = screen.getByRole('button', { name: '회원가입' });
+    fireEvent.submit(submitBtn.closest('form')!);
+
+    await waitFor(() => {
+      expect(screen.getByText('이름은 최소 2자 이상 입력해주세요.')).toBeInTheDocument();
+      expect(screen.getByText('올바른 이메일 형식을 입력해주세요.')).toBeInTheDocument();
+      expect(screen.getByText('비밀번호는 최소 8자 이상이어야 합니다.')).toBeInTheDocument();
+      expect(screen.getByText('비밀번호가 일치하지 않습니다.')).toBeInTheDocument();
+    });
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
+
+  it('alerts error message when register API rejects', async () => {
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    (apiClient.post as any).mockRejectedValueOnce({
+      error: { message: '이미 가입된 이메일입니다.' },
+    });
+
+    render(
+      <BrowserRouter>
+        <SignUp />
+      </BrowserRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText('홍길동'), {
+      target: { value: '새사용자' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('example@boim.com'), {
+      target: { value: 'dup@boim.com' },
+    });
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    fireEvent.change(passwordInputs[0], { target: { value: 'password123' } });
+    fireEvent.change(passwordInputs[1], { target: { value: 'password123' } });
+
+    const submitBtn = screen.getByRole('button', { name: '회원가입' });
+    fireEvent.submit(submitBtn.closest('form')!);
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith('이미 가입된 이메일입니다.');
+    });
+    expect(mockNavigate).not.toHaveBeenCalled();
+    alertSpy.mockRestore();
+  });
 });

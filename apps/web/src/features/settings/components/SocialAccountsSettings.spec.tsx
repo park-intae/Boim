@@ -162,4 +162,37 @@ describe('SocialAccountsSettings Component', () => {
       expect(alertSpy).toHaveBeenCalledWith('카카오 계정이 성공적으로 연동되었습니다!');
     });
   });
+
+  it('displays error alert when returning with social_link_error parameter', async () => {
+    window.location.search = '?social_link_error=already_linked';
+    const alertSpy = vi.spyOn(window, 'alert');
+
+    (apiClient.get as any).mockResolvedValueOnce({
+      primaryAccountProvider: 'local',
+      localAccount: { email: 'test@boim.com', nickname: '테스트유저' },
+      kakao: { linked: false, email: null, nickname: null, profileImage: null },
+      naver: { linked: false, email: null, nickname: null, profileImage: null },
+      preferredImageProvider: 'kakao',
+      preferredNameProvider: 'kakao',
+    });
+
+    render(<SocialAccountsSettings onBack={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith('소셜 계정 연동 실패: already_linked');
+    });
+  });
+
+  it('handles social status fetch failure gracefully without crashing', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    (apiClient.get as any).mockRejectedValueOnce(new Error('network error'));
+
+    render(<SocialAccountsSettings onBack={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+    });
+    expect(screen.getByRole('heading', { name: '소셜 계정 연동' })).toBeInTheDocument();
+    consoleSpy.mockRestore();
+  });
 });

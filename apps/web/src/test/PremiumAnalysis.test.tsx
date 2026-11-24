@@ -51,4 +51,15 @@ describe('PremiumAnalysis Component', () => {
     expect(screen.getByText('30%')).toBeInTheDocument();
     expect(screen.getByText('70%')).toBeInTheDocument();
   });
+
+  it('총 납입 보험료가 0원인 항목만 있어도 NaN% 없이 빈 상태 안내로 안전하게 렌더링되어야 한다.', () => {
+    const zeroData = [
+      { id: 1, name: '무료보험', category: '기타', monthlyPayment: 0 },
+    ];
+    vi.mocked(useGetInsurances).mockReturnValue({ data: zeroData } as unknown as ReturnType<typeof useGetInsurances>);
+    render(<PremiumAnalysis />);
+
+    expect(screen.getByText('분석할 데이터가 없습니다')).toBeInTheDocument();
+    expect(screen.queryByText('NaN%')).not.toBeInTheDocument();
+  });
 });

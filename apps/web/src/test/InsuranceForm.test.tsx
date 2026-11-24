@@ -161,4 +161,15 @@ describe('InsuranceForm Component', () => {
       expect(mockUpdate.mock.calls[0][0].data.name).toBe('기존 암보험 상품');
     });
   });
+
+  it('등록 요청이 진행 중(isPending: true)일 때 제출 버튼이 비활성화되어야 한다.', () => {
+    vi.mocked(useCreateInsurance).mockReturnValue({
+      mutate: mockCreate,
+      isPending: true,
+    } as unknown as ReturnType<typeof useCreateInsurance>);
+
+    render(<InsuranceForm />);
+    const submitBtn = screen.getByRole('button', { name: '저장 중...' });
+    expect(submitBtn).toBeDisabled();
+  });
 });

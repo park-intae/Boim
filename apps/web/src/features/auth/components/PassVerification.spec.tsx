@@ -130,4 +130,37 @@ describe('PassVerification Component', () => {
     const verifyBtn = screen.getByRole('button', { name: '인증 확인' });
     expect(verifyBtn).toBeDisabled();
   });
+
+  it('휴대폰 번호 없이 인증번호 요청 시 에러 문구를 표시하고 API를 호출하지 않아야 한다', () => {
+    render(
+      <BrowserRouter>
+        <PassVerification onVerifySuccess={vi.fn()} />
+      </BrowserRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '인증번호 요청' }));
+
+    expect(screen.getByText('휴대폰 번호를 입력해주세요.')).toBeInTheDocument();
+    expect(apiClient.post).not.toHaveBeenCalled();
+  });
+
+  it('인증번호 요청 API가 reject되면 에러 메시지를 표시해야 한다', async () => {
+    vi.mocked(apiClient.post).mockRejectedValueOnce({
+      error: { message: 'PASS 서버 연결에 실패했습니다.' },
+    });
+
+    render(
+      <BrowserRouter>
+        <PassVerification onVerifySuccess={vi.fn()} />
+      </BrowserRouter>,
+    );
+
+    const phoneInput = screen.getByPlaceholderText('휴대폰 번호 (- 없이 입력)');
+    fireEvent.change(phoneInput, { target: { value: '01012345678' } });
+    fireEvent.click(screen.getByRole('button', { name: '인증번호 요청' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('PASS 서버 연결에 실패했습니다.')).toBeInTheDocument();
+    });
+  });
 });
