@@ -39,8 +39,19 @@ describe('InsuranceProductController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should throw UnauthorizedException when user is missing', () => {
-    expect(() => controller.findAll({} as RequestWithJwtUser)).toThrow(
+  it('should throw UnauthorizedException when user is missing on protected routes', () => {
+    const emptyReq = {} as RequestWithJwtUser;
+    expect(() => controller.findAll(emptyReq)).toThrow(UnauthorizedException);
+    expect(() => controller.findOne(emptyReq, '1')).toThrow(
+      UnauthorizedException,
+    );
+    expect(() => controller.create(emptyReq, {} as any)).toThrow(
+      UnauthorizedException,
+    );
+    expect(() => controller.update(emptyReq, '1', {})).toThrow(
+      UnauthorizedException,
+    );
+    expect(() => controller.remove(emptyReq, '1')).toThrow(
       UnauthorizedException,
     );
   });

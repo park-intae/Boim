@@ -248,5 +248,61 @@ describe('DocumentService', () => {
         ForbiddenException,
       );
     });
+
+    it('파일 크기가 30MB를 초과하거나 연결할 productId가 없으면 예외를 던져야 한다', async () => {
+      const hugeFile = {
+        originalname: 'huge.pdf',
+        mimetype: 'application/pdf',
+        size: 31 * 1024 * 1024,
+        buffer: Buffer.from('a'),
+      } as Express.Multer.File;
+      await expect(service.uploadDocument(1n, hugeFile)).rejects.toThrow(
+        BadRequestException,
+      );
+
+      const validFile = {
+        originalname: 'policy.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        buffer: Buffer.from('pdf'),
+      } as Express.Multer.File;
+      mockPrismaService.insuranceProduct.findUnique.mockResolvedValueOnce(null);
+      await expect(service.uploadDocument(1n, validFile, 999n)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('문서 조회/삭제/파싱 시 미존재(404) 및 타인 접근(403), 빈 목록([])을 올바르게 처리해야 한다', async () => {
+      mockPrismaService.document.findUnique.mockResolvedValueOnce({
+        id: 10n,
+        userId: 2n,
+        fileUrl: '/uploads/documents/other.pdf',
+      });
+      await expect(service.getDocument(1n, 10n)).rejects.toThrow(
+        ForbiddenException,
+      );
+
+      mockPrismaService.document.findUnique.mockResolvedValueOnce(null);
+      await expect(service.deleteDocument(1n, 999n)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      mockPrismaService.document.findUnique.mockResolvedValueOnce({
+        id: 10n,
+        userId: 2n,
+        fileUrl: '/uploads/documents/other.pdf',
+      });
+      await expect(service.deleteDocument(1n, 10n)).rejects.toThrow(
+        ForbiddenException,
+      );
+
+      mockPrismaService.document.findUnique.mockResolvedValueOnce(null);
+      await expect(service.parseDocument(1n, 999n)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      mockPrismaService.document.findMany.mockResolvedValueOnce([]);
+      expect(await service.getUserDocuments(1n)).toEqual([]);
+    });
   });
 });

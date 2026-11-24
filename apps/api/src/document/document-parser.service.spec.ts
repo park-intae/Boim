@@ -123,5 +123,33 @@ random noise string with aia token and words
         await fs.promises.unlink(tmpFile).catch(() => {});
       }
     });
+
+    it('존재하지 않는 파일 경로이면 에러를 던져야 한다', async () => {
+      await expect(
+        service.extractTextFromFile('/non/existent/file.txt', 'text/plain'),
+      ).rejects.toThrow();
+    });
+
+    it('빈 텍스트나 무관한 텍스트, 범위 밖 납입일(32일), 단일 날짜(+10년) 경계를 안전하게 처리해야 한다', () => {
+      const emptyResult = service.parseInsuranceText('');
+      expect(emptyResult.institution).toBe('한화손해보험');
+      expect(emptyResult.category).toBe('HEALTH');
+
+      const singleDateText = `
+보험회사: 메리츠화재
+상품명: 펫퍼민트 반려견보험
+가입일: 2025-05-10
+납입일: 매월 32일
+보장금액: 1억 5천만원
+월 보험료: 42,000원
+`;
+      const parsed = service.parseInsuranceText(singleDateText);
+      expect(parsed.category).toBe('PET');
+      expect(parsed.startDate).toBe('2025-05-10');
+      expect(parsed.maturityDate).toBe('2035-05-10');
+      expect(parsed.paymentDay).toBe(10); // 32일 무시 후 startDate 일자 폴백
+      expect(parsed.coverageAmount).toBe(150000000);
+      expect(parsed.monthlyPayment).toBe(42000);
+    });
   });
 });

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnauthorizedException } from '@nestjs/common';
 import { DocumentController } from './document.controller';
 import { DocumentService } from './document.service';
 import type { RequestWithJwtUser } from '../auth/auth.controller';
@@ -152,6 +153,31 @@ describe('DocumentController', () => {
 
       expect(service.deleteDocument).toHaveBeenCalledWith(1n, 10n);
       expect(result).toEqual({ success: true, message: '삭제 완료' });
+    });
+  });
+
+  describe('getDocument & 인증 누락 차단', () => {
+    it('특정 문서를 조회해야 한다', async () => {
+      mockDocumentService.getDocument.mockResolvedValue({ id: 10 });
+      const result = await controller.getDocument('10', mockRequest);
+      expect(service.getDocument).toHaveBeenCalledWith(1n, 10n);
+      expect(result).toEqual({ id: 10 });
+    });
+
+    it('인증 정보가 없으면 보호된 엔드포인트에서 UnauthorizedException을 던져야 한다', async () => {
+      const emptyReq = {} as RequestWithJwtUser;
+      await expect(controller.getUserDocuments(emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.getDocument('10', emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.parseDocument('10', emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.deleteDocument('10', emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

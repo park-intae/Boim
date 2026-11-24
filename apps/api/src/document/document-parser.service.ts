@@ -383,6 +383,7 @@ export class DocumentParserService {
     }
 
     // 6. 납입일 매칭 (매월 N일 또는 계약일의 일자)
+    let matchedPaymentDay = false;
     const dayMatch = text.match(
       /(?:매월|이체일|납입일)\s*[:：]?\s*(?:매월\s*)?([0-9]{1,2})\s*일/,
     );
@@ -390,8 +391,10 @@ export class DocumentParserService {
       const day = parseInt(dayMatch[1], 10);
       if (day >= 1 && day <= 31) {
         paymentDay = day;
+        matchedPaymentDay = true;
       }
-    } else if (startDate) {
+    }
+    if (!matchedPaymentDay && startDate) {
       const dayFromDate = parseInt(startDate.slice(8, 10), 10);
       if (dayFromDate >= 1 && dayFromDate <= 31) {
         paymentDay = dayFromDate;
