@@ -5,6 +5,30 @@
 
 ---
 
+## [Phase 23] - 2026-11-24
+
+### 🔒 전사 보안·인증 무결성 강화 및 치명적 결함 수정 (Security & Fixed)
+- **인증/인가 가드 및 Row-level 소유권 검증 (`Phase 23-01`):**
+  - `InsuranceProductController/Service`에 `AuthGuard('jwt')` 및 본인 소유권(`userId`) 검증을 강제해 IDOR 취약점 차단.
+  - `OptionalJwtAuthGuard`를 제거하고 `UserController`, `DocumentController`, `AnalysisController`, `NotificationController`를 엄격한 `AuthGuard('jwt')`로 전환.
+- **로그인·OAuth·PASS 인증 취약점 및 시크릿 관리 수정 (`Phase 23-02`):**
+  - `AuthService.login`: 비밀번호 필수 검증, 소셜 전용 계정 일반 로그인 차단, 탈퇴 회원(`deletedAt`) 로그인 차단.
+  - `SocialAuthService`/`AuthController`: 프로덕션 환경에서 `mock_state`/모의 OAuth 토큰/`mock-link` 차단, 일회용 OAuth 교환 코드(`POST /auth/oauth/exchange`) 도입으로 URL 쿼리 토큰 노출 제거.
+  - `env.validation.ts`: 프로덕션 환경 `JWT_SECRET` 미설정·기본값 폴백 시 서버 부트스트랩 즉시 실패 처리.
+  - `PassService`: 휴대폰 번호 마스킹·인증번호 프로덕션 로깅 차단, 만료 쿨다운 맵 정리로 메모리 누수 방지, 해시 기반 `passCi` 생성.
+- **데이터 무결성·스텁 구현·입력 검증 보강 (`Phase 23-03`):**
+  - `UserService.updatePassword`(실제 `bcrypt` 해싱 저장), `importData`(백업 JSON 검증 및 복원) 실제 구현, `exportData` 민감 필드(`password`, `refreshToken`, `passCi`) 제외.
+  - `InsuranceProductService` 날짜·금액 유효성 검증, `HttpExceptionFilter` 배열 메시지 포맷팅 및 프로덕션 로그 마스킹, `BigInt` 안전 직렬화.
+  - `DocumentService` 확장자·`productId` 소유권 검증, `DocumentParserService` OCR 실패 시 가짜 샘플 폴백 오인 제거, `ExportService` 엑셀 Formula Injection 이스케이프, `AiDiagnosisService` 5분 TTL 캐싱.
+- **알림 스케줄러 KST 자정 불일치 수정 (`Phase 23-04`):**
+  - `NotificationSchedulerService.runBatch`의 중복 조회 경계를 실제 KST 자정(`UTC - 9h`)으로 보정하고, 탈퇴 회원 제외 및 청크 조회(`BATCH_SIZE = 500`) 도입.
+- **프론트엔드 API 규격 통일 및 401/엑셀 버그 수정 (`Phase 23-05`):**
+  - `UserController` 이중 래핑 제거 및 `useUserQueries` 단일 응답 파싱 통일, `useExportExcel`의 `useAuthStore` 토큰 연동 수정, `useCreateInsurance` 하드코딩 `userId: 1` 제거, `apiClient` 401 자동 로그아웃 인터셉터 추가.
+- **인프라·운영 보안 설정 (`Phase 23-06`):**
+  - `docker-compose.yml` 업로드 볼륨(`boim_uploads`) 영속화 및 `JWT_SECRET` 필수화, `apps/api/Dockerfile` 기동 시 `prisma migrate deploy` 적용, `main.ts` CORS `FRONTEND_URL` 제한.
+
+---
+
 ## [Phase 22] - 2026-11-21
 
 ### 🤖 AI 진단 모델 동적 탐색 및 다단계 폴백 아키텍처 개선 (Changed)

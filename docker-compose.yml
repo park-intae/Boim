@@ -33,9 +33,11 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/boim?schema=public"
-      JWT_SECRET: ${JWT_SECRET:-boim_jwt_secret_key_production_2026}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET environment variable must be set}
       USE_MOCK_PARSER: ${USE_MOCK_PARSER:-true}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    volumes:
+      - boim_uploads:/app/apps/api/uploads
     ports:
       - "${API_PORT:-4000}:4000"
     depends_on:
@@ -60,6 +62,8 @@ services:
 
 volumes:
   boim_pgdata:
+    driver: local
+  boim_uploads:
     driver: local
 
 networks:

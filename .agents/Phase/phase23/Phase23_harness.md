@@ -86,17 +86,17 @@
 - [x] **프론트엔드 관련 단위/통합 테스트 업데이트 및 검증**
 
 ### 6. Phase 23-06: 인프라·운영 보안 설정 및 전체 품질 무결성 검증 (Medium)
-- [ ] **Docker & CORS 운영 보안 강화**
-  - [ ] `docker-compose.yml`: `api` 서비스에 업로드 파일 영속 볼륨(`boim_uploads:/app/apps/api/uploads`) 추가 및 `JWT_SECRET` 기본값 폴백 제거(필수 환경변수 `${JWT_SECRET:?...}`)
-  - [ ] `apps/api/Dockerfile`: 기동 시 `prisma migrate deploy` 실행 후 서버 시작하도록 `CMD` 개선
-  - [ ] `apps/api/src/main.ts`: `app.enableCors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true })`로 출처 제한
-- [ ] **전사 검증, 에러로그 및 문서 동기화**
-  - [ ] `apps/api` 단위/E2E 테스트 전체 Pass 확인
-  - [ ] `apps/web` Vitest 전체 Pass 확인
-  - [ ] 전 워크스페이스 `tsc --noEmit` 및 `lint` 통과 확인
-  - [ ] Docker 이미지 빌드 및 컨테이너 기동 검증 (`docker compose build` / `up` 또는 설정 검증)
-  - [ ] 작업 중 발생한 오류·수정 내역 `.agents/errorlog.md` 기록
-  - [ ] `.agents/Phase/Phase_harness.md`, `CHANGELOG.md`, `README.md` 업데이트 후 완료 커밋
+- [x] **Docker & CORS 운영 보안 강화**
+  - [x] `docker-compose.yml`: `api` 서비스에 업로드 파일 영속 볼륨(`boim_uploads:/app/apps/api/uploads`) 추가 및 `JWT_SECRET` 기본값 폴백 제거(필수 환경변수 `${JWT_SECRET:?...}`)
+  - [x] `apps/api/Dockerfile`: 기동 시 `prisma migrate deploy` 실행 후 서버 시작하도록 `CMD` 개선
+  - [x] `apps/api/src/main.ts`: `app.enableCors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true })`로 출처 제한
+- [x] **전사 검증, 에러로그 및 문서 동기화**
+  - [x] `apps/api` 단위/E2E 테스트 전체 Pass 확인
+  - [x] `apps/web` Vitest 전체 Pass 확인
+  - [x] 전 워크스페이스 `tsc --noEmit` 및 `lint` 통과 확인
+  - [x] Docker 이미지 빌드 및 컨테이너 기동 검증 (`docker compose build` / `up` 또는 설정 검증)
+  - [x] 작업 중 발생한 오류·수정 내역 `.agents/errorlog.md` 기록
+  - [x] `.agents/Phase/Phase_harness.md`, `CHANGELOG.md`, `README.md` 업데이트 후 완료 커밋
 
 ---
 

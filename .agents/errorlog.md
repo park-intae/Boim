@@ -202,4 +202,25 @@
   2. 백엔드에 `GET /api/auth/social/link/:provider?token=...` 엔드포인트를 신설하고, JWT 기반 유저 식별자 + 10분 만료 HMAC-SHA256 서명 State(`link.{provider}.{userId}...`)를 탑재하여 실제 카카오/네이버 공식 인가 화면으로 302 리다이렉트하는 표준 OAuth 바인딩 아키텍처 완성.
   3. 카카오/네이버 동의 완료 후 콜백에서 `state` 서명을 검증하여 해당 사용자의 DB 계정에 원본 프로필을 바인딩하고 대시보드로 복귀시키는 전 과정 완성.
 
+## 29. 미인증 폴백 가드(`OptionalJwtAuthGuard`) 및 무인증 컨트롤러로 인한 Row-level 권한 우회(IDOR)
+- **발생 상황:** Phase 23 전사 보안 감사 중 발견.
+- **오류 내용:**
+  1. `OptionalJwtAuthGuard`가 토큰 누락·만료·위조 시에도 `{ userId: '1' }`을 반환하여, 미인증 외부 요청이 1번 사용자의 프로필·문서·알림·AI 진단·엑셀 다운로드에 접근 가능했음.
+  2. `InsuranceProductController`에 인증 가드 자체가 없어 전체 사용자 보험 목록 노출 및 타인 상품 수정·삭제가 가능했음.
+- **해결 및 예방:**
+  1. 모든 사용자 데이터 API에 `AuthGuard('jwt')`를 강제하고 `OptionalJwtAuthGuard`를 제거함.
+  2. 서비스 레이어(`InsuranceProductService`, `DocumentService`)에서 반드시 `product.userId === userId` 소유권 검증을 수행하고, 웹 데모 모드는 프론트엔드(`demoFallback.ts`)에서만 격리 처리하도록 유지함.
+
+## 30. 알림 배치 스케줄러 KST/UTC 자정 경계 불일치로 인한 중복 발송
+- **발생 상황:** `NotificationSchedulerService.runBatch` 중복 방지 조건 점검 중 발견.
+- **오류 내용:** 크론 배치는 `Asia/Seoul` 자정(`KST 00:00` = 전날 `UTC 15:00`)에 실행되나, 중복 조회용 `startOfDay`를 `Date.UTC(year, month - 1, day, 0, 0, 0)`(KST `09:00`)으로 계산하여 당일 재실행 시 자정에 생성된 알림을 찾지 못하고 중복 발송함.
+- **해결 및 예방:** KST 기준 날짜 범위 조회 시 반드시 `UTC - 9시간` 오프셋을 반영해 실제 KST 00:00:00 ~ 23:59:59.999에 해당하는 UTC 타임스탬프 범위를 계산함.
+
+## 31. 엑셀 다운로드 토큰 키 불일치 및 `UserController` 이중 래핑 재발
+- **발생 상황:** 프론트엔드 API 연동 점검(Phase 23) 중 발견.
+- **오류 내용:**
+  1. `useExportExcel`이 존재하지 않는 `boim_access_token` 스토리지 키를 조회해 `Authorization` 헤더가 항상 누락됨.
+  2. `UserController`가 `TransformInterceptor`와 별개로 `{ success: true, data: ... }`를 수동 래핑해 훅마다 파싱 방식이 파편화됨.
+- **해결 및 예방:** 토큰 조회는 `useAuthStore.getState().accessToken` 단일 경로로 통일하고, 모든 NestJS 컨트롤러는 순수 데이터만 반환하여 전역 `TransformInterceptor`의 단일 응답 포맷을 유지함.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"
