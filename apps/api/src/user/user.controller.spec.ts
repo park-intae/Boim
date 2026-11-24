@@ -55,6 +55,20 @@ describe('UserController', () => {
     await expect(
       controller.getProfile({} as RequestWithJwtUser),
     ).rejects.toThrow(UnauthorizedException);
+    await expect(
+      controller.updateProfile({} as RequestWithJwtUser, { name: 'a' }),
+    ).rejects.toThrow(UnauthorizedException);
+    await expect(
+      controller.updatePassword({} as RequestWithJwtUser, {
+        newPassword: 'password123',
+      }),
+    ).rejects.toThrow(UnauthorizedException);
+    await expect(
+      controller.deleteAccount({} as RequestWithJwtUser),
+    ).rejects.toThrow(UnauthorizedException);
+    await expect(
+      controller.exportData({} as RequestWithJwtUser),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
   it('getProfile should return user data', async () => {

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt');
@@ -100,6 +100,17 @@ describe('AuthService', () => {
       expect(prismaService.user.update).not.toHaveBeenCalled();
       expect(result).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
     });
+
+    it('should absorb DB or BigInt errors on logout and return success message', async () => {
+      (prismaService.user.update as jest.Mock).mockRejectedValueOnce(
+        new Error('DB error'),
+      );
+      const result1 = await service.logout('1');
+      expect(result1).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+
+      const result2 = await service.logout('not-a-number');
+      expect(result2).toEqual({ message: '성공적으로 로그아웃되었습니다.' });
+    });
   });
 
   describe('register', () => {
@@ -131,9 +142,9 @@ describe('AuthService', () => {
       (prismaService.user.findUnique as jest.Mock).mockResolvedValue({
         id: BigInt(1),
       });
-      await expect(
-        service.register('existing@boim.com', 'pw'),
-      ).rejects.toThrow();
+      await expect(service.register('existing@boim.com', 'pw')).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -185,6 +196,33 @@ describe('AuthService', () => {
       });
       await expect(
         service.login('deleted@test.com', 'password'),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException when password is whitespace only, social-only, or mismatched', async () => {
+      await expect(service.login('test@test.com', '   ')).rejects.toThrow(
+        UnauthorizedException,
+      );
+
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: BigInt(2),
+        email: 'social@test.com',
+        password: null,
+        deletedAt: null,
+      });
+      await expect(
+        service.login('social@test.com', 'password123'),
+      ).rejects.toThrow(UnauthorizedException);
+
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: BigInt(1),
+        email: 'test@test.com',
+        password: 'hashed_password',
+        deletedAt: null,
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
+      await expect(
+        service.login('test@test.com', 'wrong_password'),
       ).rejects.toThrow(UnauthorizedException);
     });
   });

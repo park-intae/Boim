@@ -1,4 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+  BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SocialAuthService } from './social-auth.service';
@@ -367,6 +372,37 @@ describe('AuthController', () => {
       expect(mockRes.redirect).toHaveBeenCalledWith(
         expect.stringContaining('https://nid.naver.com/oauth2.0/authorize'),
       );
+    });
+
+    it('should throw BadRequestException for unsupported provider and UnauthorizedException for missing/invalid token', async () => {
+      const mockRes = { redirect: jest.fn() } as any;
+      await expect(
+        controller.initiateSocialLink('google', 'valid_token', mockRes),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.initiateSocialLink('kakao', '', mockRes),
+      ).rejects.toThrow(UnauthorizedException);
+
+      authService.verifyToken = jest.fn().mockReturnValue(null);
+      await expect(
+        controller.initiateSocialLink('kakao', 'invalid_token', mockRes),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should block mockLinkSocial and mockUnlinkSocial in production', async () => {
+      const prevEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      const mockReq = { user: { userId: '1' } } as any;
+      try {
+        await expect(
+          controller.mockLinkSocial(mockReq, 'kakao'),
+        ).rejects.toThrow(ForbiddenException);
+        await expect(
+          controller.mockUnlinkSocial(mockReq, 'naver'),
+        ).rejects.toThrow(ForbiddenException);
+      } finally {
+        process.env.NODE_ENV = prevEnv;
+      }
     });
   });
 

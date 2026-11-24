@@ -132,4 +132,36 @@ describe('KakaoStrategy', () => {
       }),
     );
   });
+
+  it('should call done with error when processSocialUser throws and promote http image to https', async () => {
+    const err = new Error('Kakao processing error');
+    socialAuthService.processSocialUser.mockRejectedValueOnce(err);
+
+    let capturedErr: Error | null = null;
+    let capturedUser: unknown = null;
+    await strategy.validate(
+      'access',
+      'refresh',
+      {
+        id: '123',
+        _json: {
+          properties: { profile_image: 'http://k.kakaocdn.net/img.jpg' },
+        },
+      },
+      (e: Error | null, u?: unknown) => {
+        capturedErr = e;
+        capturedUser = u;
+      },
+    );
+
+    expect(socialAuthService.processSocialUser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '카카오 사용자',
+        profileImage: 'https://k.kakaocdn.net/img.jpg',
+      }),
+      undefined,
+    );
+    expect(capturedErr).toBe(err);
+    expect(capturedUser).toBe(false);
+  });
 });

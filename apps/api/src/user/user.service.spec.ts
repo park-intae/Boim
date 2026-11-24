@@ -24,6 +24,9 @@ describe('UserService', () => {
               create: jest.fn(),
               upsert: jest.fn(),
             },
+            insuranceProduct: {
+              createMany: jest.fn().mockResolvedValue({ count: 1 }),
+            },
             userLoginHistory: {
               count: jest.fn(),
               createMany: jest.fn(),
@@ -145,6 +148,26 @@ describe('UserService', () => {
     await expect(
       service.importData(1n, {
         insuranceProducts: [{ name: 'only-name' }],
+      }),
+    ).rejects.toThrow(BadRequestException);
+
+    await expect(service.importData(1n, null as any)).rejects.toThrow(
+      BadRequestException,
+    );
+
+    await expect(
+      service.importData(1n, {
+        insuranceProducts: [
+          {
+            category: '건강',
+            name: '테스트',
+            institution: '삼성',
+            startDate: '2024-01-01',
+            maturityDate: '2034-01-01',
+            monthlyPayment: -500,
+            coverageAmount: 1000000,
+          },
+        ],
       }),
     ).rejects.toThrow(BadRequestException);
   });

@@ -119,5 +119,21 @@ describe('PassService', () => {
         '인증번호가 일치하지 않습니다.',
       );
     });
+
+    it('프로덕션 환경에서는 테스트 슈퍼코드(000000, 123456)를 거부해야 한다', async () => {
+      const prevEnv = process.env.NODE_ENV;
+      const txId = await service.requestMockVerification('01044445555');
+      process.env.NODE_ENV = 'production';
+      try {
+        await expect(service.verifyMockCode(txId, '000000')).rejects.toThrow(
+          BadRequestException,
+        );
+        await expect(service.verifyMockCode(txId, '123456')).rejects.toThrow(
+          BadRequestException,
+        );
+      } finally {
+        process.env.NODE_ENV = prevEnv;
+      }
+    });
   });
 });

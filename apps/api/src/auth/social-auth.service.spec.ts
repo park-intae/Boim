@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SocialAuthService } from './social-auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 
 describe('SocialAuthService', () => {
   let service: SocialAuthService;
@@ -457,6 +461,18 @@ describe('SocialAuthService', () => {
           name: '공격자',
         }),
       ).rejects.toThrow(ConflictException);
+    });
+
+    it('should throw BadRequestException when switching primary account to unlinked provider', async () => {
+      prismaService.user.findUnique.mockResolvedValueOnce({
+        id: BigInt(10),
+        kakaoNickname: null,
+        kakaoEmail: null,
+      });
+
+      await expect(service.setPrimaryAccount('10', 'kakao')).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 

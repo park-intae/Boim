@@ -57,4 +57,29 @@ describe('HttpExceptionFilter', () => {
       },
     });
   });
+
+  it('should join array validation messages from HttpException response', () => {
+    const mockJson = jest.fn();
+    const mockStatus = jest.fn().mockReturnValue({ json: mockJson });
+    const mockGetResponse = jest.fn().mockReturnValue({ status: mockStatus });
+    const mockArgumentsHost = {
+      switchToHttp: () => ({ getResponse: mockGetResponse }),
+    } as any;
+
+    const exception = new HttpException(
+      { message: ['이메일 형식이 아닙니다.', '비밀번호는 8자 이상입니다.'] },
+      HttpStatus.BAD_REQUEST,
+    );
+
+    filter.catch(exception, mockArgumentsHost);
+
+    expect(mockStatus).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(mockJson).toHaveBeenCalledWith({
+      success: false,
+      error: {
+        code: '400',
+        message: '이메일 형식이 아닙니다., 비밀번호는 8자 이상입니다.',
+      },
+    });
+  });
 });
