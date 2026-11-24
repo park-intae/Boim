@@ -26,6 +26,9 @@
   - `UserController` 이중 래핑 제거 및 `useUserQueries` 단일 응답 파싱 통일, `useExportExcel`의 `useAuthStore` 토큰 연동 수정, `useCreateInsurance` 하드코딩 `userId: 1` 제거, `apiClient` 401 자동 로그아웃 인터셉터 추가.
 - **인프라·운영 보안 설정 (`Phase 23-06`):**
   - `docker-compose.yml` 업로드 볼륨(`boim_uploads`) 영속화 및 `JWT_SECRET` 필수화, `apps/api/Dockerfile` 기동 시 `prisma migrate deploy` 적용, `main.ts` CORS `FRONTEND_URL` 제한.
+- **보안 실패·공격 시나리오 및 HTTP 가드 통합 테스트 보강:**
+  - `jwt-guard.integration.spec.ts`: Supertest 기반 실제 HTTP 요청 시 토큰 미첨부·위조 토큰 `401 Unauthorized` 및 타인 리소스 접근 `403 Forbidden` 검증.
+  - `document.service.spec.ts`, `document-parser.service.spec.ts`, `export.service.spec.ts`, `user.service.spec.ts`, `notification.controller.spec.ts`, `social-auth.service.spec.ts`: 확장자 위조, 타인 `productId` 연결, OCR 실패, 수식 인젝션, 잘못된 백업 복원, 프로덕션 배치 시크릿 불일치, 로컬 계정 자동 연동 차단 테스트 추가 (백엔드 **28 Suites / 228 Tests**, 프론트엔드 **49 Files / 218 Tests** 100% Pass).
 
 ---
 

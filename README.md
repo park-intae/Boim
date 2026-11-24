@@ -154,9 +154,9 @@ Boim 프로젝트는 기능 추가 및 리팩토링 시 **단 하나의 회귀 �
 
 | 영역 | 프레임워크 | 검증 항목 | 테스트 스위트 | 테스트 통과 수 | 통과율 |
 | :--- | :--- | :--- | :---: | :---: | :---: |
-| **Backend API** | Jest / Supertest | 컨트롤러, 서비스 비즈니스 로직, 인증/인가 가드, 크론 스케줄러, AI 진단 규칙 엔진 | **27 Suites** | **205 Tests** | **100% PASS** ✅ |
-| **Frontend Web** | Vitest / Testing Library | 컴포넌트 렌더링, 캘린더 인터랙션, React Query 훅, Zustand 스토어, PWA 캐싱 | **48 Files** | **211 Tests** | **100% PASS** ✅ |
-| **종합 무결성** | Turbo Monorepo | 모노레포 전체 통합 검증 (`pnpm test`) | **75 Suites** | **416 Tests** | **100% PASS** 🚀 |
+| **Backend API** | Jest / Supertest | 컨트롤러, 서비스 비즈니스 로직, 인증/인가 가드, HTTP 통합 보안 테스트, 크론 스케줄러, AI 진단 규칙 엔진 | **28 Suites** | **228 Tests** | **100% PASS** ✅ |
+| **Frontend Web** | Vitest / Testing Library | 컴포넌트 렌더링, 캘린더 인터랙션, React Query 훅, Zustand 스토어, PWA 캐싱 | **49 Files** | **218 Tests** | **100% PASS** ✅ |
+| **종합 무결성** | Turbo Monorepo | 모노레포 전체 통합 검증 (`pnpm test`) | **77 Suites** | **446 Tests** | **100% PASS** 🚀 |
 
 ---
 
@@ -226,6 +226,8 @@ Boim 프로젝트는 기능 추가 및 리팩토링 시 **단 하나의 회귀 �
 | **Phase 19** | **Expo(React Native) 기반 모바일 앱 구축, 플로팅 탭 네비게이션 및 실시간 인앱 OCR 오토 스캐너** | **완료** ✅ |
 | **Phase 20** | **상용 외부 API 실연동 (Google Gemini AI 실시간 분석, 카카오/네이버 OAuth2 실연동 & 대표 본계정 파이프라인)** | **완료** ✅ |
 | **Phase 21** | **프론트엔드 전수 Mock/더미 데이터 정리 및 실데이터 연동 무결성 검증 (Mock Cleanup & Real Data Binding)** | **완료** ✅ |
+| **Phase 22** | **AI 진단 모델 동적 탐색(`models.list()`) 및 최신→하위→규칙 엔진 3단계 폴백 아키텍처 개선** | **완료** ✅ |
+| **Phase 23** | **전사 보안·인증 무결성 강화, KST 알림 정밀화, API 규격 통일 및 실패/공격 시나리오 HTTP 통합 테스트 완비** | **완료** ✅ |
 
 ---
 
