@@ -11,7 +11,7 @@
 | :--- | :--- |
 | **프로젝트명** | **Boim (보임)** — 개인 보험 가입 현황 관리 캘린더 및 AI 진단 대시보드 |
 | **아키텍처** | `pnpm` Workspace + `Turborepo` 기반 Full-Stack Monorepo (`web`, `api`, `mobile`, `shared-types`) |
-| **개발 기간 / 단계** | **Phase 01 ~ Phase 21** 전 마일스톤 완수 (설계 · 구현 · 리팩토링 · 컨테이너화 · 실데이터 무결성 검증) |
+| **개발 기간 / 단계** | **Phase 01 ~ Phase 24** 전 마일스톤 완수 (설계 · 구현 · 보안/무결성 강화 · 실패/경계값 QA · 컨테이너화) |
 | **주요 제공 형태** | 웹 SPA & PWA (`@boim/web`), 백엔드 API (`@boim/api`), 모바일 앱 (`@boim/mobile`), Docker Compose 풀스택 |
 | **라이브 데모 / 저장소** | [Live Web Demo](https://park-intae.github.io/Boim/) · [배포 운영 가이드](./DEPLOYMENT.md) |
 
@@ -119,18 +119,22 @@ flowchart TD
 - **문제:** 초기 개발 단계에 잔존하던 소셜 콜백 실패 시 임의 계정 자동 로그인 폴백, 테스트용 `temp_token`/`mock_state` 키, 가짜 소셜 연동(`mock-link`) 모드가 실사용 시 보안 및 데이터 정합성 위험을 유발할 수 있었습니다.
 - **해결:** 비정상 자동 로그인 폴백과 모든 Mock 연동 코드를 전면 제거해 정식 에러 안내·재시도 UI로 전환했으며, 온보딩용 샘플 기능은 정식 `presetData` 규격으로 분리하고 대시보드 전 영역의 실데이터 바인딩 감사를 완료했습니다.
 
+### Case 6. 전사 보안·무결성 강화 및 실패·경계값 회귀 방어 (Phase 22~24)
+- **문제:** 동적 AI 모델 전환, KST 자정 알림 중복 경계, IDOR·일회용 OAuth 교환 코드·OCR 파싱 예외(`32일` 등 범위 밖 납입일) 등 실패·경계값 경로에서 회귀 위험이 존재했습니다.
+- **해결:** `models.list()` 기반 3단계 AI 폴백 체인을 구축하고, Row-level 소유권 검증·Supertest HTTP 가드 통합 테스트·KST 자정 경계 보정·`DocumentParserService` 납입일 범위 검증을 적용했으며, 전사 실패/예외/경계값 테스트를 **79 Suites · 525 Tests** 규모로 확충했습니다.
+
 ---
 
 ## 6. 📊 품질 보증(QA) 및 아키텍처 리팩토링 성과
 
 ### 6.1 전사 테스트 스위트 & 커버리지 현황
-엄격한 TDD와 회귀 검증을 통해 모노레포 전체 테스트 통과율 100%를 유지하고 있습니다.
+엄격한 TDD와 실패·경계값 회귀 검증을 통해 모노레포 전체 테스트 통과율 100%를 유지하고 있습니다.
 
-| 영역 | 프레임워크 | 테스트 규모 | 통과율 | 라인 커버리지 (최종 기록) |
+| 영역 | 프레임워크 | 테스트 규모 | 통과율 | 라인 커버리지 (기준 기록) |
 | :--- | :--- | :---: | :---: | :---: |
-| **Backend API (`@boim/api`)** | Jest / Supertest | **27 Suites · 205 Tests** | **100% PASS** | **90.22%** (Phase 14 기준) |
-| **Frontend Web (`@boim/web`)** | Vitest / Testing Library | **48 Files · 211 Tests** | **100% PASS** | **83.15%** (Phase 14 기준, `src/api` 93.68%) |
-| **전사 통합 (`pnpm test`)** | Turborepo | **75 Suites · 416 Tests** | **100% PASS** | 전사 품질 기준선(80%+) 달성 |
+| **Backend API (`@boim/api`)** | Jest / Supertest | **29 Suites · 256 Tests** | **100% PASS** | **90.22%** (Phase 14 기준) |
+| **Frontend Web (`@boim/web`)** | Vitest / Testing Library | **50 Files · 269 Tests** | **100% PASS** | **83.15%** (Phase 14 기준, `src/api` 93.68%) |
+| **전사 통합 (`pnpm test`)** | Turborepo | **79 Suites · 525 Tests** | **100% PASS** | 전사 품질 기준선(80%+) 달성 |
 
 ### 6.2 Clean Architecture 컴포넌트 및 도메인 규칙 엔진 분리 (Phase 14)
 거대 컴포넌트와 서비스 파일에서 순수 비즈니스 로직·프레젠테이션·커스텀 훅을 분리해 단일 책임 원칙(SRP)을 확립했습니다.
