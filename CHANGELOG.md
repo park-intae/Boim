@@ -5,6 +5,31 @@
 
 ---
 
+## [Phase 24] - 2026-11-24
+
+### 🧪 전사 핵심 로직 실패·예외·경계값 시나리오 테스트 보강 및 결함 수정 (Test & Fixed)
+- **백엔드 Auth · User · Common 실패·경계값 검증 (`Phase 24-01`):**
+  - `env.validation.spec.ts` 신설: 프로덕션 환경 `JWT_SECRET` 미설정·알려진 기본값·16자 미만 및 `DATABASE_URL` 누락 시 부트스트랩 예외 검증.
+  - `auth.service.spec.ts`, `auth.controller.spec.ts`, `social-auth.service.spec.ts`, `pass.service.spec.ts`, `kakao.strategy.spec.ts`, `naver.strategy.spec.ts`: 중복 이메일, 소셜 전용 계정 일반 로그인, 공백 비밀번호, CSRF state 차단, OAuth 코드 TTL 만료, PASS 9/10자리 경계·프로덕션 슈퍼코드 거부·만료 경계 검증.
+  - `user.service.spec.ts`, `user.controller.spec.ts`, `http-exception.filter.spec.ts`: `updatePassword` 7/8자 경계, `importData` 비객체/잘못된 날짜/음수·`Infinity` 금액 차단, 보호 엔드포인트 미인증 `UnauthorizedException` 검증.
+- **백엔드 InsuranceProduct · Document · Parser 실패 검증 및 버그 수정 (`Phase 24-02`):**
+  - `DocumentParserService`: 범위 밖 납입일(예: `32일`) 파싱 시 `startDate` 일자 폴백이 누락되던 버그를 수정(`paymentDay >= 1 && paymentDay <= 31` 검증 추가)하고 단위 테스트로 검증.
+  - `insurance-product.service.spec.ts`, `document.service.spec.ts`, `document-parser.service.spec.ts`: 공백 문자열, `maturityDate < startDate` 역전, `0`원/`NaN`/`Infinity` 금액 경계, 파일 크기 초과·타인 `productId` 접근, OCR 실패 시 `worker.terminate()` 보장 검증.
+- **백엔드 Notification · RuleEvaluator · Analysis 실패·경계값 검증 (`Phase 24-03`):**
+  - `notification-rule.evaluator.spec.ts`: 윤년/평년 2월 말일(28/29일)·30일 월말 납입일 보정, 12월→익년 1월 이월, 방해금지 `22:00`~`08:00` 정각 경계(`21:59`/`22:00`/`08:00`/`08:01`), 채널 우선순위(`kakao > push > email > in_app`) 검증.
+  - `notification-scheduler.service.spec.ts`, `email.service.spec.ts`, `rule-based-diagnosis.engine.spec.ts`, `ai-diagnosis.service.spec.ts`, `export.service.spec.ts`: 500건 초과 청크 페이징, 메일 전송 실패 전파, 0원/음수 금액 및 점수 클램핑(20~95), AI 빈 응답/비정상 JSON 폴백, 5분 캐시 및 `forceRefresh`, 수식 이스케이프(`\t`, `\r`) 검증.
+- **프론트엔드 API 훅 & `apiClient` 실패·롤백·데모 분기 검증 (`Phase 24-04`):**
+  - `client.spec.ts`, `useInsuranceQueries.spec.ts`, `useNotificationQueries.spec.ts`, `useDocumentQueries.spec.ts`, `useUserQueries.spec.ts`, `useDiagnosisQueries.spec.ts`: 데모 세션 401 격리, `useUpdateNotificationSettings` 실패 시 Optimistic Update 캐시 롤백, `useExportExcel` fetch/blob 실패 및 토큰 누락 헤더 검증.
+- **프론트엔드 Auth · 폼 · 캘린더 · 대시보드 UI 예외·경계값 검증 (`Phase 24-05`):**
+  - `Login.spec.tsx`, `SignUp.spec.tsx`, `PassVerification.spec.tsx`, `ReAuthModal.spec.tsx`, `OAuthCallbackPage.spec.tsx`: 스키마 유효성 실패 및 서버 에러 reject UI/alert 검증.
+  - `MainCalendar.test.tsx`, `DailyEventsView.spec.tsx`, `InsuranceForm.test.tsx`, `useInsuranceForm.spec.ts`, `PolicyDocumentUploader.test.tsx`: 윤년(2024년 2월 29일) vs 평년(2025년 2월) 및 말일(31일) 납입 뱃지 경계, `isPending` 비활성화, 업로드/파싱/샘플 파싱 실패 에러 UI 검증.
+  - `AiDiagnosisReport.test.tsx`, `PremiumAnalysis.test.tsx`, `NotificationList.test.tsx`, `MyInsuranceList.test.tsx`, `SettingsPanel.spec.tsx`, `SocialAccountsSettings.spec.tsx`, `LoginHistorySettings.spec.tsx`: `isError` 재시도, 0원 `NaN%` 방어, 배치 실패 배너, `social_link_error`, `location: null` 폴백 검증.
+- **프론트엔드 ErrorBoundary · 유틸리티 예외 검증 및 전사 통합 검증 (`Phase 24-06`):**
+  - `RouteErrorBoundary.spec.tsx` 신설(일반 에러 Fallback 및 `ChunkLoadError` 10초 리로드 루프 방어) 및 `webNotification.test.ts`, `demoFallback.spec.ts`, `authStore.spec.ts` 예외 분기 보강.
+  - 전사 테스트 스위트 검증 완료: 백엔드 **29 Suites / 256 Tests**, 프론트엔드 **50 Files / 269 Tests** (총 **79 Suites / 525 Tests**, 100% Pass).
+
+---
+
 ## [Phase 23] - 2026-11-24
 
 ### 🔒 전사 보안·인증 무결성 강화 및 치명적 결함 수정 (Security & Fixed)

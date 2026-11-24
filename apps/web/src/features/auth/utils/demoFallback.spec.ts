@@ -83,4 +83,21 @@ describe('demoFallback utilities', () => {
     expect(diagnosis.score).toBe(88);
     expect(diagnosis.totalMonthlyPayment).toBeGreaterThan(0);
   });
+
+  it('handles empty/undefined emails, token-based demo session detection, and state reset', () => {
+    expect(isDemoAccountEmail('')).toBe(false);
+    expect(isDemoAccountEmail(undefined)).toBe(false);
+
+    useAuthStore.getState().login(
+      { id: 'u1', email: 'other@boim.com', isPassVerified: false },
+      DEMO_ACCESS_TOKEN,
+    );
+    expect(isDemoSession()).toBe(true);
+
+    deleteDemoInsurance(1);
+    expect(getDemoInsurances().length).toBe(6);
+
+    resetDemoFallbackState();
+    expect(getDemoInsurances().length).toBe(7);
+  });
 });

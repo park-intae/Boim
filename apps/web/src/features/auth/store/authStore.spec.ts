@@ -62,4 +62,30 @@ describe('useAuthStore & hybridStorage', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(useAuthStore.getState().user).toBeNull();
   });
+
+  it('handles setPassVerified safely when user is null or authenticated', () => {
+    useAuthStore.getState().setPassVerified(true);
+    expect(useAuthStore.getState().user).toBeNull();
+
+    useAuthStore.getState().login(
+      { id: 'user_4', email: 'pass@boim.com', isPassVerified: false },
+      'mock_token_pass',
+    );
+    useAuthStore.getState().setPassVerified(true);
+    expect(useAuthStore.getState().user?.isPassVerified).toBe(true);
+  });
+
+  it('migrates storage between sessionStorage and localStorage when rememberMe changes', () => {
+    useAuthStore.getState().setRememberMe(false);
+    useAuthStore.getState().login(
+      { id: 'user_5', email: 'migrate@boim.com', isPassVerified: false },
+      'mock_token_migrate',
+    );
+    expect(sessionStorage.getItem('boim-auth-storage')).toBeTruthy();
+    expect(localStorage.getItem('boim-auth-storage')).toBeNull();
+
+    useAuthStore.getState().setRememberMe(true);
+    expect(localStorage.getItem('boim-auth-storage')).toBeTruthy();
+    expect(sessionStorage.getItem('boim-auth-storage')).toBeNull();
+  });
 });

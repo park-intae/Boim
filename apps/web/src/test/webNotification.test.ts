@@ -82,4 +82,43 @@ describe('webNotification utility', () => {
     expect(result.permission).toBe('denied');
     expect(mockConstructor).not.toHaveBeenCalled();
   });
+
+  it('Notification API가 지원되지 않는 환경에서는 false/denied를 안전하게 반환해야 한다', async () => {
+    delete (window as { Notification?: unknown }).Notification;
+
+    expect(isNotificationSupported()).toBe(false);
+    expect(getNotificationPermission()).toBe('denied');
+    expect(await requestNotificationPermission()).toBe('denied');
+
+    const result = showDesktopNotification('미지원 알림');
+    expect(result.success).toBe(false);
+    expect(result.permission).toBe('denied');
+    expect(result.reason).toContain('does not support');
+  });
+
+  it('requestPermission이 reject되면 기존 Notification.permission을 반환해야 한다', async () => {
+    class MockNotification {
+      static permission: NotificationPermission = 'default';
+      static requestPermission = vi.fn().mockRejectedValue(new Error('Permission blocked'));
+    }
+    window.Notification = MockNotification as unknown as typeof Notification;
+
+    const result = await requestNotificationPermission();
+    expect(result).toBe('default');
+  });
+
+  it('Notification 생성자가 예외를 던지면 success: false와 에러 사유를 반환해야 한다', () => {
+    class ThrowingNotification {
+      static permission: NotificationPermission = 'granted';
+      constructor() {
+        throw new Error('Notification constructor failed');
+      }
+    }
+    window.Notification = ThrowingNotification as unknown as typeof Notification;
+
+    const result = showDesktopNotification('예외 알림');
+    expect(result.success).toBe(false);
+    expect(result.permission).toBe('granted');
+    expect(result.reason).toBe('Notification constructor failed');
+  });
 });
