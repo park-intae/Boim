@@ -94,6 +94,17 @@ describe('AnalysisController', () => {
         mockAiDiagnosisService.diagnoseUserInsurances,
       ).toHaveBeenCalledWith(BigInt(5), false);
     });
+
+    it('인증 정보가 없으면 GET ai-diagnosis와 exportExcel에서 UnauthorizedException을 던져야 한다.', async () => {
+      const emptyReq = {} as any;
+      const mockRes = { setHeader: jest.fn(), end: jest.fn() } as any;
+      await expect(controller.getDiagnosis(emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.exportExcel(emptyReq, mockRes)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 
   describe('exportExcel (GET /analysis/export/excel)', () => {

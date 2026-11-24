@@ -329,5 +329,46 @@ describe('AiDiagnosisService', () => {
       expect(candidates[2]).toBe('gemini-2.5-flash');
       expect(candidates).toContain('gemini-flash-latest');
     });
+
+    it('빈 응답이나 잘못된 JSON만 반환되면 규칙 기반 폴백을 사용하고, 캐시를 재사용/강제갱신해야 한다.', async () => {
+      mockPrismaService.insuranceProduct.findMany.mockResolvedValue([
+        {
+          id: 1n,
+          userId: 1n,
+          category: '실손',
+          name: '실손보험',
+          monthlyPayment: 30000,
+          coverageAmount: 50000000,
+        },
+      ]);
+
+      const generateContentMock = jest
+        .fn()
+        .mockResolvedValueOnce({ text: '   ' })
+        .mockResolvedValueOnce({ text: '{ invalid json' });
+      (
+        service as unknown as {
+          aiClient: { models: { generateContent: typeof generateContentMock } };
+        }
+      ).aiClient = {
+        models: { generateContent: generateContentMock },
+      };
+
+      const first = await service.diagnoseUserInsurances(BigInt(99), false);
+      expect(first.isFallback).toBe(true);
+
+      // 캐시 히트: DB findMany 추가 호출 없이 동일 결과 반환
+      const cached = await service.diagnoseUserInsurances(BigInt(99), false);
+      expect(cached).toEqual(first);
+      expect(mockPrismaService.insuranceProduct.findMany).toHaveBeenCalledTimes(
+        1,
+      );
+
+      // forceRefresh: true 시 다시 조회
+      await service.diagnoseUserInsurances(BigInt(99), true);
+      expect(mockPrismaService.insuranceProduct.findMany).toHaveBeenCalledTimes(
+        2,
+      );
+    });
   });
 });

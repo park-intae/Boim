@@ -130,5 +130,36 @@ describe('RuleBasedDiagnosisEngine', () => {
       expect(engine.validateGrade('INVALID_GRADE', 80)).toBe('GOOD');
       expect(engine.validateGrade(null, 95)).toBe('EXCELLENT');
     });
+
+    it('handles zero/negative amounts, uncategorized products, and score clamping', () => {
+      const edgeProducts = [
+        {
+          id: 1n,
+          category: '',
+          name: '미분류',
+          monthlyPayment: 0,
+          coverageAmount: 0,
+        },
+        {
+          id: 2n,
+          category: '치아',
+          name: '치아보험',
+          monthlyPayment: -5000,
+          coverageAmount: null,
+        },
+      ];
+
+      const result = engine.generateDiagnosis(edgeProducts);
+      expect(result.score).toBeGreaterThanOrEqual(20);
+      expect(result.score).toBeLessThanOrEqual(95);
+      expect(engine.scoreToGrade(85)).toBe('EXCELLENT');
+      expect(engine.scoreToGrade(84)).toBe('GOOD');
+      expect(engine.scoreToGrade(70)).toBe('GOOD');
+      expect(engine.scoreToGrade(69)).toBe('NORMAL');
+      expect(engine.scoreToGrade(55)).toBe('NORMAL');
+      expect(engine.scoreToGrade(54)).toBe('NEEDS_ATTENTION');
+      expect(engine.scoreToGrade(40)).toBe('NEEDS_ATTENTION');
+      expect(engine.scoreToGrade(39)).toBe('WARNING');
+    });
   });
 });

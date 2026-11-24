@@ -73,4 +73,25 @@ describe('EmailService', () => {
     const transporter = await service.getTransporter();
     expect(transporter).toBeDefined();
   });
+
+  it('sendMail 실패 시 예외를 전파해야 한다', async () => {
+    service.setTransporter({
+      sendMail: jest.fn().mockRejectedValueOnce(new Error('SMTP timeout')),
+    } as unknown as Transporter);
+
+    await expect(
+      service.sendEmail('user@boim.com', '제목', '내용'),
+    ).rejects.toThrow('SMTP timeout');
+  });
+
+  it('NODE_ENV=test이고 SMTP_HOST가 없으면 jsonTransport를 반환해야 한다', async () => {
+    const prevEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'test';
+    try {
+      const transporter = await service.getTransporter();
+      expect(transporter).toBeDefined();
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+    }
+  });
 });

@@ -170,5 +170,34 @@ describe('ExportService', () => {
       expect(detailSheet.getCell('C2').value).toBe('\'+cmd|" /C calc"!A0');
       expect(detailSheet.getCell('D2').value).toBe("'@SUM(1+1)");
     });
+
+    it('탭(\\t) 및 캐리지리턴(\\r) 수식 인젝션과 월납입 0원일 때 비중 0 처리를 수행해야 한다.', async () => {
+      mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce([
+        {
+          id: BigInt(1),
+          userId: BigInt(1),
+          institution: '\tMALICIOUS',
+          name: '\rPAYLOAD',
+          category: '기타',
+          monthlyPayment: 0,
+          coverageAmount: BigInt(0),
+          startDate: new Date('2024-01-01'),
+          maturityDate: new Date('2044-01-01'),
+        },
+      ]);
+
+      const buffer = await service.generateExcelReport(BigInt(1));
+      const loadedWorkbook = new ExcelJS.Workbook();
+      await loadedWorkbook.xlsx.load(buffer);
+
+      const detailSheet = loadedWorkbook.getWorksheet('가입 보험 상세')!;
+      expect(detailSheet.getCell('B2').value).toBe("'\tMALICIOUS");
+      expect(detailSheet.getCell('C2').value as string).toMatch(
+        /^'[\r\n]PAYLOAD$/,
+      );
+
+      const statsSheet = loadedWorkbook.getWorksheet('카테고리별 통계')!;
+      expect(statsSheet.getCell('E2').value).toBe(0);
+    });
   });
 });

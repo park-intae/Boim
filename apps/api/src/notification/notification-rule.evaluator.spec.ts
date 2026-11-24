@@ -195,5 +195,87 @@ describe('NotificationRuleEvaluator', () => {
         ),
       ).toBe('in_app');
     });
+
+    it('handles leap-year Feb 29, non-leap Feb 28 month-end clamping, and Dec->Jan rollover', () => {
+      // 31일 가입 상품의 2024년(윤년) 2월 말일(29일) 기준 D-1 = 2월 28일
+      const leapProduct = {
+        id: 1n,
+        userId: 1n,
+        name: '윤년상품',
+        institution: '삼성',
+        startDate: new Date('2024-01-31T00:00:00Z'),
+        maturityDate: new Date('2030-01-31T00:00:00Z'),
+        monthlyPayment: 50000,
+      };
+      const feb28Leap = new Date(Date.UTC(2024, 1, 28, 0, 0, 0, 0));
+      const leapResult = evaluator.checkPaymentDue(
+        leapProduct,
+        feb28Leap,
+        2024,
+        2,
+      );
+      expect(leapResult?.title).toContain('1일 전');
+      expect(leapResult?.message).toContain('2월 29일');
+
+      // 2025년(평년) 2월 말일(28일) 기준 D-1 = 2월 27일
+      const feb27NonLeap = new Date(Date.UTC(2025, 1, 27, 0, 0, 0, 0));
+      const nonLeapResult = evaluator.checkPaymentDue(
+        leapProduct,
+        feb27NonLeap,
+        2025,
+        2,
+      );
+      expect(nonLeapResult?.title).toContain('1일 전');
+      expect(nonLeapResult?.message).toContain('2월 28일');
+
+      // 12월 말 -> 익년 1월 1일 납입 D-7 (2026-12-25 -> 2027-01-01)
+      const jan1Product = {
+        ...leapProduct,
+        startDate: new Date('2024-01-01T00:00:00Z'),
+      };
+      const dec25 = new Date(Date.UTC(2026, 11, 25, 0, 0, 0, 0));
+      const rollover = evaluator.checkPaymentDue(jan1Product, dec25, 2026, 12);
+      expect(rollover?.title).toContain('7일 전');
+      expect(rollover?.message).toContain('1월 1일');
+    });
+
+    it('checks exact quiet hours boundaries (21:59, 22:00, 08:00, 08:01 KST) and daytime quiet hours', () => {
+      // KST = UTC + 9h
+      expect(
+        evaluator.isQuietTime(
+          '22:00',
+          '08:00',
+          new Date('2026-11-11T12:59:00.000Z'), // KST 21:59
+        ),
+      ).toBe(false);
+      expect(
+        evaluator.isQuietTime(
+          '22:00',
+          '08:00',
+          new Date('2026-11-11T13:00:00.000Z'), // KST 22:00
+        ),
+      ).toBe(true);
+      expect(
+        evaluator.isQuietTime(
+          '22:00',
+          '08:00',
+          new Date('2026-11-11T23:00:00.000Z'), // KST 08:00
+        ),
+      ).toBe(true);
+      expect(
+        evaluator.isQuietTime(
+          '22:00',
+          '08:00',
+          new Date('2026-11-11T23:01:00.000Z'), // KST 08:01
+        ),
+      ).toBe(false);
+      expect(
+        evaluator.isQuietTime(
+          '13:00',
+          '15:00',
+          new Date('2026-11-11T05:00:00.000Z'), // KST 14:00
+        ),
+      ).toBe(true);
+    });
   });
 });

@@ -18,7 +18,7 @@
 ## 📋 세부 Phase 마일스톤 로드맵
 - [x] **Phase 24-01:** 백엔드 Auth · User · Common 실패·경계값 테스트 보강 ([Phase24-01_harness.md](./Phase24-01_harness.md))
 - [x] **Phase 24-02:** 백엔드 InsuranceProduct · Document · Parser 실패·경계값 테스트 보강 ([Phase24-02_harness.md](./Phase24-02_harness.md))
-- [ ] **Phase 24-03:** 백엔드 Notification · RuleEvaluator · Analysis 실패·경계값 테스트 보강 ([Phase24-03_harness.md](./Phase24-03_harness.md))
+- [x] **Phase 24-03:** 백엔드 Notification · RuleEvaluator · Analysis 실패·경계값 테스트 보강 ([Phase24-03_harness.md](./Phase24-03_harness.md))
 - [ ] **Phase 24-04:** 프론트엔드 API 훅 & `apiClient` 실패·롤백·데모 분기 테스트 보강 ([Phase24-04_harness.md](./Phase24-04_harness.md))
 - [ ] **Phase 24-05:** 프론트엔드 Auth · 폼 · 캘린더(윤년/월말) · 핵심 컴포넌트 에러/경계값 테스트 보강 ([Phase24-05_harness.md](./Phase24-05_harness.md))
 - [ ] **Phase 24-06:** 프론트엔드 Utils · ErrorBoundary · 전사 검증 및 문서 동기화 ([Phase24-06_harness.md](./Phase24-06_harness.md))

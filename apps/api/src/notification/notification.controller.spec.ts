@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 import { NotificationSchedulerService } from './notification-scheduler.service';
@@ -180,6 +180,22 @@ describe('NotificationController', () => {
         process.env.NODE_ENV = prevEnv;
         process.env.BATCH_SECRET = prevSecret;
       }
+    });
+
+    it('인증 정보가 없으면 보호 엔드포인트에서 UnauthorizedException을 던진다', async () => {
+      const emptyReq = {} as unknown as RequestWithJwtUser;
+      await expect(controller.findAll(emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.markAllAsRead(emptyReq)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.markAsRead(emptyReq, '1')).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(controller.remove(emptyReq, '1')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });
