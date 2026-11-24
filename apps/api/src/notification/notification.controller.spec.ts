@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ForbiddenException } from '@nestjs/common';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 import { NotificationSchedulerService } from './notification-scheduler.service';
@@ -164,6 +165,21 @@ describe('NotificationController', () => {
 
       expect(mockSchedulerService.runBatch).toHaveBeenCalled();
       expect(result).toEqual(mockBatchResult);
+    });
+
+    it('프로덕션 환경에서 BATCH_SECRET 불일치 시 ForbiddenException을 던진다', async () => {
+      const prevEnv = process.env.NODE_ENV;
+      const prevSecret = process.env.BATCH_SECRET;
+      process.env.NODE_ENV = 'production';
+      process.env.BATCH_SECRET = 'valid_secret';
+      try {
+        await expect(
+          controller.triggerBatch(undefined, 'wrong_secret'),
+        ).rejects.toThrow(ForbiddenException);
+      } finally {
+        process.env.NODE_ENV = prevEnv;
+        process.env.BATCH_SECRET = prevSecret;
+      }
     });
   });
 });

@@ -122,15 +122,31 @@ describe('UserService', () => {
     expect(result.marketingPush).toBe(true);
   });
 
-  it('exportData should return user with relations', async () => {
+  it('exportData should select only non-sensitive fields', async () => {
     jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({ id: 1n } as any);
     const data = await service.exportData(1n);
-    expect(data.id).toBe(1n);
+    expect(data!.id).toBe(1n);
+    expect(prisma.user.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 1n },
+        select: expect.not.objectContaining({
+          password: true,
+          refreshToken: true,
+          passCi: true,
+        }),
+      }),
+    );
   });
 
-  it('importData should return true', async () => {
+  it('importData should return true on valid empty object and throw BadRequestException on invalid product item', async () => {
     const data = await service.importData(1n, {});
     expect(data).toBe(true);
+
+    await expect(
+      service.importData(1n, {
+        insuranceProducts: [{ name: 'only-name' }],
+      }),
+    ).rejects.toThrow(BadRequestException);
   });
 
   it('softDeleteUser should set deletedAt', async () => {

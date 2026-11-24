@@ -1,4 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { DocumentParserService } from './document-parser.service';
 
 describe('DocumentParserService', () => {
@@ -101,6 +105,23 @@ random noise string with aia token and words
       expect(result.startDate).toBe('2026-10-01');
       expect(result.maturityDate).toBe('2036-10-01');
       expect(result.coverageAmount).toBe(100000000);
+    });
+  });
+
+  describe('extractTextFromFile (실패 케이스)', () => {
+    it('텍스트를 추출할 수 없는 PDF/바이너리 파일이면 가짜 샘플을 반환하지 않고 BadRequestException을 던져야 한다', async () => {
+      const tmpFile = path.join(os.tmpdir(), `boim_empty_${Date.now()}.pdf`);
+      await fs.promises.writeFile(
+        tmpFile,
+        Buffer.from([0x25, 0x50, 0x44, 0x46]),
+      );
+      try {
+        await expect(
+          service.extractTextFromFile(tmpFile, 'application/pdf'),
+        ).rejects.toThrow(BadRequestException);
+      } finally {
+        await fs.promises.unlink(tmpFile).catch(() => {});
+      }
     });
   });
 });

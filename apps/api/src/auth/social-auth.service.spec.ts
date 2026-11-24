@@ -438,6 +438,26 @@ describe('SocialAuthService', () => {
       expect(result.name).toBe('카카오라이언');
       expect(result.profileImage).toBe('https://kakao.com/lion.jpg');
     });
+
+    it('should throw ConflictException when auto-linking social email to password-protected local account', async () => {
+      prismaService.user.findFirst.mockResolvedValueOnce(null);
+      prismaService.user.findUnique.mockResolvedValueOnce({
+        id: BigInt(5),
+        email: 'local@boim.com',
+        provider: 'local',
+        password: 'hashed_local_password',
+        deletedAt: null,
+      });
+
+      await expect(
+        service.processSocialUser({
+          provider: 'kakao',
+          providerId: 'kakao_999',
+          email: 'local@boim.com',
+          name: '공격자',
+        }),
+      ).rejects.toThrow(ConflictException);
+    });
   });
 
   describe('generateLinkState and verifyLinkState', () => {

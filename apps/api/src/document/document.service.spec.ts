@@ -217,4 +217,36 @@ describe('DocumentService', () => {
       expect(result.success).toBe(true);
     });
   });
+
+  describe('보안 실패 케이스 (확장자 위조 및 타인 productId)', () => {
+    it('MIME 타입을 pdf로 속여도 확장자가 .exe이면 BadRequestException을 던져야 한다', async () => {
+      const disguisedFile = {
+        originalname: 'malware.exe',
+        mimetype: 'application/pdf',
+        size: 1024,
+        buffer: Buffer.from('mz'),
+      } as Express.Multer.File;
+
+      await expect(service.uploadDocument(1n, disguisedFile)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('타인의 보험 상품(productId)에 문서를 연결하려 하면 ForbiddenException을 던져야 한다', async () => {
+      const validFile = {
+        originalname: 'policy.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        buffer: Buffer.from('pdf'),
+      } as Express.Multer.File;
+      mockPrismaService.insuranceProduct.findUnique.mockResolvedValueOnce({
+        id: 99n,
+        userId: 2n,
+      });
+
+      await expect(service.uploadDocument(1n, validFile, 99n)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+  });
 });

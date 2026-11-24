@@ -143,5 +143,32 @@ describe('ExportService', () => {
         '등록된 보험 상품이 없습니다.',
       );
     });
+
+    it('수식 인젝션(=, +, -, @)으로 시작하는 셀 문자열은 작은따옴표로 이스케이프해야 한다.', async () => {
+      mockPrismaService.insuranceProduct.findMany.mockResolvedValueOnce([
+        {
+          id: BigInt(1),
+          userId: BigInt(1),
+          institution: '=HYPERLINK("http://evil.com","클릭")',
+          name: '+cmd|" /C calc"!A0',
+          category: '@SUM(1+1)',
+          monthlyPayment: 10000,
+          coverageAmount: BigInt(10000000),
+          startDate: new Date('2024-01-01'),
+          maturityDate: new Date('2044-01-01'),
+        },
+      ]);
+
+      const buffer = await service.generateExcelReport(BigInt(1));
+      const loadedWorkbook = new ExcelJS.Workbook();
+      await loadedWorkbook.xlsx.load(buffer);
+
+      const detailSheet = loadedWorkbook.getWorksheet('가입 보험 상세')!;
+      expect(detailSheet.getCell('B2').value).toBe(
+        '\'=HYPERLINK("http://evil.com","클릭")',
+      );
+      expect(detailSheet.getCell('C2').value).toBe('\'+cmd|" /C calc"!A0');
+      expect(detailSheet.getCell('D2').value).toBe("'@SUM(1+1)");
+    });
   });
 });
