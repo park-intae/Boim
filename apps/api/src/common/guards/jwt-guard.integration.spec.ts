@@ -17,6 +17,7 @@ import { JwtStrategy } from '../../auth/jwt.strategy';
 import { PrismaService } from '../../prisma/prisma.service';
 import { HttpExceptionFilter } from '../filters/http-exception.filter';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
+import { getJwtSecret } from '../config/env.validation';
 
 describe('JWT AuthGuard & Row-Level Ownership Integration (HTTP)', () => {
   let app: INestApplication;
@@ -42,7 +43,7 @@ describe('JWT AuthGuard & Row-Level Ownership Integration (HTTP)', () => {
       imports: [
         PassportModule,
         JwtModule.register({
-          secret: 'fallback_secret_for_dev_only',
+          secret: getJwtSecret(),
           signOptions: { expiresIn: '1h' },
         }),
       ],
