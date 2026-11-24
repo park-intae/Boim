@@ -107,5 +107,27 @@ describe('useDiagnosisQueries', () => {
       await waitFor(() => expect(result.current.isError).toBe(true));
       expect(result.current.error?.message).toBe('엑셀 리포트 다운로드에 실패했습니다.');
     });
+
+    it('omits Authorization header when accessToken is null and rejects on fetch/diagnosis network errors', async () => {
+      useAuthStore.getState().logout();
+      global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network down'));
+
+      const { result: exportRes } = renderHook(() => useExportExcel(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      exportRes.current.mutate();
+      await waitFor(() => expect(exportRes.current.isError).toBe(true));
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/analysis/export/excel'),
+        expect.objectContaining({ headers: {} }),
+      );
+
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Gemini unavailable'));
+      const { result: genRes } = renderHook(() => useGenerateDiagnosis(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      genRes.current.mutate();
+      await waitFor(() => expect(genRes.current.isError).toBe(true));
+    });
   });
 });

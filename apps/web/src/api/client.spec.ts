@@ -106,4 +106,42 @@ describe('apiClient interceptors', () => {
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(useAuthStore.getState().accessToken).toBeNull();
   });
+
+  it('does not logout on 401 in demo session or on 500 server error', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const errorHandler = (apiClient.interceptors.response as any).handlers[0].rejected;
+
+    // 1. 데모 세션일 때 401 응답 시 로그아웃하지 않음
+    useAuthStore.getState().login(
+      { id: 'demo_user_1', email: 'demo@boim.com', isPassVerified: true },
+      'demo-access-token',
+    );
+    await expect(
+      errorHandler({
+        response: {
+          status: 401,
+          data: { success: false, error: { code: '401', message: 'Unauthorized' } },
+        },
+      }),
+    ).rejects.toBeDefined();
+    expect(useAuthStore.getState().isAuthenticated).toBe(true);
+
+    // 2. 일반 세션에서 500 에러 응답 시 로그아웃하지 않음
+    useAuthStore.getState().login(
+      { id: '1', email: 'user@boim.com', isPassVerified: true },
+      'valid-token',
+    );
+    await expect(
+      errorHandler({
+        response: {
+          status: 500,
+          data: { success: false, error: { code: '500', message: 'Internal Error' } },
+        },
+      }),
+    ).rejects.toEqual({
+      success: false,
+      error: { code: '500', message: 'Internal Error' },
+    });
+    expect(useAuthStore.getState().isAuthenticated).toBe(true);
+  });
 });

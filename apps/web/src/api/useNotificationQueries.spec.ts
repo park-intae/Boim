@@ -127,5 +127,35 @@ describe('useNotificationQueries', () => {
       });
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['notifications'] });
     });
+
+    it('returns empty array when data is undefined and propagates network rejections', async () => {
+      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: undefined });
+      const { result: listRes } = renderHook(() => useGetNotifications(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      await waitFor(() => expect(listRes.current.isSuccess).toBe(true));
+      expect(listRes.current.data).toEqual([]);
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(new Error('Network error'));
+      const { result: readRes } = renderHook(() => useMarkNotificationRead(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      readRes.current.mutate('notif-1');
+      await waitFor(() => expect(readRes.current.isError).toBe(true));
+
+      vi.mocked(apiClient.delete).mockRejectedValueOnce(new Error('Delete error'));
+      const { result: delRes } = renderHook(() => useDeleteNotification(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      delRes.current.mutate('notif-1');
+      await waitFor(() => expect(delRes.current.isError).toBe(true));
+
+      vi.mocked(apiClient.post).mockRejectedValueOnce(new Error('Batch error'));
+      const { result: batchRes } = renderHook(() => useTriggerBatch(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      batchRes.current.mutate();
+      await waitFor(() => expect(batchRes.current.isError).toBe(true));
+    });
   });
 });

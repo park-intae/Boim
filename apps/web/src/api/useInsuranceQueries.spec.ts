@@ -160,5 +160,44 @@ describe('useInsuranceQueries', () => {
       expect(apiClient.delete).toHaveBeenCalledWith('/insurance-products/1');
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: insuranceKeys.all });
     });
+
+    it('handles create/update/delete failure responses and network rejections', async () => {
+      vi.mocked(apiClient.post).mockResolvedValueOnce({
+        success: false,
+        error: { message: 'Create failed' },
+      });
+      const { result: createRes } = renderHook(() => useCreateInsurance(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      createRes.current.mutate({
+        category: '건강',
+        name: '보험',
+        institution: '삼성',
+        startDate: '2024-01-01',
+        maturityDate: '2034-01-01',
+        monthlyPayment: 10000,
+        coverageAmount: 1000000,
+      });
+      await waitFor(() => expect(createRes.current.isError).toBe(true));
+      expect(createRes.current.error?.message).toBe('Create failed');
+
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(new Error('Network 500'));
+      const { result: updateRes } = renderHook(() => useUpdateInsurance(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      updateRes.current.mutate({ id: 1, data: { name: '수정' } });
+      await waitFor(() => expect(updateRes.current.isError).toBe(true));
+
+      vi.mocked(apiClient.delete).mockResolvedValueOnce({
+        success: false,
+        error: { message: 'Delete forbidden' },
+      });
+      const { result: deleteRes } = renderHook(() => useDeleteInsurance(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      deleteRes.current.mutate(1);
+      await waitFor(() => expect(deleteRes.current.isError).toBe(true));
+      expect(deleteRes.current.error?.message).toBe('Delete forbidden');
+    });
   });
 });

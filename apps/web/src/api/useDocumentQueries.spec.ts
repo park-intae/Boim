@@ -143,5 +143,33 @@ describe('useDocumentQueries', () => {
       expect(result.current.data?.fileName).toBe('sample_policy.pdf');
       expect(apiClient.get).toHaveBeenCalledWith('/documents/sample/preset');
     });
+
+    it('handles upload/parse API rejections and empty productId params', async () => {
+      const mockFile = new File(['dummy'], 'policy.pdf', { type: 'application/pdf' });
+      vi.mocked(apiClient.post).mockRejectedValueOnce({
+        success: false,
+        error: { code: '400', message: 'Upload failed' },
+      });
+      const { result: upRes } = renderHook(() => useUploadDocument(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      upRes.current.mutate({ file: mockFile });
+      await waitFor(() => expect(upRes.current.isError).toBe(true));
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/documents/upload',
+        expect.any(FormData),
+        expect.objectContaining({ params: {} }),
+      );
+
+      vi.mocked(apiClient.post).mockRejectedValueOnce({
+        success: false,
+        error: { code: '400', message: 'Parse failed' },
+      });
+      const { result: parseRes } = renderHook(() => useParseDocument(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      parseRes.current.mutate({ documentId: 99 });
+      await waitFor(() => expect(parseRes.current.isError).toBe(true));
+    });
   });
 });

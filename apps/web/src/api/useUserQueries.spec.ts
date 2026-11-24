@@ -127,6 +127,28 @@ describe('useUserQueries', () => {
         queryKey: [...userKeys.me(), 'notificationSettings'],
       });
     });
+
+    it('rolls back optimistic notification settings on mutation error', async () => {
+      queryClient.setDefaultOptions({ queries: { gcTime: Infinity } });
+      queryClient.setQueryData([...userKeys.me(), 'notificationSettings'], mockNotificationSettings);
+      const setQueryDataSpy = vi.spyOn(queryClient, 'setQueryData');
+      vi.mocked(apiClient.patch).mockRejectedValueOnce(new Error('Server 500'));
+
+      const { result } = renderHook(() => useUpdateNotificationSettings(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+
+      result.current.mutate({ pushEnabled: !mockNotificationSettings.pushEnabled });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(setQueryDataSpy).toHaveBeenLastCalledWith(
+        [...userKeys.me(), 'notificationSettings'],
+        mockNotificationSettings,
+      );
+      expect(queryClient.getQueryData([...userKeys.me(), 'notificationSettings'])).toEqual(
+        mockNotificationSettings,
+      );
+    });
   });
 
   describe('useExportData, useImportData, useDeleteAccount', () => {
@@ -191,6 +213,30 @@ describe('useUserQueries', () => {
 
       await waitFor(() => expect(result.current.data).toEqual(mockLoginHistories));
       expect(apiClient.get).toHaveBeenCalledWith('/users/me/login-history');
+    });
+
+    it('throws error when user API responses indicate failure', async () => {
+      vi.mocked(apiClient.patch).mockResolvedValueOnce({
+        success: false,
+        error: { message: 'Password update denied' },
+      });
+      const { result: pwRes } = renderHook(() => useUpdatePassword(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      pwRes.current.mutate({ currentPassword: 'old', newPassword: 'newpassword123' });
+      await waitFor(() => expect(pwRes.current.isError).toBe(true));
+      expect(pwRes.current.error?.message).toBe('Password update denied');
+
+      vi.mocked(apiClient.delete).mockResolvedValueOnce({
+        success: false,
+        error: { message: 'Delete denied' },
+      });
+      const { result: delRes } = renderHook(() => useDeleteAccount(), {
+        wrapper: createQueryWrapper(queryClient),
+      });
+      delRes.current.mutate();
+      await waitFor(() => expect(delRes.current.isError).toBe(true));
+      expect(delRes.current.error?.message).toBe('Delete denied');
     });
   });
 });
