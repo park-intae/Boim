@@ -15,7 +15,6 @@ export const HeroSection: React.FC = () => {
     <section id="intro" className="scroll-mt-20 relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-28 bg-gradient-to-b from-blue-50/40 via-white to-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
           {/* Left Column: Head Copy & CTA */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             {/* Badge */}
@@ -46,7 +45,7 @@ export const HeroSection: React.FC = () => {
                 <span>내 보험 관리 시작</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <span className="text-[13px] font-semibold text-gray-400 self-center sm:self-auto">
+              <span className="text-[13px] font-semibold text-gray-600 self-center sm:self-auto">
                 복잡한 절차 없이 간편하게
               </span>
             </div>
@@ -67,7 +66,7 @@ export const HeroSection: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-[12px] text-gray-400 font-medium mt-4">
+            <p className="text-[12px] text-gray-600 font-medium mt-4">
               보험을 더 명확하게 관리하는 새로운 금융 습관
             </p>
           </div>
@@ -79,34 +78,34 @@ export const HeroSection: React.FC = () => {
               <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 mb-3.5">
                 <BrandLogo size="sm" />
                 <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-bold text-gray-500">김보임 님</span>
+                  <span className="text-[12px] font-bold text-gray-600">김보임 님</span>
                   <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[11px] font-extrabold">김</div>
                 </div>
               </div>
 
-              {/* Title inside card */}
+              {/* Title inside card (H2 for valid descending heading order after H1) */}
               <div className="mb-3">
-                <h3 className="text-[15px] font-extrabold text-gray-900">보험 일정</h3>
-                <p className="text-[11px] font-medium text-gray-400">이번 달 보험 흐름을 확인해 보세요.</p>
+                <h2 className="text-[15px] font-extrabold text-gray-900">보험 일정</h2>
+                <p className="text-[11px] font-medium text-gray-600">이번 달 보험 흐름을 확인해 보세요.</p>
               </div>
 
               {/* Metric Cards (4 Grid) */}
               <div className="grid grid-cols-4 gap-1.5 mb-4">
                 <div className="bg-slate-50 rounded-xl p-2 text-center border border-gray-100/80">
-                  <div className="text-[10px] font-semibold text-gray-500">가입 보험</div>
-                  <div className="text-[14px] font-black text-gray-900 mt-0.5">7<span className="text-[10px] font-bold text-gray-400">건</span></div>
+                  <div className="text-[10px] font-semibold text-gray-600">가입 보험</div>
+                  <div className="text-[14px] font-black text-gray-900 mt-0.5">7<span className="text-[10px] font-bold text-gray-600">건</span></div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-2 text-center border border-gray-100/80">
-                  <div className="text-[10px] font-semibold text-gray-500">이번 달 납입</div>
-                  <div className="text-[14px] font-black text-blue-600 mt-0.5">3<span className="text-[10px] font-bold text-gray-400">건</span></div>
+                  <div className="text-[10px] font-semibold text-gray-600">이번 달 납입</div>
+                  <div className="text-[14px] font-black text-blue-600 mt-0.5">3<span className="text-[10px] font-bold text-gray-600">건</span></div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-2 text-center border border-gray-100/80">
-                  <div className="text-[10px] font-semibold text-gray-500">갱신 예정</div>
-                  <div className="text-[14px] font-black text-amber-600 mt-0.5">2<span className="text-[10px] font-bold text-gray-400">건</span></div>
+                  <div className="text-[10px] font-semibold text-gray-600">갱신 예정</div>
+                  <div className="text-[14px] font-black text-amber-700 mt-0.5">2<span className="text-[10px] font-bold text-gray-600">건</span></div>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-2 text-center border border-gray-100/80">
-                  <div className="text-[10px] font-semibold text-gray-500">만기 예정</div>
-                  <div className="text-[14px] font-black text-indigo-600 mt-0.5">1<span className="text-[10px] font-bold text-gray-400">건</span></div>
+                  <div className="text-[10px] font-semibold text-gray-600">만기 예정</div>
+                  <div className="text-[14px] font-black text-indigo-600 mt-0.5">1<span className="text-[10px] font-bold text-gray-600">건</span></div>
                 </div>
               </div>
 
@@ -114,23 +113,23 @@ export const HeroSection: React.FC = () => {
               <div className="bg-slate-50/70 rounded-2xl p-3 border border-gray-100 mb-3.5">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[13px] font-extrabold text-gray-900">2026년 11월</span>
-                  <div className="flex gap-1 text-[10px] font-bold text-gray-400">
+                  <div className="flex gap-1 text-[10px] font-bold text-gray-600">
                     <span>월</span><span>화</span><span>수</span><span>목</span><span>금</span>
                   </div>
                 </div>
                 {/* Mini Calendar Grid */}
                 <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-gray-700 py-1">
-                  <span className="text-red-500 text-[10px]">일</span>
+                  <span className="text-red-700 text-[10px]">일</span>
                   <span className="text-[10px]">월</span>
                   <span className="text-[10px]">화</span>
                   <span className="text-[10px]">수</span>
                   <span className="text-[10px]">목</span>
                   <span className="text-[10px]">금</span>
-                  <span className="text-blue-500 text-[10px]">토</span>
-                  
-                  <span className="text-gray-300">1</span>
+                  <span className="text-blue-700 text-[10px]">토</span>
+
+                  <span className="text-gray-500">1</span>
                   <span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
-                  <span className="text-red-500">8</span>
+                  <span className="text-red-700">8</span>
                   <span>9</span>
                   <span className="relative">
                     10
@@ -142,7 +141,7 @@ export const HeroSection: React.FC = () => {
                     12
                   </span>
                   <span>13</span><span>14</span>
-                  <span className="text-red-500">15</span>
+                  <span className="text-red-700">15</span>
                   <span>16</span><span>17</span><span>18</span><span>19</span>
                   <span className="relative">
                     20
@@ -168,12 +167,12 @@ export const HeroSection: React.FC = () => {
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                       <span className="font-bold text-gray-800">OO 안심 운전자보험</span>
                     </div>
-                    <span className="font-bold text-gray-500">11월 20일 갱신 예정</span>
+                    <span className="font-bold text-gray-600">11월 20일 갱신 예정</span>
                   </div>
                 </div>
                 <div className="mt-2.5 pt-2 border-t border-gray-100 flex justify-end">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => navigate('/signup')}
                     className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-0.5 cursor-pointer"
                   >

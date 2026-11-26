@@ -93,6 +93,9 @@
   - [x] **Phase 24-04:** 프론트엔드 API 훅 & `apiClient` 실패·롤백·데모 분기 테스트 보강
   - [x] **Phase 24-05:** 프론트엔드 Auth · 폼 · 캘린더(윤년/월말) · 핵심 컴포넌트 에러/경계값 테스트 보강
   - [x] **Phase 24-06:** 프론트엔드 Utils · ErrorBoundary · 전사 검증 및 문서 동기화
+- [x] **Phase 25: 랜딩 페이지 웹 접근성(a11y) 및 Lighthouse 품질 100점 고도화 (완료)**
+  - [x] **Phase 25-01:** 랜딩 페이지 시맨틱 헤딩 계층(`heading-order`), 로고 접근성 라벨(`label-content-name-mismatch`) 및 WCAG AA 색상 대비(`color-contrast`) 전면 개선
+  - [x] **Phase 25-02:** 랜딩 페이지 접근성 단위 테스트 보강, 전사 무결성 검증, 컨테이너 반영 및 하네스 단일화(2-File Rule)
 
 ---
 

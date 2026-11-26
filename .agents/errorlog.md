@@ -223,4 +223,17 @@
   2. `UserController`가 `TransformInterceptor`와 별개로 `{ success: true, data: ... }`를 수동 래핑해 훅마다 파싱 방식이 파편화됨.
 - **해결 및 예방:** 토큰 조회는 `useAuthStore.getState().accessToken` 단일 경로로 통일하고, 모든 NestJS 컨트롤러는 순수 데이터만 반환하여 전역 `TransformInterceptor`의 단일 응답 포맷을 유지함.
 
+## 32. 랜딩 페이지 WCAG 2.1 AA 접근성 위반 및 Docker 컨테이너(`boim-web`) 미갱신으로 인한 구버전 번들 서빙 이슈
+- **발생 상황:** Phase 25 랜딩 페이지(`http://localhost/`) Lighthouse 웹 접근성(Accessibility) 측정 및 개선 검증 중.
+- **오류 내용:**
+  1. **색상 대비율 부족 (`color-contrast`):** 밝은 배경(`#ffffff`, `bg-slate-50`) 위에 사용된 `text-gray-400`(2.6:1), `text-red-500`(3.7:1), `text-emerald-600`(3.65:1) 등이 WCAG 2.1 AA 기준(4.5:1 이상)에 미달함.
+  2. **제목 요소 계층 순서 위반 (`heading-order`):** `HeroSection`의 메인 `<h1>` 직후 우측 쇼케이스 카드 타이틀(`보험 일정`)이 `<h2>`를 건너뛰고 `<h3>`로 선언됨.
+  3. **표시 텍스트와 접근성 이름 불일치 (`label-content-name-mismatch`, WCAG 2.5.3):** 내부에 `"Boim"` 텍스트가 렌더링되는 상단 로고 버튼(`role="button"`)에 `"Boim"`이 빠진 `aria-label="최상단으로 이동"`을 부여함.
+  4. **컨테이너 이미지 미갱신:** 소스 코드를 수정하고 로컬 테스트/빌드를 통과했으나, `http://localhost/`(80 포트)를 서빙 중인 `boim-web` Docker 컨테이너를 재빌드하지 않아 브라우저 재측정 시 구버전 번들(`LandingPage-T5lO3uGU.js`)이 그대로 응답됨.
+- **해결 및 예방:**
+  1. 밝은 배경 위 보조 텍스트는 최소 `text-gray-600`(7.0:1+), 상태/요일 강조 색상은 `text-red-700`, `text-blue-700`, `text-emerald-700`, `text-amber-700` 이상을 사용하여 4.5:1 이상의 명도 대비를 확보함.
+  2. 페이지 내 헤딩 태그는 반드시 `h1` ➔ `h2` ➔ `h3` 내림차순을 준수하고, `LandingPage.spec.tsx`에 헤딩 계층 순서 및 저대비 클래스 부재를 검증하는 자동화 단위 테스트를 추가함.
+  3. 시각적 텍스트가 존재하는 인터랙티브 요소에 `aria-label`을 부여할 때는 반드시 시각적 텍스트(`Boim`)를 포함(`aria-label="Boim 최상단으로 이동"`)시킬 것.
+  4. 로컬 Docker(`http://localhost`) 환경이 구동 중일 때는 코드 수정 및 커밋 직후 반드시 `docker compose up -d --build web`(또는 `api`)을 실행하여 컨테이너 서빙 번들을 즉시 최신화할 것.
+
 > **결론:** "기존에 구축된 공통 모듈(apiClient, Interceptor)이 있는지 반드시 확인하고, 이를 적극 활용하며 중복 처리를 절대 하지 말 것. 또한 타입 임포트 시 `import type`을 반드시 명시하고, 파일 편집 시 태그 및 문법 짝을 확실하게 검수하며, Replace 툴 사용 시 기존 코드의 유실 여부를 반드시 크로스체크할 것. **무엇보다 `any` 타입은 프로젝트 내에서 절대 금지되며, 기능-테스트-커밋의 원사이클을 반드시 지킬 것.**"

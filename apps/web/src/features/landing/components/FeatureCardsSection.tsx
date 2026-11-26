@@ -39,10 +39,10 @@ export const FeatureCardsSection: React.FC = () => {
 
             {/* Inner UI Preview */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200/60 shadow-sm group-hover:border-blue-100 transition-colors">
-              <div className="text-[11px] font-bold text-gray-400 mb-1">나의 보험 현황</div>
+              <div className="text-[11px] font-bold text-gray-600 mb-1">나의 보험 현황</div>
               <div className="flex items-center justify-between">
                 <div className="text-[18px] font-extrabold text-gray-950">
-                  7<span className="text-[13px] font-bold text-gray-500">개 가입 보험</span>
+                  7<span className="text-[13px] font-bold text-gray-600">개 가입 보험</span>
                 </div>
                 <span className="px-2.5 py-1 text-[11px] font-bold text-blue-600 bg-blue-50 rounded-lg">
                   전체 보기
@@ -54,7 +54,7 @@ export const FeatureCardsSection: React.FC = () => {
           {/* Card 2: 일정 알림 */}
           <div className="bg-slate-50/70 hover:bg-white rounded-3xl p-7 border border-gray-100 hover:border-blue-200 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col justify-between group cursor-default">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-100/70 text-emerald-700 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                 <Bell className="w-6 h-6 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2.5">
@@ -74,7 +74,7 @@ export const FeatureCardsSection: React.FC = () => {
               <div className="text-[13px] font-extrabold text-gray-900 mb-1">
                 OO 종합건강보험 · 85,000원
               </div>
-              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+              <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
                 <span>납입 완료</span>
               </div>
@@ -84,7 +84,7 @@ export const FeatureCardsSection: React.FC = () => {
           {/* Card 3: AI 보장 상태 분석 (Boim 실스펙 업그레이드) */}
           <div className="bg-slate-50/70 hover:bg-white rounded-3xl p-7 border border-gray-100 hover:border-blue-200 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 flex flex-col justify-between group cursor-default">
             <div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-600 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100/70 text-amber-700 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                 <ShieldCheck className="w-6 h-6 stroke-[2.5]" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2.5">
@@ -97,12 +97,12 @@ export const FeatureCardsSection: React.FC = () => {
 
             {/* Inner UI Preview */}
             <div className="bg-white rounded-2xl p-4 border border-gray-200/60 shadow-sm group-hover:border-amber-100 transition-colors">
-              <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 mb-1.5">
+              <div className="flex items-center justify-between text-[11px] font-bold text-gray-600 mb-1.5">
                 <span>AI 종합 보장 점수</span>
-                <span className="text-emerald-600 font-extrabold">안심 등급 🟢</span>
+                <span className="text-emerald-700 font-extrabold">안심 등급 🟢</span>
               </div>
               <div className="text-[18px] font-black text-blue-600 mb-2">
-                85 <span className="text-[12px] font-bold text-gray-400">/ 100점</span>
+                85 <span className="text-[12px] font-bold text-gray-600">/ 100점</span>
               </div>
               {/* Progress bar */}
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">

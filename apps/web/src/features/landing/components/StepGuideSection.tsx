@@ -21,9 +21,7 @@ export const StepGuideSection: React.FC = () => {
   return (
     <section id="step-guide" className="scroll-mt-20 py-20 lg:py-28 bg-slate-50/50 border-t border-gray-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
           {/* Left Column: Step by Step Guide Description (Interactive Tabs) */}
           <div className="lg:col-span-6 flex flex-col items-start">
             <div className="text-[13px] font-extrabold text-blue-600 tracking-wider uppercase mb-3">
@@ -39,7 +37,6 @@ export const StepGuideSection: React.FC = () => {
 
             {/* Interactive Step Items */}
             <div className="space-y-4 w-full" role="tablist" aria-label="이용 방법 단계">
-              
               {/* Step 1 Button */}
               <button
                 type="button"
@@ -56,7 +53,7 @@ export const StepGuideSection: React.FC = () => {
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black shrink-0 transition-colors ${
                     activeStep === 1
                       ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/25'
-                      : 'bg-gray-100 text-gray-500'
+                      : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   1
@@ -67,7 +64,7 @@ export const StepGuideSection: React.FC = () => {
                   }`}>
                     보험 정보를 간편하게 등록하고
                   </h3>
-                  <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                  <p className="text-[13px] text-gray-600 font-medium leading-relaxed">
                     보험 증권 사진 한 장으로 보험사, 상품명, 납입 금액을 자동 추출합니다.
                   </p>
                 </div>
@@ -89,7 +86,7 @@ export const StepGuideSection: React.FC = () => {
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black shrink-0 transition-colors ${
                     activeStep === 2
                       ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/25'
-                      : 'bg-gray-100 text-gray-500'
+                      : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   2
@@ -100,7 +97,7 @@ export const StepGuideSection: React.FC = () => {
                   }`}>
                     납입 일정과 일정을 캘린더로 정리하고
                   </h3>
-                  <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                  <p className="text-[13px] text-gray-600 font-medium leading-relaxed">
                     월 납입액, 자동이체일, 만기일을 캘린더와 D-Day 알림으로 꼼꼼히 챙깁니다.
                   </p>
                 </div>
@@ -122,7 +119,7 @@ export const StepGuideSection: React.FC = () => {
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-black shrink-0 transition-colors ${
                     activeStep === 3
                       ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/25'
-                      : 'bg-gray-100 text-gray-500'
+                      : 'bg-gray-100 text-gray-600'
                   }`}
                 >
                   3
@@ -133,7 +130,7 @@ export const StepGuideSection: React.FC = () => {
                   }`}>
                     내 보험 상태를 AI로 한눈에 확인하세요
                   </h3>
-                  <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                  <p className="text-[13px] text-gray-600 font-medium leading-relaxed">
                     Gemini AI가 내 연령대에 꼭 맞는 필수 보장 대비 과다/부족 항목을 리포트합니다.
                   </p>
                 </div>
@@ -145,7 +142,6 @@ export const StepGuideSection: React.FC = () => {
           {/* Right Column: Step-specific Interactive Mockup Panel */}
           <div className="lg:col-span-6 flex justify-center lg:justify-end">
             <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-xl shadow-slate-200/60 border border-gray-100 min-h-[460px] flex flex-col justify-between">
-              
               {/* STEP 1: Registration Mockup */}
               {activeStep === 1 && (
                 <div key="step-1" className="animate-[fadeIn_0.3s_ease-in-out]">
@@ -153,7 +149,7 @@ export const StepGuideSection: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-0.5">보험 등록</h3>
-                      <p className="text-[12px] font-medium text-gray-400">증권을 업로드하거나 직접 정보를 입력하세요.</p>
+                      <p className="text-[12px] font-medium text-gray-600">증권을 업로드하거나 직접 정보를 입력하세요.</p>
                     </div>
                     <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200/50 text-[11px] font-bold text-indigo-700">
                       <Sparkles className="w-3 h-3 text-indigo-600" />
@@ -169,7 +165,7 @@ export const StepGuideSection: React.FC = () => {
                     <div className="text-[12px] font-bold text-gray-800 mb-1">
                       증권 PDF 또는 이미지를 드래그하여 업로드
                     </div>
-                    <div className="text-[11px] text-gray-400 font-medium mb-2.5">
+                    <div className="text-[11px] text-gray-600 font-medium mb-2.5">
                       PDF, JPG, PNG 파일 지원 (최대 10MB)
                     </div>
 
@@ -188,13 +184,13 @@ export const StepGuideSection: React.FC = () => {
                   <div className="space-y-2.5">
                     <div className="grid grid-cols-2 gap-2.5">
                       <div>
-                        <div className="text-[10px] font-bold text-gray-400 mb-1">보험사</div>
+                        <div className="text-[10px] font-bold text-gray-600 mb-1">보험사</div>
                         <div className="w-full h-8 px-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-[12px] font-bold text-gray-900">
                           OO손해보험
                         </div>
                       </div>
                       <div>
-                        <div className="text-[10px] font-bold text-gray-400 mb-1">월 납입액</div>
+                        <div className="text-[10px] font-bold text-gray-600 mb-1">월 납입액</div>
                         <div className="w-full h-8 px-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-[12px] font-bold text-blue-600">
                           85,000원
                         </div>
@@ -202,7 +198,7 @@ export const StepGuideSection: React.FC = () => {
                     </div>
 
                     <div>
-                      <div className="text-[10px] font-bold text-gray-400 mb-1">상품명</div>
+                      <div className="text-[10px] font-bold text-gray-600 mb-1">상품명</div>
                       <div className="w-full h-8 px-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center text-[12px] font-semibold text-gray-900">
                         OO 맞춤 종합보장보험 (표준형)
                       </div>
@@ -218,7 +214,7 @@ export const StepGuideSection: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-0.5">납입 및 일정 관리</h3>
-                      <p className="text-[12px] font-medium text-gray-400">이번 달 캘린더 납입 일정을 자동으로 모아봅니다.</p>
+                      <p className="text-[12px] font-medium text-gray-600">이번 달 캘린더 납입 일정을 자동으로 모아봅니다.</p>
                     </div>
                     <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/50 text-[11px] font-bold text-blue-700">
                       <Calendar className="w-3 h-3 text-blue-600" />
@@ -233,8 +229,8 @@ export const StepGuideSection: React.FC = () => {
                         <CreditCard className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="text-[11px] font-bold text-gray-500">이번 달 총 납입 예정</div>
-                        <div className="text-[16px] font-black text-gray-950">257,000<span className="text-[12px] font-bold text-gray-500">원</span></div>
+                        <div className="text-[11px] font-bold text-gray-600">이번 달 총 납입 예정</div>
+                        <div className="text-[16px] font-black text-gray-950">257,000<span className="text-[12px] font-bold text-gray-600">원</span></div>
                       </div>
                     </div>
                     <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-lg">
@@ -251,7 +247,7 @@ export const StepGuideSection: React.FC = () => {
                         </span>
                         <div>
                           <div className="text-[12px] font-bold text-gray-900">OO 종합건강보험</div>
-                          <div className="text-[11px] text-gray-400 font-medium">85,000원 · 자동이체</div>
+                          <div className="text-[11px] text-gray-600 font-medium">85,000원 · 자동이체</div>
                         </div>
                       </div>
                       <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
@@ -266,10 +262,10 @@ export const StepGuideSection: React.FC = () => {
                         </span>
                         <div>
                           <div className="text-[12px] font-bold text-gray-900">OO 안심 운전자보험</div>
-                          <div className="text-[11px] text-gray-400 font-medium">52,000원 · 카드납</div>
+                          <div className="text-[11px] text-gray-600 font-medium">52,000원 · 카드납</div>
                         </div>
                       </div>
-                      <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
                         완료
                       </span>
                     </div>
@@ -281,10 +277,10 @@ export const StepGuideSection: React.FC = () => {
                         </span>
                         <div>
                           <div className="text-[12px] font-bold text-gray-900">OO 든든 실손보험</div>
-                          <div className="text-[11px] text-gray-400 font-medium">120,000원 · 자동이체</div>
+                          <div className="text-[11px] text-gray-600 font-medium">120,000원 · 자동이체</div>
                         </div>
                       </div>
-                      <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                      <span className="text-[11px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md">
                         예정
                       </span>
                     </div>
@@ -299,7 +295,7 @@ export const StepGuideSection: React.FC = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-0.5">AI 보장 종합 진단</h3>
-                      <p className="text-[12px] font-medium text-gray-400">Gemini AI가 내 보장의 균형을 분석했습니다.</p>
+                      <p className="text-[12px] font-medium text-gray-600">Gemini AI가 내 보장의 균형을 분석했습니다.</p>
                     </div>
                     <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/50 text-[11px] font-bold text-emerald-700">
                       <TrendingUp className="w-3 h-3 text-emerald-600" />
@@ -344,7 +340,7 @@ export const StepGuideSection: React.FC = () => {
                         <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
                         <span>치아 / 일상 간병 특약</span>
                       </div>
-                      <span className="font-extrabold text-amber-600">보강 추천</span>
+                      <span className="font-extrabold text-amber-700">보강 추천</span>
                     </div>
                   </div>
 
@@ -356,7 +352,7 @@ export const StepGuideSection: React.FC = () => {
               )}
 
               {/* Bottom Card Footer Action Indicator */}
-              <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-gray-400">
+              <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[11px] font-bold text-gray-600">
                 <span>단계별 Boim 실제 기능 목업</span>
                 <span className="text-blue-600">{activeStep} / 3 단계 진행 중</span>
               </div>

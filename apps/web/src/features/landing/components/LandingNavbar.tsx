@@ -86,7 +86,7 @@ export const LandingNavbar: React.FC = () => {
           className="cursor-pointer group select-none"
           role="button"
           tabIndex={0}
-          aria-label="최상단으로 이동"
+          aria-label="Boim 최상단으로 이동"
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               scrollToTop();

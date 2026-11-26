@@ -5,6 +5,28 @@
 
 ---
 
+## [Phase 25] - 2026-11-26
+
+### ♿ 랜딩 페이지 웹 접근성(a11y) 및 Lighthouse 품질 100점 고도화 (Accessibility & WCAG 2.1 AA)
+- **시맨틱 헤딩 계층 교정 (`heading-order`, `Phase 25-01`):**
+  - `HeroSection.tsx`: 메인 `<h1>` 헤드라인 직후 우측 쇼케이스 카드 타이틀(`보험 일정`)이 `<h2>`를 건너뛰고 `<h3>`로 선언되어 있던 계층 위반을 `<h2>`로 교정하여 `h1` ➔ `h2` ➔ `h3` 순차 계층 확립.
+- **표시 텍스트와 접근 가능한 이름 일치 (`label-content-name-mismatch`, WCAG 2.5.3, `Phase 25-01`):**
+  - `LandingNavbar.tsx`: 내부에 표시 텍스트(`Boim`)를 포함한 상단 로고 버튼(`role="button"`)의 `aria-label`을 `"Boim 최상단으로 이동"`으로 보강하여 음성 제어 및 스크린 리더 접근성 이름 일치 규격 준수.
+- **배경 및 전경 색상 대비율 전면 강화 (`color-contrast`, WCAG 2.1 AA 4.5:1 이상, `Phase 25-01`):**
+  - `HeroSection.tsx`, `FeatureCardsSection.tsx`, `StepGuideSection.tsx`(1~3단계 전체 탭), `LandingFooter.tsx` 내 밝은 배경(`#ffffff`, `bg-slate-50`, `bg-indigo-50/30`) 위 저대비 텍스트를 고대비 색상 토큰으로 전면 상향:
+    - `text-gray-400`(대비율 2.5~2.6:1) ➔ `text-gray-600`(대비율 7.0:1 이상)
+    - `text-gray-300`(미니 캘린더 이전 달 날짜) ➔ `text-gray-500`(대비율 4.7:1)
+    - `text-red-500` / `text-blue-500`(미니 캘린더 일/토요일) ➔ `text-red-700` / `text-blue-700`(대비율 6.7:1 이상)
+    - `text-emerald-600`(`납입 완료`, `안심 등급 🟢`, `완료`) ➔ `text-emerald-700`(대비율 5.0~5.45:1)
+    - `text-amber-600`(`갱신 예정 2건`, `보강 추천`) ➔ `text-amber-700`(대비율 4.6~4.85:1)
+- **접근성 회귀 방지 단위 테스트 추가, Docker 컨테이너 반영 및 하네스 단일화 (`Phase 25-02`):**
+  - `LandingPage.spec.tsx`: 랜딩 페이지 제목(`h1~h6`) 내림차순 계층 검증, 로고 `aria-label` 표시 텍스트 포함 검증, 1~3단계 전 탭 저대비 클래스(`text-gray-400`, `text-gray-300`) 무결성 단위 테스트 2건 추가 (프론트엔드 Vitest 50개 스위트 271개 테스트, 전사 79개 스위트 527개 테스트 100% Pass).
+  - `boim-web` Docker 컨테이너 프로덕션 이미지 재빌드 및 재기동(`docker compose up -d --build web`)을 통해 `http://localhost/` 실서비스 환경에 신규 접근성 번들(`LandingPage-WmosQgl3.js`) 즉시 반영.
+  - `.agents/errorlog.md` 32번 항목에 WCAG 2.1 AA 접근성 위반 원인 및 Docker 컨테이너 번들 동기화 절차 기록.
+  - Phase 25 하위 하네스를 `Phase25_sub_harness.md`로 단일 통합 정리 (2-File Rule 준수).
+
+---
+
 ## [Phase 24] - 2026-11-24
 
 ### 🧪 전사 핵심 로직 실패·예외·경계값 시나리오 테스트 보강 및 결함 수정 (Test & Fixed)

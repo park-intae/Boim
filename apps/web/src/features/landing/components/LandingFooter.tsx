@@ -10,7 +10,7 @@ export const LandingFooter: React.FC = () => {
         <BrandLogo size="sm" />
 
         {/* Right: Copyright */}
-        <div className="text-[13px] text-gray-400 font-medium text-center sm:text-right">
+        <div className="text-[13px] text-gray-600 font-medium text-center sm:text-right">
           &copy; 2026 BOIM. All rights reserved.
         </div>
 

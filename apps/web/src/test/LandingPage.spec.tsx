@@ -186,4 +186,47 @@ describe('LandingPage Component (Phase 17)', () => {
     fireEvent.click(ctaBtns[ctaBtns.length - 1]);
     expect(mockNavigate).toHaveBeenCalledWith('/signup');
   });
+
+  it('WCAG 웹 접근성(a11y): 제목(Heading) 계층이 건너뜀 없이 내림차순(heading-order)을 유지해야 한다', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
+
+    const headings = Array.from(container.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+    expect(headings.length).toBeGreaterThan(0);
+
+    const levels = headings.map((h) => Number(h.tagName.replace('H', '')));
+    // 첫 번째 헤딩은 반드시 h1이어야 함
+    expect(levels[0]).toBe(1);
+
+    // 이전 헤딩 대비 레벨이 2 이상 건너뛰지 않아야 함 (예: h1 직후 h3 불가)
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i] - levels[i - 1]).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('WCAG 웹 접근성(a11y): GNB 로고 버튼의 aria-label이 표시 텍스트(Boim)를 포함하고 저대비 텍스트 클래스가 없어야 한다', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <LandingPage />
+      </MemoryRouter>
+    );
+
+    // WCAG 2.5.3 Label in Name: 내부 표시 텍스트 'Boim'이 aria-label에 포함되어야 함
+    const logoBtn = screen.getByRole('button', { name: /Boim 최상단으로 이동/i });
+    expect(logoBtn).toBeInTheDocument();
+    expect(logoBtn).toHaveTextContent(/Boim/);
+
+    // 1~3단계 모든 탭에서 WCAG AA 색상 대비 미달 클래스(text-gray-400, text-gray-300)가 존재하지 않아야 함
+    expect(container.querySelector('.text-gray-400')).toBeNull();
+    expect(container.querySelector('.text-gray-300')).toBeNull();
+
+    fireEvent.click(screen.getByRole('tab', { name: /납입 일정과 일정을 캘린더로 정리하고/i }));
+    expect(container.querySelector('.text-gray-400')).toBeNull();
+
+    fireEvent.click(screen.getByRole('tab', { name: /내 보험 상태를 AI로 한눈에 확인하세요/i }));
+    expect(container.querySelector('.text-gray-400')).toBeNull();
+  });
 });
