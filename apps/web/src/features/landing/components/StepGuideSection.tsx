@@ -169,12 +169,7 @@ export const StepGuideSection: React.FC = () => {
                       PDF, JPG, PNG 파일 지원 (최대 10MB)
                     </div>
 
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-[11px] font-bold shadow-sm shadow-indigo-500/20">
-                      <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
-                      <span>가상 모의 증권 샘플로 원클릭 분석</span>
-                    </div>
-
-                    <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[11px] font-bold">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[11px] font-bold">
                       <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                       <span>3초 만에 폼 정보가 자동 입력되었습니다</span>
                     </div>

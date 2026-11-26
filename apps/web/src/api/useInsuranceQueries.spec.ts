@@ -170,6 +170,7 @@ describe('useInsuranceQueries', () => {
         wrapper: createQueryWrapper(queryClient),
       });
       createRes.current.mutate({
+        userId: 1,
         category: '건강',
         name: '보험',
         institution: '삼성',

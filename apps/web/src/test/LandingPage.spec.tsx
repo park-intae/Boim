@@ -148,7 +148,7 @@ describe('LandingPage Component (Phase 17)', () => {
     // 1단계 기본 노출 확인
     expect(screen.getByText('보험 정보를 간편하게 등록하고')).toBeInTheDocument();
     expect(screen.getByText('증권 자동 완성')).toBeInTheDocument();
-    expect(screen.getByText(/가상 모의 증권 샘플로 원클릭 분석/i)).toBeInTheDocument();
+    expect(screen.queryByText(/가상 모의 증권 샘플로 원클릭 분석/i)).not.toBeInTheDocument();
     expect(screen.getByText(/3초 만에 폼 정보가 자동 입력되었습니다/i)).toBeInTheDocument();
     expect(screen.getByText('1 / 3 단계 진행 중')).toBeInTheDocument();
 
